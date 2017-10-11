@@ -9,8 +9,8 @@
   "_id": "2340k728234jjf87",
   "listingId": "3cv45765nb75467",
   "guestId": "3vg5980u34cvg5",
-  "startDate": DATETIME,
-  "endDate": DATETIME,
+  "startDate": "2016-05-18T16:00:00Z",
+  "endDate": "2016-05-18T16:00:00Z",
   "status": "pending, confirmed, closed, cancelled",
   "hostRating": "",
   "guestRating": "",
@@ -24,7 +24,7 @@
 
 ### API request to create initial booking:
 
-Endpoint:
+`/stays` POST
 
 ### Parameters
 
@@ -41,8 +41,8 @@ Endpoint:
 {
   "listingId": "v3456yv456v46",
   "guestId": "f34c56345635f4634",
-  "startDate": DATETIME,
-  "endDate": DATETIME
+  "startDate": "2016-05-18T16:00:00Z",
+  "endDate": "2016-05-18T16:00:00Z"
 }
 
 ```
@@ -51,7 +51,7 @@ Endpoint:
 ```JSON
 {
   "stayId": "v3456yv456v46",
-  "status": "pending
+  "status": "pending"
 }
 
 ```
