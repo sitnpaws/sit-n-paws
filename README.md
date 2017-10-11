@@ -1,3 +1,4 @@
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/hrhuffles/sit-n-paws.png?columns=all)](https://waffle.io/hrhuffles/sit-n-paws?utm_source=badge)
 # sit-n-paws
 
 > This application is for connecting pet owners who want to temporarily leave their beloved pets with other pet lovers (referred to as __hosts__) to safely care for them for a reasonable fee.
