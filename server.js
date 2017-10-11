@@ -27,9 +27,9 @@ seedListingDB();
 
 //handles log in information in the db, creates jwt
 app.post('/login', (req, res) => {
-  var username = req.body.username;
+  var email = req.body.email;
   var password = req.body.password;
-  User.findOne({ username: username})
+  User.findOne({ email: email })
      .exec((err, found) => {
       if (err) {
         throw err;
@@ -40,6 +40,7 @@ app.post('/login', (req, res) => {
             if (match) {
               let payload = {
                 username: found.username,
+                email: found.email,
                 name: found.name
               };
               let token = jwt.sign(payload, 'Shaken, not stirred', {
@@ -48,6 +49,7 @@ app.post('/login', (req, res) => {
               res.json({
                 success: true,
                 username: found.username,
+                email: found.email,
                 token: token
               });
             }
@@ -99,6 +101,7 @@ app.post('/signup', (req, res) => {
           res.json({
             success: true,
             username: newUser.username,
+            email: newUser.email,
             token: token
           });
         })
@@ -142,7 +145,7 @@ app.post('/listings', listingsUpload, (req, res, next) => {
   // The 'next()' is important as it ensures the images get sent
   // to the Cloudinary servers after the Listing and responses are
   // sent to the client, making the upload responsive
-  Listing.findOne({name: req.body.name})
+  Listing.findOne({email: req.body.email})
   .then((found) => {
     if (found) {
       // update Listing

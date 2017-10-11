@@ -13,7 +13,7 @@ export default class Login extends React.Component {
 
     // login and register forms are tracked with separate states
     this.state = {
-      username: '',
+      email: '',
       password: '',
       registerUsername: '',
       registerPassword: '',
@@ -34,7 +34,7 @@ export default class Login extends React.Component {
       } else {
         var url = masterUrl + '/login';
         var credentials = {
-          username: this.state.username,
+          email: this.state.email,
           password: this.state.password
         };
       }
@@ -72,13 +72,13 @@ export default class Login extends React.Component {
   render() {
     return (
       <MuiThemeProvider>
-      <div>
+        <div>
           <div className="wrapper login-forms-container">
             <div className="login-forms">
               <h1>LOGIN</h1>
               <form onChange={this.setField}>
-                <label>username</label>
-                <input type="text" name="username" value={this.state.username}/>
+                <label>e-mail</label>
+                <input type="text" name="email" value={this.state.email}/>
                 <br />
                 <label>password</label>
                 <input type="password" name="password" value={this.state.password}/>
@@ -100,7 +100,7 @@ export default class Login extends React.Component {
             <div className="login-forms">
               <h1>REGISTER</h1>
               <form onChange={this.setField}>
-                <label>email</label>
+                <label>e-mail</label>
                 <input type="email" name="registerEmail" value={this.state.registerEmail} />
                 <br />
                 <label>username</label>
