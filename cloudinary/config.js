@@ -1,6 +1,6 @@
 const cloudConfig = {
-  cloud_name: 'top-hat',
-  api_key: '554171953742111',
-  api_secret: '3BIDYuhvrLG6WDzleVkISTyAq2c'
+  cloud_name: 'sit-n-paws',
+  api_key: '862778586185375 ',
+  api_secret: 'esU2I5d_5CNQKNyQbKuI4ETuo9w'
 };
 module.exports = cloudConfig;
