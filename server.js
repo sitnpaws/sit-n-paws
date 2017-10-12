@@ -2,6 +2,7 @@ const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const moment = require('moment');
 const User = require('./db/models/users');
 const Listing = require('./db/models/listing');
@@ -270,6 +271,26 @@ app.get('/listings/:zipcode', (req, res) => {
       })
 });
 
+app.get('/api/stays', jwtAuth, (req, res) => {
+  console.log('request received...');
+  const { email: userEmail } = req.tokenPayload;
+  User.findOne({email: userEmail}).then(user => {
+    if (!user) {
+      return res.status(400).send('User not found');
+    } else {
+      const userId = user._id;
+      const hostStays = Stay.find({hostId: ObjectId(userId)}).populate('listing', 'name zipcode', 'Listing').exec();
+      const guestStays = Stay.find({guestId: ObjectId(userId)}).populate('listing', 'name zipcode', 'Listing').exec();
+      return Promise.all([hostStays, guestStays]).then(([hostStays, guestStays]) => {
+        let stays = [];
+        hostStays.forEach(stay => { stay.role = 'host'; stays.push(stay); });
+        guestStays.forEach(stay => { stay.role = 'guest'; stays.push(stay); });
+        res.status(200).json(stays);
+      });
+    }
+  }).catch(err => res.status(500).send('Oops! Server error.'));
+});
+
 app.post('/api/stays', jwtAuth, (req, res) => {
   const { email: guestEmail } = req.tokenPayload;
   const { listingId, startDate, endDate } = req.body;
@@ -284,7 +305,7 @@ app.post('/api/stays', jwtAuth, (req, res) => {
       const days = Math.max(moment(endDate).diff(moment(startDate), 'days'), 1);
       hostEmail = listing.email;
       let newStay = new Stay({
-        listingId: listingId,
+        listing: listingId,
         hostId: listing.userId,
         guestId: guest._id,
         startDate: startDate,
@@ -297,8 +318,11 @@ app.post('/api/stays', jwtAuth, (req, res) => {
     }
   }).then(stay => {
     if (hostEmail) { sendStayRequestMail(hostEmail, guestEmail, startDate, endDate); }
-    return res.status(201).json({message: 'stay created', stayId: stay._id});
-  }).catch(err => res.status(500).send('Server error: ', err));
+    res.status(201).json({message: 'stay created', stayId: stay._id});
+  }).catch(err => {
+    console.log('Server error: ', err);
+    res.status(500).send('Oops! Server error.');
+  });
 });
 
 app.get('*', (req, res) => {
