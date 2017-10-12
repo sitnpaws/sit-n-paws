@@ -9,7 +9,7 @@ import masterUrl from '../utils/masterUrl.js';
 import request from 'superagent';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Drawer from 'material-ui/Drawer';
-import AppBar from 'material-ui/AppBar';
+import { AppBar, Tabs, Tab } from 'material-ui';
 import IconButton from 'material-ui/IconButton';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import Pets from 'material-ui/svg-icons/action/pets';
@@ -22,11 +22,35 @@ export default class StaysView extends React.Component {
     super(props);
     this.state = {
       openDrawer: false,
-      renderProfile: false
+      renderProfile: false,
+      tabVal: 'stays'
     };
     // Drawer - Styles for the side drawer buttons
     this.styles = {
       margin: 40,
+      appBar: {
+        background: '#C5BA9B',
+        alignItems: 'center',
+        overflow: 'hidden',
+        position: 'fixed',
+        top: 0,
+        left: 0
+      },
+      tabItemContainer: {
+		    background: 'none',
+        maxWidth: '600px',
+	    },
+      tab: {
+        backgroundColor: '#C5BA9B',
+        height: '40px',
+        marginTop: '25px',
+        marginBottom: 0
+      },
+      title: {
+        background: '#C5BA9B',
+        height: 'auto',
+        lineHeight: 'auto',
+      }
     };
 
     this.touchTap = this.touchTap.bind(this);
@@ -65,7 +89,10 @@ export default class StaysView extends React.Component {
       <MuiThemeProvider>
         <div>
           <AppBar
-            title="Stays & Requests"
+            title={<Tabs value={this.state.tabVal} tabItemContainerStyle={this.styles.tabItemContainer} inkBarStyle={{background: 'none'}}>
+              <Tab label="Main" value="main" style={this.styles.tab} href="/main"/>
+              <Tab label="Stays" value="stays" style={this.styles.tab} href="/stays"/>
+              </Tabs>}
             iconElementLeft={<IconButton><Pets/></IconButton>}
             iconElementRight={<IconButton><NavigationMenu/></IconButton>}
             onRightIconButtonTouchTap={this.touchTap}
