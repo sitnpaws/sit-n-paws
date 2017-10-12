@@ -30,7 +30,7 @@ export default class ListingView extends React.Component {
 
     // Closes the modal upon clicking contact me
     this.handleClose = () => {
-      this.setState({open: false});
+      this.setState({open: false, formWarning: ''});
     }
 
     // Handles the date change in contact me
