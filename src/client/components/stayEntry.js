@@ -26,6 +26,11 @@ class StayEntry extends React.Component {
       marginRight: 5
     };
 
+    this.cardStyles = {
+      'maxWidth':'70%',
+      'textAlign':'left'
+    };
+
     this.handleCancelStay = this.handleCancelStay.bind(this);
     this.handleGuestAccept = this.handleGuestAccept.bind(this);
     this.handleGuestReject = this.handleGuestReject.bind(this);
@@ -84,11 +89,12 @@ class StayEntry extends React.Component {
     if (stay.hostEmail !== this.state.email) {
       // Guest View
       return(
-        <div>
-          <Card>
+        <div className="stay-entry" align="center">
+          <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><Home style={this.iconStyles} /><strong>Stay with {stay.hostId}</strong></span>}
+              title={<span className="stay-title"><strong>Stay with {stay.hostId}</strong></span>}
               subtitle={`Status: ${this.state.status}`}
+              avatar={<Home style={this.iconStyles} />}
             />
             <CardText>
               <div className = "stayDetail">
@@ -111,11 +117,12 @@ class StayEntry extends React.Component {
     } else {
       // Host View
       return(
-        <div>
-          <Card>
+        <div className="stay-entry" align="center">
+          <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><Pets style={this.iconStyles} /><strong>Request from {stay.guestId}</strong></span>}
+              title={<span className="stay-title"><strong>Request from {stay.guestId}</strong></span>}
               subtitle={`Status: ${this.state.status}`}
+              avatar={<Pets style={this.iconStyles} />}
             >
             </CardHeader>
 
