@@ -2,15 +2,17 @@ const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const moment = require('moment');
 const User = require('./db/models/users');
 const Listing = require('./db/models/listing');
+const Stay = require('./db/models/stays');
 const jwt = require('jsonwebtoken');
-const seedListingDB = require('./seed');
 const cloudinary = require('cloudinary');
 const cloudConfig = require('./cloudinary/config.js');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
 const upload = multer({dest: './uploads/'});
+const debug = process.env.DEBUG || true;
 
 // This is the shape of the object from the config file which is gitignored
 // const cloudConfig = {
@@ -23,7 +25,37 @@ cloudinary.config(cloudConfig);
 const app = express();
 app.use(express.static((__dirname + '/src/public')));
 app.use(bodyParser.json());
-seedListingDB();
+
+const JWT_KEY = 'who let the dogs in?!';
+const EMAIL_AUTH = {user: 'sitnpawsio@gmail.com', pass: 'sitnpaws13'};
+
+//============= AUTHENTICATION HELPER =============\\
+const jwtAuth = (req, res, next) => {
+  const token = req.headers.authentication;
+  if (!token) { res.status(401).send(); return; }
+  try { // token validation
+    req.tokenPayload = jwt.verify(token, JWT_KEY);
+    next();
+  } catch(err) {
+    res.status(401).send();
+    return;
+  }
+};
+
+//============= EMAIL NOTIFICATION HELPER =============\\
+const sendStayRequestMail = (hostEmail, guestEmail, startDate, endDate) => {
+  const transporter = nodemailer.createTransport({service: 'gmail', auth: EMAIL_AUTH});
+  const mailOptions = {
+    to: 'jmeek13@gmail.com',
+    subject: 'Hi from Sit-n-Paws! A friend wants to stay at your house from ' +
+              moment(startDate).format('LL') + ' to ' + moment(endDate).format('LL'),
+    text: 'Email the pet owner @ ' + guestEmail +
+    ' to discuss specifics, and login to approve or reject the stay. Please respond within 24 hours!',
+  };
+  transporter.sendMail(mailOptions).then((info) => {
+    if (debug) { console.log('Nodemailer details: ', info); }
+  });
+}
 
 //handles log in information in the db, creates jwt
 app.post('/login', (req, res) => {
@@ -43,7 +75,7 @@ app.post('/login', (req, res) => {
                 email: found.email,
                 name: found.name
               };
-              let token = jwt.sign(payload, 'Shaken, not stirred', {
+              let token = jwt.sign(payload, JWT_KEY, {
                 expiresIn: '1h'
               });
               res.json({
@@ -95,7 +127,7 @@ app.post('/signup', (req, res) => {
             name: newUser.name,
             email: newUser.email
           };
-          let token = jwt.sign(payload, 'Shaken, not stirred', {
+          let token = jwt.sign(payload, JWT_KEY, {
             expiresIn: '1h'
           });
           res.json({
@@ -110,8 +142,7 @@ app.post('/signup', (req, res) => {
         })
       }
     })
-    console.log(password);
-})
+});
 
 //handles updating profiles in db
 app.post('/profile', (req, res) => {
@@ -224,7 +255,7 @@ app.get('/listings', (req, res) => {
         res.send(listings);
       }
     })
-})
+});
 
 //handles getting listings by zipcode from search
 app.get('/listings/:zipcode', (req, res) => {
@@ -237,36 +268,38 @@ app.get('/listings/:zipcode', (req, res) => {
         res.send(listings);
         }
       })
-})
+});
 
-//handles requests for contacting host, sends email to host
-app.post('/contacthost', (req, res) => {
-  var ownerEmail = req.body.ownerEmail;
-  var hostEmail = req.body.hostEmail;
-  var date = req.body.date;
-
-  var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'sitnpawstophat@gmail.com', // Your email id
-      pass: 'SitNPawsHR1' // Your password
-    }
-  });
-  var mailOptions = {
-    to: hostEmail,
-    subject: 'Hi from Sit-n-Paws! A friend wants to stay at your house on ' + date,
-    text: 'Email the pet owner @ ' + ownerEmail + ' Please respond within 24 hours!'
-  };
-  transporter.sendMail(mailOptions, function(error, response) {
-    if (error) {
-      console.log(error);
-      res.json({hi: 'error here'})
+app.post('/api/stays', jwtAuth, (req, res) => {
+  const { email: guestEmail } = req.tokenPayload;
+  const { listingId, startDate, endDate } = req.body;
+  if (!listingId || !startDate || !endDate ) { res.status(400).send('bad request'); return; }
+  let hostEmail = '';
+  let listing = Listing.findById(listingId);
+  let guest = User.findOne({email: guestEmail});
+  const newStay = Promise.all([listing, guest]).then(([listing, guest]) => {
+    if (!listing || !guest) {
+      return res.status(400).send('Listing or guest not found.');
     } else {
-      console.log('Email sent: ' + response.response);
-      res.json({hi: response.response});
+      const days = Math.max(moment(endDate).diff(moment(startDate), 'days'), 1);
+      hostEmail = listing.email;
+      let newStay = new Stay({
+        listingId: listingId,
+        hostId: listing.userId,
+        guestId: guest._id,
+        startDate: startDate,
+        endDate: endDate,
+        status: 'pending',
+        pricePer: listing.cost,
+        totalPrice: Math.floor(listing.cost*(days)),
+      });
+      return newStay.save();
     }
-  });
-})
+  }).then(stay => {
+    if (hostEmail) { sendStayRequestMail(hostEmail, guestEmail, startDate, endDate); }
+    return res.status(201).json({message: 'stay created', stayId: stay._id});
+  }).catch(err => res.status(500).send('Server error: ', err));
+});
 
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
