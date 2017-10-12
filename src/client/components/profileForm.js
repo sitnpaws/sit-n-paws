@@ -56,10 +56,9 @@ export default class ProfileUpdate extends React.Component {
       phone: phone,
       address: address
     };
-    console.log(data);
     axios.put('/api/profile', data, { headers: {'Authorization': this.token} })
       .then((res) => {
-        console.log('profile updated');
+        localStorage.setItem('jwt', res.data.token);
       })
       .catch((err) => {
         console.log(err);
