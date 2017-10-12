@@ -21,9 +21,8 @@ const listingsData = [
 // seed data for user to provide instant login capability
 const mockCompleteUser = [
   {
-    username: 'mary444',
-    password: 'password1',
     email: 'sitnpawsio+host1@gmail.com',
+    password: 'password1',
     name: 'Mary Tester',
     phone: '561-123-5155',
     address: '14 Main Street'

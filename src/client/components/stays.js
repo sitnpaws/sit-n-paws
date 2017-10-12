@@ -37,7 +37,6 @@ class Stays extends React.Component {
   getStays() {
     axios.get('/api/stays', { headers: {'Authorization': this.token} })
       .then((res) => {
-        console.log('STAYS!!', res.data);
         this.setState({
           stays: res.data
         })

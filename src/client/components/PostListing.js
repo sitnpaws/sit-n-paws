@@ -74,7 +74,10 @@ export default class PostListing extends React.Component {
   componentDidMount() {
     let token = localStorage.getItem('jwt');
     let decoded = jwt.decode(token);
-    this.setState({name: decoded.name});
+    this.setState({
+      name: decoded.name,
+      email: decoded.email
+    });
   }
 
   render() {
