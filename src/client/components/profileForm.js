@@ -1,52 +1,53 @@
 import React from 'react';
+import axios from 'axios';
 import ListingView from './listingView';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import LoginSubmit from '../utils/login';
 import masterUrl from '../utils/masterUrl.js';
+import jwt from 'jsonwebtoken'
 
 
 export default class ProfileUpdate extends React.Component {
-
   constructor(props) {
     super(props);
-
     this.state = {
-      email: '',
       name: '',
       phone: '',
-      address: '',
-      renderState: false,
+      address: ''
     }
+    this.token;
+    this.setField = this.setField.bind(this);
+    this.updateProfile = this.updateProfile.bind(this);
+  }
 
-    // Handles form fields
-    this.setField = (e) => {
-      this.setState({[e.target.name]: e.target.value});
-    }
+  componentDidMount() {
+    this.token = localStorage.jwt;
+  }
 
-    // Updates profile on clicking submit button (Incomplete);
-    this.updateProfile = () => {
-      console.log('Update profile');
-      let data = this.state;
-      this.setState({renderState: !this.state.renderState})
-      var url = masterUrl + '/profile';
-      var options = {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: new Headers({
-          'Content-Type': 'application/json'
-        })
-      };
+  // Handles form fields
+  setField(e) {
+    this.setState({[e.target.name]: e.target.value});
+  }
 
-      fetch(url, options)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((errors) => {
-          console.log('Login Error: ', errors);
-      });
-    }
+  // Updates profile on clicking submit button
+  updateProfile() {
+    let name = (this.state.name) ? this.state.name : null;
+    let phone = (this.state.phone) ? this.state.phone : null;
+    let address = (this.state.address) ? this.state.address : null;
+    let data = {
+      name: name,
+      phone: phone,
+      address: address
+    };
+    console.log(data);
+    axios.put('/api/profile', data, { headers: {'Authorization': this.token} })
+      .then((res) => {
+        console.log('profile updated: ', res);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   }
 
   // Form for updateProfile
@@ -56,11 +57,6 @@ export default class ProfileUpdate extends React.Component {
         <h1>Edit Your Profile</h1>
         <form onChange={this.setField}>
           <fieldset>
-            <legend>Enter Your Email</legend>
-            <br />
-            <input type="text" value={this.state.email} name="email" />
-            <br />
-            <br />
             <label>Name:</label>
             <input type="text" value={this.state.name} name="name" />
             <br />
@@ -73,7 +69,7 @@ export default class ProfileUpdate extends React.Component {
         </form>
         <br />
         <RaisedButton onClick={this.updateProfile} type="submit" label="Submit Changes" primary={true} style={this.styles} />
-        </div>
-    );
-  };
+      </div>
+    )
+  }
 }

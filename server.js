@@ -32,7 +32,7 @@ const EMAIL_AUTH = {user: 'sitnpawsio@gmail.com', pass: 'sitnpaws13'};
 
 //============= AUTHENTICATION HELPER =============\\
 const jwtAuth = (req, res, next) => {
-  const token = req.headers.authentication;
+  const token = req.headers.authorization;
   if (!token) { res.status(401).send(); return; }
   try { // token validation
     req.tokenPayload = jwt.verify(token, JWT_KEY);
@@ -146,10 +146,9 @@ app.post('/signup', (req, res) => {
 });
 
 //handles updating profiles in db
-app.post('/profile', (req, res) => {
-  var email = req.body.email;
-
-  var updateProfile = {
+app.put('/api/profile', jwtAuth, (req, res) => {
+  let email = req.tokenPayload.email;
+  let updateProfile = {
     name: req.body.name,
     phone: req.body.phone,
     address: req.body.address
@@ -158,7 +157,7 @@ app.post('/profile', (req, res) => {
     if(err) {
       console.log(err);
     } else {
-      console.log('Profile update success!');
+      console.log('Profile update success');
     }
   })
 });
