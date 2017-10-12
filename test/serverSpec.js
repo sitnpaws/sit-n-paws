@@ -270,3 +270,4 @@ describe('Listings APIs and database', function() {
   })
 
 });
+//TODO: Update testing for endpoints: post-/api/stays get-/api/stays , and signup/login (just username to email switch)
