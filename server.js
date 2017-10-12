@@ -167,7 +167,6 @@ app.put('/api/profile', jwtAuth, (req, res) => {
     if(err) {
       console.log(err);
     } else {
-      console.log('Profile update success: ', updated);
       let payload = {
         name: updated.name,
         email: updated.email
