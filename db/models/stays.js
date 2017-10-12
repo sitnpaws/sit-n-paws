@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 
 staySchema = new mongoose.Schema(
   {
-    listingId: { type: mongoose.Schema.ObjectId, required: true },
+    listing: { type: mongoose.Schema.ObjectId, required: true },
     hostId: { type: mongoose.Schema.ObjectId, required: true },
     guestId: { type: mongoose.Schema.ObjectId, required: true },
     startDate: { type: Date, required: true },
@@ -15,7 +15,7 @@ staySchema = new mongoose.Schema(
     totalPrice: { type: Number, required: true }
   }
 );
-
+//TODO: formalize the ref to listing table
 var Stay = mongoose.model('Stay', staySchema);
 
 module.exports = Stay;
