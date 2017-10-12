@@ -1,23 +1,6 @@
 # Sit-n-paws API
 
-## Database collections
-
-### Stay in stays collection
-
-```JSON
-{
-  "_id": "2340k728234jjf87",
-  "listingId": "3cv45765nb75467",
-  "guestId": "3vg5980u34cvg5",
-  "startDate": "2016-05-18T16:00:00Z",
-  "endDate": "2016-05-18T16:00:00Z",
-  "status": "pending, confirmed, closed, cancelled",
-  "hostRating": "",
-  "guestRating": "",
-  "pricePer": "",
-  "totalPrice": ""
-}
-```
+## API
 
 ### API request to create initial booking:
 
@@ -83,7 +66,7 @@
 }
 ```
 
-### Listings
+### API to create and retrieve Listings
 
 `/listings` POST
 
@@ -124,43 +107,53 @@
 
 ---
 
-### Profile
+## Database collections
 
-`/profile` POST
+### Stay in stays collection
 
-#### Parameters
+#### Fields
 | param |   description   | data type | examples |
 |------------|-----------|------------|-----------|
-| __username__ |  The user's username as input by the user | String | "brianG123" |
-| __password__  |  The user's password as input by the user   | String | "writer123" |
-| __email__  |  The user's email as input by the user |  String  | "brianG@random.edu" |
-| __name__ |  The user's name as input by the user | String | "Brian Griffin" |
-| __phone__  |  The user's phone number as input by the user   | String | "555-235-1234" |
-| __address__  |  The user's address as input by the user |  String  | "31 Spooner Street" |
-
-#### Example Request format
-```JSON
-{
-   "username": "brianG123",
-   "password": "writer123",
-   "email": "brianG@random.edu",
-   "name": "Brian Griffin",
-   "phone": "555-235-1234",
-   "address": "31 Spooner Street"
-}
-```
-
-#### Example Response format
+| ***_id*** |  Id representing this specific stay | String | "354673bv46736bv" |
+| __listingId__  |  The Id of the associated listing   | String | "5426g3bv4673b4673" |
+| __guestId__  |  The Id of the guest who will be staying |  String  | "f354987hnc39870n7c3y5" |
+| __startDate__ |  The start date of the stay in UTC | String | "2016-05-18T16:00:00Z" |
+| __status__  |  The end date of the stay in UTC | String | "2016-05-18T16:00:00Z" |
+| __hostRating__  |  The rating given to the stay by the host |  Number  | 5 |
+| __guestRating__  |  The rating given to the stay by the guest |  Number  | 5 |
+| __pricePer__  |  The average price per night the guest is paying |  Number  | 76.77 |
+| __totalPrice__  |  The total price the guest is paying |  Number  | 76.77 |
 
 ```JSON
 {
-   "success": true
+  "_id": "2340k728234jjf87",
+  "listingId": "3cv45765nb75467",
+  "guestId": "3vg5980u34cvg5",
+  "startDate": "2016-05-18T16:00:00Z",
+  "endDate": "2016-05-18T16:00:00Z",
+  "status": "pending, confirmed, closed, cancelled",
+  "hostRating": 5,
+  "guestRating": 5,
+  "pricePer": 33.99,
+  "totalPrice": 76.77
 }
 ```
-
----
 
 ### Listing in listings collection
+
+#### Fields
+| param |   description   | data type | examples |
+|------------|-----------|------------|-----------|
+| __name__ |  The host's username | String | "brianG123" |
+| __zipcode__  |  The zipcode of the listing   | String | "95024" |
+| __dogSizePreference__  |  The dog's size preferred by the host |  String  | "Small" |
+| __dogBreedPreference__ |  The dog's breed preferred by the host | String | "Beagle" |
+| __dogTemperamentPreference__  |  The dog's temperament preferred by the host   | String | "Nice" |
+| __dogActivityPreference__  |  The dog's level of activity preferred by the host |  String  | "calm" |
+| __homeAttributes__  |  Words to describe the home |  String  | "Apartment" |
+| __hostPictures__  |  URL of the image for the Host |  String  | "https://randomuser.me/api/portraits/men/55.jpg" |
+| __homePictures__  |  URL of the image for the listing |  String  | "https://farm1.staticflickr.com/48/111317752_7934d93e8a.jpg" |
+| __cost__  |  The user's address as input by the user |  Number  | 57.99 |
 
 ```JSON
 {
@@ -173,8 +166,30 @@
    "homeAttributes": "Support",
    "hostPictures": "https://randomuser.me/api/portraits/men/55.jpg",
    "homePictures": "https://farm1.staticflickr.com/48/111317752_7934d93e8a.jpg",
-   "cost": 57
+   "cost": 57.99
 }
 ```
 
+### User is Users Collection
 
+#### Fields
+| param |   description   | data type | examples |
+|------------|-----------|------------|-----------|
+| __username__ |  The user's username as input by the user | String | "brianG123" |
+| __password__  |  The user's password as input by the user   | String | "writer123" |
+| __email__  |  The user's email as input by the user |  String  | "brianG@random.edu" |
+| __name__ |  The user's name as input by the user | String | "Brian Griffin" |
+| __phone__  |  The user's phone number as input by the user   | String | "555-235-1234" |
+| __address__  |  The user's address as input by the user |  String  | "31 Spooner Street" |
+
+#### Example user entry
+```JSON
+{
+   "username": "brianG123",
+   "password": "writer123",
+   "email": "brianG@random.edu",
+   "name": "Brian Griffin",
+   "phone": "555-235-1234",
+   "address": "31 Spooner Street"
+}
+```
