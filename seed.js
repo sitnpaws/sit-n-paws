@@ -46,6 +46,7 @@ const seedListingDB = () => {
         }
         let reformatUser = JSON.stringify(mockCompleteUser[0]);
         let newUser = new User(JSON.parse(reformatUser));
+        const newUserId = newUser._id;
         // add user mary444 to database
         newUser.save((err) => {
           if(err) {
@@ -55,6 +56,7 @@ const seedListingDB = () => {
         // iterate over mock listings, format, and save each listing into the database
         listingsData.forEach((listing) => {
           // reformat data to strings for parsing before saving
+          listing.userId = newUserId;
           let reformatListing = JSON.stringify(listing);
           let newListing = new Listing(JSON.parse(reformatListing));
           newListing.save((err) => {
