@@ -48,16 +48,17 @@ class Stays extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        {
-          (this.state.stays.length !== 0)
-            ? this.state.stays.map(stay => <StayEntry stay={stay} key={stay._id}/>)
-            : <div>You have no stays yet!</div>
-        }
-      </div>
-
-    )
+    if (this.state.stays.length === 0) {
+      return (
+        <div>
+          You have no stays yet! Woof!
+        </div>
+      )
+    } else {
+      return (
+        this.state.stays.map(stay => <StayEntry stay={stay} key={stay._id}/>)
+      )
+    }
   }
 }
 

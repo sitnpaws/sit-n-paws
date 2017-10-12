@@ -44,7 +44,7 @@ class StayEntry extends React.Component {
   }
 
   handleCancelStay() {
-    axios.put('/api/stays/cancel/' + this.props.stay.listingId)
+    axios.put('/api/stays/cancel/' + this.props.stay._id)
     .then((res) => {
       this.setState({
           status: res.data.status
@@ -56,7 +56,7 @@ class StayEntry extends React.Component {
   }
 
   handleGuestAccept() {
-    axios.put('/api/stays/accept/' + this.props.stay.listingId)
+    axios.put('/api/stays/accept/' + this.props.stay._id)
     .then((res) => {
       this.setState({
           status: res.data.status
@@ -68,7 +68,7 @@ class StayEntry extends React.Component {
   }
 
   handleGuestReject() {
-    axios.put('/api/stays/reject/' + this.props.stay.listingId)
+    axios.put('/api/stays/reject/' + this.props.stay._id)
     .then((res) => {
       this.setState({
           status: res.data.status
@@ -143,6 +143,10 @@ class StayEntry extends React.Component {
             </CardActions>
           </Card>
       </div>
+      )
+    } else {
+      return (
+        <div></div>
       )
     }
   }
