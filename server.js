@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 const JWT_KEY = 'who let the dogs in?!';
 const EMAIL_AUTH = {user: 'sitnpawsio@gmail.com', pass: 'sitnpaws13'};
 
-// AUTHENTICATION HELPER //
+//============= AUTHENTICATION HELPER =============\\
 const jwtAuth = (req, res, next) => {
   const token = req.headers.authentication;
   if (!token) { res.status(401).send(); return; }
@@ -41,6 +41,21 @@ const jwtAuth = (req, res, next) => {
     return;
   }
 };
+
+//============= EMAIL NOTIFICATION HELPER =============\\
+const sendStayRequestMail = (hostEmail, guestEmail, startDate, endDate) => {
+  const transporter = nodemailer.createTransport({service: 'gmail', auth: EMAIL_AUTH});
+  const mailOptions = {
+    to: 'jmeek13@gmail.com',
+    subject: 'Hi from Sit-n-Paws! A friend wants to stay at your house from ' +
+              moment(startDate).format('LL') + ' to ' + moment(endDate).format('LL'),
+    text: 'Email the pet owner @ ' + guestEmail +
+    ' to discuss specifics, and login to approve or reject the stay. Please respond within 24 hours!',
+  };
+  transporter.sendMail(mailOptions).then((info) => {
+    if (debug) { console.log('Nodemailer details: ', info); }
+  });
+}
 
 //handles log in information in the db, creates jwt
 app.post('/login', (req, res) => {
@@ -256,9 +271,6 @@ app.get('/listings/:zipcode', (req, res) => {
 });
 
 app.post('/api/stays', jwtAuth, (req, res) => {
-  console.log('token payload: ', req.tokenPayload);
-  console.log('req body: ', req.body);
-
   const { email: guestEmail } = req.tokenPayload;
   const { listingId, startDate, endDate } = req.body;
   if (!listingId || !startDate || !endDate ) { res.status(400).send('bad request'); return; }
@@ -269,7 +281,7 @@ app.post('/api/stays', jwtAuth, (req, res) => {
     if (!listing || !guest) {
       return res.status(400).send('Listing or guest not found.');
     } else {
-      const days = Math.min(moment(endDate).diff(moment(startDate), 'days'), 1);
+      const days = Math.max(moment(endDate).diff(moment(startDate), 'days'), 1);
       hostEmail = listing.email;
       let newStay = new Stay({
         listingId: listingId,
@@ -288,21 +300,6 @@ app.post('/api/stays', jwtAuth, (req, res) => {
     return res.status(201).json({message: 'stay created', stayId: stay._id});
   }).catch(err => res.status(500).send('Server error: ', err));
 });
-
-// nodemailer function
-const sendStayRequestMail = (hostEmail, guestEmail, startDate, endDate) => {
-  const transporter = nodemailer.createTransport({service: 'gmail', auth: EMAIL_AUTH});
-  const mailOptions = {
-    to: 'jmeek13@gmail.com',
-    subject: 'Hi from Sit-n-Paws! A friend wants to stay at your house from ' +
-              moment(startDate).format('LL') + ' to ' + moment(endDate).format('LL'),
-    text: 'Email the pet owner @ ' + guestEmail +
-    ' to discuss specifics, and login to approve or reject the stay. Please respond within 24 hours!',
-  };
-  transporter.sendMail(mailOptions).then((info) => {
-    if (debug) { console.log('Nodemailer details: ', info); }
-  });
-}
 
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
