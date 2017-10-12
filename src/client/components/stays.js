@@ -22,109 +22,22 @@ class Stays extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: null,
-      stays: [
-        {
-          "_id": "1",
-          "listingId": "1111",
-          "guestId": "111",
-          "hostId": '1234',
-          "hostEmail": 'j@j.com',
-          "startDate": "2016-05-18T16:00:00Z",
-          "endDate": "2016-05-18T16:00:00Z",
-          "status": "pending",
-          "hostRating": "",
-          "guestRating": "",
-          "pricePer": "25",
-          "totalPrice": "25"
-        },
-        {
-          "_id": "2",
-          "listingId": "2222",
-          "hostId": "1111",
-          "guestId": "55111",
-          "hostEmail": 'a@a.com',
-          "startDate": "2016-05-18T16:00:00Z",
-          "endDate": "2016-05-18T16:00:00Z",
-          "status": "closed",
-          "hostRating": "",
-          "guestRating": "",
-          "pricePer": "55",
-          "totalPrice": "55"
-        },
-        {
-          "_id": "3",
-          "listingId": "2222",
-          "guestId": "1121",
-          "hostId": "1111",
-          "hostEmail": 'j@j.com',
-          "startDate": "2016-05-18T16:00:00Z",
-          "endDate": "2016-05-18T16:00:00Z",
-          "status": "closed",
-          "hostRating": "",
-          "guestRating": "",
-          "pricePer": "55",
-          "totalPrice": "55"
-        },
-        {
-          "_id": "4",
-          "listingId": "3333",
-          "guestId": "111",
-          "hostId": "1111",
-          "startDate": "2016-05-18T16:00:00Z",
-          "endDate": "2016-05-18T16:00:00Z",
-          "status": "pending",
-          "hostRating": "",
-          "guestRating": "",
-          "pricePer": "74",
-          "totalPrice": "74"
-        },
-        {
-          "_id": "5",
-          "listingId": "2222",
-          "hostId": "1111",
-          "guestId": "12345",
-          "hostEmail": 'j@j.com',
-          "startDate": "2016-05-18T16:00:00Z",
-          "endDate": "2016-05-18T16:00:00Z",
-          "status": "confirmed",
-          "hostRating": "",
-          "guestRating": "",
-          "pricePer": "55",
-          "totalPrice": "55"
-        },
-        {
-          "_id": "6",
-          "listingId": "3333",
-          "guestId": "111",
-          "hostId": "1111",
-          "startDate": "2016-05-18T16:00:00Z",
-          "endDate": "2016-05-18T16:00:00Z",
-          "status": "cancelled",
-          "hostRating": "",
-          "guestRating": "",
-          "pricePer": "74",
-          "totalPrice": "74"
-        },
-      ]
+      stays: []
     };
   }
 
   componentWillMount() {
-    var token = localStorage.jwt;
-    var decoded = jwt.decode(token);
-    this.setState({email: decoded.email});
+    this.token = localStorage.jwt;
   }
 
   componentDidMount() {
-    // uncomment when this is working
-    // this.getStays();
+    this.getStays();
   }
 
   getStays() {
-    // api route should return all stays with the user's id as hostId OR guestId
-    axios.get('/api/stays', localStorage.jwt)
+    axios.get('/api/stays', { headers: {'Authorization': this.token} })
       .then((res) => {
+        console.log('STAYS!!', res.data);
         this.setState({
           stays: res.data
         })
