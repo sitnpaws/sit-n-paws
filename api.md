@@ -145,7 +145,7 @@
 #### Fields
 | param |   description   | data type | examples |
 |------------|-----------|------------|-----------|
-| __name__ |  The host's username | String | "brianG123" |
+| __name__ |  The host's name | String | "brianG123" |
 | __zipcode__  |  The zipcode of the listing   | String | "95024" |
 | __dogSizePreference__  |  The dog's size preferred by the host |  String  | "Small" |
 | __dogBreedPreference__ |  The dog's breed preferred by the host | String | "Beagle" |
