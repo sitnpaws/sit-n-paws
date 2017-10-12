@@ -233,3 +233,7 @@ input {
   font-weight: 700;
   background: #fff;
 }
+
+.stay-title {
+  vertical-align: middle;
+}

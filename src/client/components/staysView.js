@@ -3,6 +3,7 @@ import ListingsContainer from './listingsContainer.js';
 import PostListing from './PostListing.js';
 import ProfileUpdate from './profileForm.js';
 import ShowProfile from './showProfile.js';
+import Stays from './stays.js';
 import Search from './search.js'
 import masterUrl from '../utils/masterUrl.js';
 import request from 'superagent';
@@ -16,61 +17,46 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 
 // This component is the upper level component for all other components.
-export default class Main extends React.Component {
+export default class StaysView extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      listings: [],
-      query: '',
       openDrawer: false,
-      openPostListing: false,
-      renderProfile: false,
-    }
-
-
-    // Drawer - Opens the side drawer for my profile
-    this.touchTap = () => {
-      this.setState({openDrawer: !this.state.openDrawer});
-    }
-
+      renderProfile: false
+    };
     // Drawer - Styles for the side drawer buttons
     this.styles = {
       margin: 40,
-    }
+    };
 
-    // Drawer - Handles logout by removing jwt token and refreshing the page
-    this.logoutOnClick = (event) => {
-      localStorage.removeItem('jwt');
-      window.location.reload();
-    }
-
-    // Drawer - Renders Edit Your Profile when Edit Profile button is clicked
-    this.profileOnClick = (event) => {
-      this.setState({renderProfile: !this.state.renderProfile});
-    }
-
-    // PostListing - Opens modal to post a listing
-    this.postListing = () => {
-      this.setState({openPostListing: !this.state.openPostListing});
-    }
-
-    // Search - live search by zipcode
-    this.handleSearch = (term) => {
-      const url = masterUrl + `/listings/${term}`;
-      request.get(url, (err, res) => {
-        if (err) {
-          console.log(err);
-        } else {
-          this.setState({ listings:res.body });
-        }
-      });
-    }
+    this.touchTap = this.touchTap.bind(this);
+    this.logoutOnClick = this.logoutOnClick.bind(this);
+    this.profileOnClick = this.profileOnClick.bind(this);
+    this.backToMain = this.backToMain.bind(this);
   }
 
-  // Populates listings on load
+  // Drawer - Opens the side drawer for my profile
+  touchTap() {
+    this.setState({openDrawer: !this.state.openDrawer});
+  }
+
+  // Drawer - Handles logout by removing jwt token and refreshing the page
+  logoutOnClick(event) {
+    localStorage.removeItem('jwt');
+    window.location.reload();
+  }
+
+  // Drawer - Renders Edit Your Profile when Edit Profile button is clicked
+  profileOnClick(event) {
+    this.setState({renderProfile: !this.state.renderProfile});
+  }
+
+  backToMain() {
+    // Redirect to Main Component
+  }
+
   componentDidMount() {
-    this.handleSearch('');
+
   }
 
   // Renders AppBar, Search, Drawer, and PostListing
@@ -79,34 +65,23 @@ export default class Main extends React.Component {
       <MuiThemeProvider>
         <div>
           <AppBar
-            title="Become A Pet Host!"
+            title="Stays & Requests"
             iconElementLeft={<IconButton><Pets/></IconButton>}
             iconElementRight={<IconButton><NavigationMenu/></IconButton>}
             onRightIconButtonTouchTap={this.touchTap}
-            onLeftIconButtonTouchTap={this.postListing}
+            onLeftIconButtonTouchTap={this.backToMain}
             style={{background: 'rgb(197, 186, 155)'}}
           >
           </AppBar>
-          <br/>
-          <Search onChange={this.handleSearch}/>
-          <br/>
-          <ListingsContainer listings={this.state.listings} />
+          <Stays />
           <Drawer width={400} openSecondary={true} open={this.state.openDrawer} >
             <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.touchTap} style={{background: 'rgb(197, 186, 155)'}}/>
             <ShowProfile/>
             <RaisedButton onClick={this.profileOnClick} label="Edit Profile" labelColor="white" style={this.styles} backgroundColor="rgb(197, 186, 155)" />
             <RaisedButton onClick={this.logoutOnClick} label="Log Out" labelColor="white" style={this.styles} backgroundColor="rgb(171, 94, 94)"/>
             {this.state.renderProfile ? <ProfileUpdate/> : null}
-            <RaisedButton href="/stays" label="Stays & Requests" labelColor="black"/>
           </Drawer>
-          <Dialog
-            modal={false}
-            open={this.state.openPostListing}
-            onRequestClose={this.postListing}
-          >
-            <PostListing />
-          </Dialog>
-        </div>
+      </div>
       </MuiThemeProvider>
     )
   }

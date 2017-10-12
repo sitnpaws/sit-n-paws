@@ -25,7 +25,7 @@ export default class ShowProfile extends React.Component {
     super(props);
 
     this.state = {
-      Name: null,
+      email: null,
     }
 
     this.styles = {
@@ -37,13 +37,13 @@ export default class ShowProfile extends React.Component {
   componentWillMount() {
     var token = localStorage.jwt;
     var decoded = jwt.decode(token);
-    this.setState({Name: decoded.username});
+    this.setState({email: decoded.email});
   }
 
   render() {
     return (
       <div className='profileBox'>
-        <h1>{this.state.Name}</h1>
+        <h1>{this.state.email}</h1>
         <Avatar style={this.styles}
         backgroundColor='rgba(0,0,0,0)'
         alt="User Picture"
