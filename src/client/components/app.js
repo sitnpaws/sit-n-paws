@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Switch, Route, browserHistory } from 'react-router-dom';
 import Home from './home.js';
 import Main from './main.js';
+import StaysView from './StaysView.js';
 import Login from './login.js';
 import NotFound from './notfound.js';
 import PrivateRoute from './private.js';
@@ -35,10 +36,11 @@ export default class App extends React.Component {
         <Route exact path='/' component={Home}/>
         <Route path='/login' render={(props) => (
           <Login {...props}
-          handleLogin={this.authLogin}
+            handleLogin={this.authLogin}
           />
-          )}/>
+        )}/>
         <PrivateRoute path='/main' checkAuth={this.authLogin} component={Main}/>
+        <PrivateRoute path='/stays' checkAuth={this.authLogin} component={StaysView}/>
         <Route component={NotFound}/>
       </Switch>
     </BrowserRouter>
