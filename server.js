@@ -163,11 +163,24 @@ app.put('/api/profile', jwtAuth, (req, res) => {
     phone: req.body.phone,
     address: req.body.address
   };
-  User.findOneAndUpdate({email: email}, updateProfile, function(err) {
+  User.findOneAndUpdate({email: email}, updateProfile, { new: true}, function(err, updated) {
     if(err) {
       console.log(err);
     } else {
-      console.log('Profile update success');
+      console.log('Profile update success: ', updated);
+      let payload = {
+        name: updated.name,
+        email: updated.email
+      };
+      let token = jwt.sign(payload, JWT_KEY, {
+        expiresIn: '1h'
+      });
+      res.json({
+        success: true,
+        name: updated.name,
+        email: updated.email,
+        token: token
+      });
     }
   })
 });
