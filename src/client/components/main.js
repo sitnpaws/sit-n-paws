@@ -8,7 +8,7 @@ import masterUrl from '../utils/masterUrl.js';
 import request from 'superagent';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Drawer from 'material-ui/Drawer';
-import AppBar from 'material-ui/AppBar';
+import { AppBar, Tabs, Tab } from 'material-ui';
 import IconButton from 'material-ui/IconButton';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import Pets from 'material-ui/svg-icons/action/pets';
@@ -26,8 +26,8 @@ export default class Main extends React.Component {
       openDrawer: false,
       openPostListing: false,
       renderProfile: false,
+      tabVal: 'main'
     }
-
 
     // Drawer - Opens the side drawer for my profile
     this.touchTap = () => {
@@ -37,6 +37,29 @@ export default class Main extends React.Component {
     // Drawer - Styles for the side drawer buttons
     this.styles = {
       margin: 40,
+      appBar: {
+        background: '#C5BA9B',
+        alignItems: 'center',
+        overflow: 'hidden',
+        position: 'fixed',
+        top: 0,
+        left: 0
+      },
+      tabItemContainer: {
+		    background: 'none',
+        maxWidth: '600px',
+	    },
+      tab: {
+        backgroundColor: '#C5BA9B',
+        height: '40px',
+        marginTop: '25px',
+        marginBottom: 0
+      },
+      title: {
+        background: '#C5BA9B',
+        height: 'auto',
+        lineHeight: 'auto',
+      }
     }
 
     // Drawer - Handles logout by removing jwt token and refreshing the page
@@ -78,27 +101,33 @@ export default class Main extends React.Component {
     return (
       <MuiThemeProvider>
         <div>
-          <AppBar
-            title="Become A Pet Host!"
-            iconElementLeft={<IconButton><Pets/></IconButton>}
-            iconElementRight={<IconButton><NavigationMenu/></IconButton>}
-            onRightIconButtonTouchTap={this.touchTap}
-            onLeftIconButtonTouchTap={this.postListing}
-            style={{background: 'rgb(197, 186, 155)'}}
-          >
-          </AppBar>
+          <div>
+            <AppBar
+              title={<Tabs value={this.state.tabVal} tabItemContainerStyle={this.styles.tabItemContainer} inkBarStyle={{background: 'none'}}>
+                <Tab label="Main" value="main" style={this.styles.tab} href="/main"/>
+                <Tab label="Stays" value="stays" style={this.styles.tab} href="/stays"/>
+              </Tabs>}
+              iconElementLeft={<IconButton><Pets/></IconButton>}
+              iconElementRight={<IconButton><NavigationMenu/></IconButton>}
+              onRightIconButtonTouchTap={this.touchTap}
+              // onLeftIconButtonTouchTap={this.postListing}
+              style={this.styles.appBar}
+            >
+
+            </AppBar>
+          </div>
           <br/>
           <Search onChange={this.handleSearch}/>
           <br/>
           <ListingsContainer listings={this.state.listings} />
           <Drawer width={400} openSecondary={true} open={this.state.openDrawer} >
-            <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.touchTap} style={{background: 'rgb(197, 186, 155)'}}/>
+            <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.touchTap} style={{background: '#C5BA9B'}}/>
             <ShowProfile/>
-            <RaisedButton onClick={this.profileOnClick} label="Edit Profile" labelColor="white" style={this.styles} backgroundColor="rgb(197, 186, 155)" />
-            <RaisedButton onClick={this.logoutOnClick} label="Log Out" labelColor="white" style={this.styles} backgroundColor="rgb(171, 94, 94)"/>
+            <RaisedButton onClick={this.profileOnClick} label="Edit Profile" labelColor="#FFFFFF" style={this.styles} backgroundColor="#C5BA9B" />
+            <RaisedButton onClick={this.logoutOnClick} label="Log Out" labelColor="#FFFFFF" style={this.styles} backgroundColor="#AB5E5E"/>
             {this.state.renderProfile ? <ProfileUpdate/> : null}
             <div align="center">
-              <RaisedButton style={{'marginTop':'25px'}} href="/stays" label="Stays & Requests" labelColor="black"/>
+              <RaisedButton style={{'marginTop':'25px'}} onClick={this.postListing} label="Become a Host!" labelColor="#000000"/>
             </div>
           </Drawer>
           <Dialog

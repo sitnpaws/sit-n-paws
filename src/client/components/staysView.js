@@ -9,7 +9,7 @@ import masterUrl from '../utils/masterUrl.js';
 import request from 'superagent';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Drawer from 'material-ui/Drawer';
-import AppBar from 'material-ui/AppBar';
+import { AppBar, Tabs, Tab } from 'material-ui';
 import IconButton from 'material-ui/IconButton';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import Pets from 'material-ui/svg-icons/action/pets';
@@ -22,14 +22,40 @@ export default class StaysView extends React.Component {
     super(props);
     this.state = {
       openDrawer: false,
-      renderProfile: false
+      openPostListing: false,
+      renderProfile: false,
+      tabVal: 'stays'
     };
     // Drawer - Styles for the side drawer buttons
     this.styles = {
       margin: 40,
+      appBar: {
+        background: '#C5BA9B',
+        alignItems: 'center',
+        overflow: 'hidden',
+        position: 'fixed',
+        top: 0,
+        left: 0
+      },
+      tabItemContainer: {
+		    background: 'none',
+        maxWidth: '600px',
+	    },
+      tab: {
+        backgroundColor: '#C5BA9B',
+        height: '40px',
+        marginTop: '25px',
+        marginBottom: 0
+      },
+      title: {
+        background: '#C5BA9B',
+        height: 'auto',
+        lineHeight: 'auto',
+      }
     };
 
     this.touchTap = this.touchTap.bind(this);
+    this.postListing = this.postListing.bind(this);
     this.logoutOnClick = this.logoutOnClick.bind(this);
     this.profileOnClick = this.profileOnClick.bind(this);
     this.backToMain = this.backToMain.bind(this);
@@ -38,6 +64,11 @@ export default class StaysView extends React.Component {
   // Drawer - Opens the side drawer for my profile
   touchTap() {
     this.setState({openDrawer: !this.state.openDrawer});
+  }
+
+  // PostListing - Opens modal to post a listing
+  postListing () {
+    this.setState({openPostListing: !this.state.openPostListing});
   }
 
   // Drawer - Handles logout by removing jwt token and refreshing the page
@@ -65,22 +96,35 @@ export default class StaysView extends React.Component {
       <MuiThemeProvider>
         <div>
           <AppBar
-            title="Stays & Requests"
+            title={<Tabs value={this.state.tabVal} tabItemContainerStyle={this.styles.tabItemContainer} inkBarStyle={{background: 'none'}}>
+              <Tab label="Main" value="main" style={this.styles.tab} href="/main"/>
+              <Tab label="Stays" value="stays" style={this.styles.tab} href="/stays"/>
+            </Tabs>}
             iconElementLeft={<IconButton><Pets/></IconButton>}
             iconElementRight={<IconButton><NavigationMenu/></IconButton>}
             onRightIconButtonTouchTap={this.touchTap}
             onLeftIconButtonTouchTap={this.backToMain}
-            style={{background: 'rgb(197, 186, 155)'}}
+            style={{background: '#C5BA9B'}}
           >
           </AppBar>
           <Stays />
           <Drawer width={400} openSecondary={true} open={this.state.openDrawer} >
-            <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.touchTap} style={{background: 'rgb(197, 186, 155)'}}/>
+            <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.touchTap} style={{background: '#C5BA9B'}}/>
             <ShowProfile/>
-            <RaisedButton onClick={this.profileOnClick} label="Edit Profile" labelColor="white" style={this.styles} backgroundColor="rgb(197, 186, 155)" />
-            <RaisedButton onClick={this.logoutOnClick} label="Log Out" labelColor="white" style={this.styles} backgroundColor="rgb(171, 94, 94)"/>
+            <RaisedButton onClick={this.profileOnClick} label="Edit Profile" labelColor="#FFFFFF" style={this.styles} backgroundColor="#C5BA9B" />
+            <RaisedButton onClick={this.logoutOnClick} label="Log Out" labelColor="#FFFFFF" style={this.styles} backgroundColor="#AB5E5E"/>
             {this.state.renderProfile ? <ProfileUpdate/> : null}
+            <div align="center">
+              <RaisedButton style={{'marginTop':'25px'}} onClick={this.postListing} label="Become a Host!" labelColor="#000000"/>
+            </div>
           </Drawer>
+          <Dialog
+            modal={false}
+            open={this.state.openPostListing}
+            onRequestClose={this.postListing}
+          >
+            <PostListing />
+          </Dialog>
       </div>
       </MuiThemeProvider>
     )

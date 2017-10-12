@@ -18,16 +18,32 @@ export default class ProfileUpdate extends React.Component {
     }
     this.token;
     this.setField = this.setField.bind(this);
+    this.getProfile = this.getProfile.bind(this);
     this.updateProfile = this.updateProfile.bind(this);
   }
 
   componentDidMount() {
     this.token = localStorage.jwt;
+    this.getProfile();
   }
 
   // Handles form fields
   setField(e) {
     this.setState({[e.target.name]: e.target.value});
+  }
+
+  getProfile() {
+    axios.get('/api/profile', { headers: {'Authorization': this.token} })
+      .then((res) => {
+        this.setState({
+          name: res.data.name,
+          phone: res.data.phone,
+          address: res.data.address
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   }
 
   // Updates profile on clicking submit button
@@ -43,7 +59,7 @@ export default class ProfileUpdate extends React.Component {
     console.log(data);
     axios.put('/api/profile', data, { headers: {'Authorization': this.token} })
       .then((res) => {
-        console.log('profile updated: ', res);
+        console.log('profile updated');
       })
       .catch((err) => {
         console.log(err);

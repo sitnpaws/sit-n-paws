@@ -72,7 +72,6 @@ app.post('/login', (req, res) => {
           found.comparePassword(password).then(match => {
             if (match) {
               let payload = {
-                username: found.username,
                 email: found.email,
                 name: found.name
               };
@@ -81,8 +80,8 @@ app.post('/login', (req, res) => {
               });
               res.json({
                 success: true,
-                username: found.username,
                 email: found.email,
+                name: found.name,
                 token: token
               });
             }
@@ -90,7 +89,7 @@ app.post('/login', (req, res) => {
         } else {
           res.send(JSON.stringify({
             success: false,
-            error: 'Invalid Username/Password'
+            error: 'Invalid Login/Password'
           }));
         }
       }
@@ -99,7 +98,7 @@ app.post('/login', (req, res) => {
 
 //handles new user creations in db
 app.post('/signup', (req, res) => {
-  var username = req.body.username;
+  var name = req.body.name;
   var password = req.body.password;
   var email = req.body.email;
   User.findOne({ email: email })
@@ -115,16 +114,14 @@ app.post('/signup', (req, res) => {
         }));
       } else {
         User.create({
-          username: username,
           password: password,
           email: email,
-          name: '',
+          name: name,
           phone: '',
           address: ''
         })
         .then((newUser) => {
           let payload = {
-            username: newUser.username,
             name: newUser.name,
             email: newUser.email
           };
@@ -133,7 +130,7 @@ app.post('/signup', (req, res) => {
           });
           res.json({
             success: true,
-            username: newUser.username,
+            name: newUser.name,
             email: newUser.email,
             token: token
           });
@@ -143,6 +140,19 @@ app.post('/signup', (req, res) => {
         })
       }
     })
+});
+
+//handles fetching profiles in db
+app.get('/api/profile', jwtAuth, (req, res) => {
+  let email = req.tokenPayload.email;
+
+  User.findOne({email: email}, function(err, user) {
+    if(err) {
+      console.log(err);
+    } else {
+      res.json(user);
+    }
+  })
 });
 
 //handles updating profiles in db
@@ -298,8 +308,8 @@ app.post('/api/stays', jwtAuth, (req, res) => {
   const { listingId, startDate, endDate } = req.body;
   if (!listingId || !startDate || !endDate ) { res.status(400).send('bad request'); return; }
   let hostEmail = '';
-  let listing = Listing.findById(listingId);
-  let guest = User.findOne({email: guestEmail});
+  let listing = Listing.findById(listingId).exec();
+  let guest = User.findOne({email: guestEmail}).exec();
   const newStay = Promise.all([listing, guest]).then(([listing, guest]) => {
     if (!listing || !guest) {
       return res.status(400).send('Listing or guest not found.');
@@ -325,6 +335,47 @@ app.post('/api/stays', jwtAuth, (req, res) => {
     console.log('Server error: ', err);
     res.status(500).send('Oops! Server error.');
   });
+});
+
+//TODO: send email notifications on stay update
+app.put('/api/stay/cancel/:stayId', jwtAuth, (req, res) => {
+  Stay.findById(req.params.stayId).exec().then(stay => {
+    if (!stay) { throw new Error('Stay not found'); }
+    if (stay.status === 'closed') { throw new Error('Cannot modify a closed stay'); }
+    if (stay.status === 'rejected') { throw new Error('Cannot cancel a rejected stay'); }
+    return stay.update({status: 'cancelled'}).exec();
+  }).then(() => res.status(200).json({stayId: req.params.stayId}))
+    .catch(err => res.status(400).send(err.message));
+});
+
+app.put('/api/stay/approve/:stayId', jwtAuth, (req, res) => {
+  const stayId = req.params.stayId;
+  const user = User.findOne({email: req.tokenPayload.email}).exec();
+  const stay = Stay.findById(stayId).exec();
+  Promise.all([user, stay]).then(([user, stay]) => {
+    if (!stay) { throw new Error('Stay not found'); }
+    if (!user) { throw new Error('User not found'); }
+    if (stay.status === 'closed') { throw new Error('Cannot modify a closed stay'); }
+    if (!stay.hostId.equals(user._id)) { throw new Error('Only host may approve or reject a stay'); }
+    return stay.update({status: 'approved'}).exec();
+  }).then(() => res.status(200).json({stayId: req.params.stayId}))
+    .catch(err => res.status(400).send(err.message));
+});
+
+app.put('/api/stay/reject/:stayId', jwtAuth, (req, res) => {
+  const stayId = req.params.stayId;
+  const user = User.findOne({email: req.tokenPayload.email}).exec();
+  const stay = Stay.findById(stayId).exec();
+  Promise.all([user, stay]).then(([user, stay]) => {
+    if (!stay) { throw new Error('Stay not found'); }
+    if (!user) { throw new Error('User not found'); }
+    if (stay.status === 'closed' || stay.status === 'approved') {
+      throw new Error('Cannot reject an approved or closed stay');
+    }
+    if (!stay.hostId.equals(user._id)) { throw new Error('Only host may approve or reject a stay'); }
+    return stay.update({status: 'rejected'}).exec();
+  }).then(() => res.status(200).json({stayId: req.params.stayId}))
+    .catch(err => res.status(400).send(err.message));
 });
 
 app.get('*', (req, res) => {

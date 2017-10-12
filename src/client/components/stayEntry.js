@@ -18,7 +18,6 @@ class StayEntry extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: null,
       status: this.props.stay.status
     }
 
@@ -36,18 +35,14 @@ class StayEntry extends React.Component {
     this.handleGuestReject = this.handleGuestReject.bind(this);
   }
 
-  componentWillMount() {
-    // Need to review whether I really need this or not
-    let token = localStorage.jwt;
-    let decoded = jwt.decode(token);
-    this.setState({email: decoded.email});
-  }
+  componentWillMount() { this.token = localStorage.jwt; }
 
   handleCancelStay() {
-    axios.put('/api/stays/cancel/' + this.props.stay.listingId)
-    .then((res) => {
+    axios.put('/api/stay/cancel/' + this.props.stay._id, null, {
+      headers: {'authorization': this.token}
+    }).then((res) => {
       this.setState({
-          status: res.data.status
+        status: 'cancelled'
       });
     })
     .catch((err) => {
@@ -56,10 +51,11 @@ class StayEntry extends React.Component {
   }
 
   handleGuestAccept() {
-    axios.put('/api/stays/accept/' + this.props.stay.listingId)
-    .then((res) => {
+    axios.put('/api/stay/approve/' + this.props.stay._id, null, {
+      headers: {'authorization': this.token}
+    }).then((res) => {
       this.setState({
-          status: res.data.status
+        status: 'confirmed'
       });
     })
     .catch((err) => {
@@ -68,10 +64,11 @@ class StayEntry extends React.Component {
   }
 
   handleGuestReject() {
-    axios.put('/api/stays/reject/' + this.props.stay.listingId)
-    .then((res) => {
+    axios.put('/api/stay/reject/' + this.props.stay._id, null, {
+      headers: {'authorization': this.token}
+    }).then((res) => {
       this.setState({
-          status: res.data.status
+        status: 'rejected'
       });
     })
     .catch((err) => {
@@ -86,13 +83,13 @@ class StayEntry extends React.Component {
   render() {
     const { stay } = this.props;
 
-    if (stay.hostEmail !== this.state.email) {
+    if (stay.role === 'guest') {
       // Guest View
       return(
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Stay with {stay.hostId}</strong></span>}
+              title={<span className="stay-title"><strong>Stay with {stay.listing.name}</strong></span>}
               subtitle={`Status: ${this.state.status}`}
               avatar={<Home style={this.iconStyles} />}
             />
@@ -104,23 +101,22 @@ class StayEntry extends React.Component {
               </div>
             </CardText>
             <CardActions>
-
               {
                 this.state.status === 'closed'
                   ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/>
-                  : this.state.status === 'cancelled' ? null : <FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/>
+                  : this.state.status === ('cancelled' || 'rejected') ? null : <FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/>
               }
             </CardActions>
           </Card>
         </div>
       )
-    } else {
+    } else if (stay.role === 'host') {
       // Host View
       return(
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Request from {stay.guestId}</strong></span>}
+              title={<span className="stay-title"><strong>Request from A Guest!</strong></span>}
               subtitle={`Status: ${this.state.status}`}
               avatar={<Pets style={this.iconStyles} />}
             >
@@ -135,17 +131,21 @@ class StayEntry extends React.Component {
             </CardText>
             <CardActions>
               {
-                this.state.status === 'pending'
-                  ? <span><FlatButton label="Accept Guest" primary={true} onClick={this.handleGuestAccept}/>
-                    <FlatButton label="Reject Guest" secondary={true} onClick={this.handleGuestReject}/></span>
-                  : this.state.status === 'closed' || 'cancelled' ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/> : null
+                  this.state.status === 'pending'
+                    ? <span><FlatButton label="Accept Guest" primary={true} onClick={this.handleGuestAccept}/>
+                      <FlatButton label="Reject Guest" secondary={true} onClick={this.handleGuestReject}/></span>
+                    : this.state.status === ('closed' || 'cancelled') ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/> : null
               }
             </CardActions>
           </Card>
-      </div>
-      )
+        </div>
+        )
+      } else {
+        return (
+          <div></div>
+        )
+      }
     }
   }
-}
 
-export default StayEntry;
+  export default StayEntry;
