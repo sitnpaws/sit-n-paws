@@ -20,6 +20,7 @@ export default class ListingView extends React.Component {
       open: false,
       startDate: null,
       endDate: null,
+      formWarning: '',
     }
 
     // Opens the modal upon clicking contact me
@@ -43,6 +44,10 @@ export default class ListingView extends React.Component {
     }
 
     this.handleRequestStay = () => {
+      if (!this.state.startDate || !this.state.endDate) {
+        this.setState({formWarning: 'Please fill in both dates.'});
+        return;
+      }
       axios.post('/api/stays',
         { // stay request data
           listingId: this.props.listing._id,
@@ -51,9 +56,9 @@ export default class ListingView extends React.Component {
         }, // params object: headers
         { headers: {'Authentication': this.token} }
       ).then(resp => {
-        console.log(resp);
+        console.log(resp); //TODO: remove this later
         this.setState({open: false});
-      }).catch(err => console.log('Server error: ', err));
+      }).catch(err => this.setState({formWarning: 'Server error: ' + err}));
     }
   }
 
@@ -135,6 +140,11 @@ export default class ListingView extends React.Component {
                   />
                 </div>
               </div>
+              {this.state.formWarning &&
+                <div className="modal-warning">
+                  <span>{this.state.formWarning}</span>
+                </div>
+              }
             </Dialog>
         </CardActions>
         </Card>
