@@ -332,6 +332,7 @@ app.put('/api/stay/cancel/:stayId', jwtAuth, (req, res) => {
   Stay.findById(req.params.stayId).exec().then(stay => {
     if (!stay) { throw new Error('Stay not found'); }
     if (stay.status === 'closed') { throw new Error('Cannot modify a closed stay'); }
+    if (stay.status === 'rejected') { throw new Error('Cannot cancel a rejected stay'); }
     return stay.update({status: 'cancelled'}).exec();
   }).then(() => res.status(200).json({stayId: req.params.stayId}))
     .catch(err => res.status(400).send(err.message));
@@ -345,7 +346,7 @@ app.put('/api/stay/approve/:stayId', jwtAuth, (req, res) => {
     if (!stay) { throw new Error('Stay not found'); }
     if (!user) { throw new Error('User not found'); }
     if (stay.status === 'closed') { throw new Error('Cannot modify a closed stay'); }
-    if (stay.hostId !== user._id) { throw new Error('Only host may approve or reject a stay'); }
+    if (!stay.hostId.equals(user._id)) { throw new Error('Only host may approve or reject a stay'); }
     return stay.update({status: 'approved'}).exec();
   }).then(() => res.status(200).json({stayId: req.params.stayId}))
     .catch(err => res.status(400).send(err.message));
@@ -361,7 +362,7 @@ app.put('/api/stay/reject/:stayId', jwtAuth, (req, res) => {
     if (stay.status === 'closed' || stay.status === 'approved') {
       throw new Error('Cannot reject an approved or closed stay');
     }
-    if (stay.hostId !== user._id) { throw new Error('Only host may approve or reject a stay'); }
+    if (!stay.hostId.equals(user._id)) { throw new Error('Only host may approve or reject a stay'); }
     return stay.update({status: 'rejected'}).exec();
   }).then(() => res.status(200).json({stayId: req.params.stayId}))
     .catch(err => res.status(400).send(err.message));
