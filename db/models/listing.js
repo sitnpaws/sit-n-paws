@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var sitnpaws = require('../config')
 
 //host listing schema
-listingSchema = new mongoose.Schema(
+var listingSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.ObjectId, required: true },
     name: { type: String, required: true },

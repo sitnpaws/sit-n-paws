@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 // var sitnpaws = require('../config'); // don't think this is needed...
 
-staySchema = new mongoose.Schema(
+var staySchema = new mongoose.Schema(
   {
     listing: { type: mongoose.Schema.ObjectId, required: true },
     hostId: { type: mongoose.Schema.ObjectId, required: true },

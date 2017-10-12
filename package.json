@@ -7,7 +7,7 @@
   },
   "main": "server.js",
   "scripts": {
-    "test": "mocha test --exit",
+    "test": "mocha test/**/*.js* --grep View --require ./tools/test-helper.js -r mock-local-storage --recursive --compilers js:babel-register --exit",
     "start": "nodemon server.js",
     "build": "webpack",
     "server": "nodemon server.js",
@@ -55,13 +55,16 @@
     "webpack-dev-server": "^2.9.1"
   },
   "devDependencies": {
+    "babel-register": "^6.26.0",
     "chai": "^4.1.2",
     "chai-things": "^0.2.0",
     "css-loader": "^0.28.7",
     "enzyme": "^3.1.0",
+    "enzyme-adapter-react-16": "^1.0.1",
     "file-loader": "^0.11.2",
     "mocha": "^4.0.1",
-    "react": "^16.0.0",
+    "mock-local-storage": "^1.0.5",
+    "react-test-renderer": "^16.0.0",
     "sinon": "^4.0.1",
     "style-loader": "^0.18.2",
     "supertest": "^3.0.0"
