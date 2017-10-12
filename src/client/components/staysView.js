@@ -104,18 +104,18 @@ export default class StaysView extends React.Component {
             iconElementRight={<IconButton><NavigationMenu/></IconButton>}
             onRightIconButtonTouchTap={this.touchTap}
             onLeftIconButtonTouchTap={this.backToMain}
-            style={{background: 'rgb(197, 186, 155)'}}
+            style={{background: '#C5BA9B'}}
           >
           </AppBar>
           <Stays />
           <Drawer width={400} openSecondary={true} open={this.state.openDrawer} >
-            <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.touchTap} style={{background: 'rgb(197, 186, 155)'}}/>
+            <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.touchTap} style={{background: '#C5BA9B'}}/>
             <ShowProfile/>
-            <RaisedButton onClick={this.profileOnClick} label="Edit Profile" labelColor="white" style={this.styles} backgroundColor="rgb(197, 186, 155)" />
-            <RaisedButton onClick={this.logoutOnClick} label="Log Out" labelColor="white" style={this.styles} backgroundColor="rgb(171, 94, 94)"/>
+            <RaisedButton onClick={this.profileOnClick} label="Edit Profile" labelColor="#FFFFFF" style={this.styles} backgroundColor="#C5BA9B" />
+            <RaisedButton onClick={this.logoutOnClick} label="Log Out" labelColor="#FFFFFF" style={this.styles} backgroundColor="#AB5E5E"/>
             {this.state.renderProfile ? <ProfileUpdate/> : null}
             <div align="center">
-              <RaisedButton style={{'marginTop':'25px'}} onClick={this.postListing} label="Become a Host!" labelColor="black"/>
+              <RaisedButton style={{'marginTop':'25px'}} onClick={this.postListing} label="Become a Host!" labelColor="#000000"/>
             </div>
           </Drawer>
           <Dialog

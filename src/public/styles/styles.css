@@ -211,6 +211,10 @@ input {
   text-align: center;
 }
 
+.profileName {
+  word-wrap: break-word;
+}
+
 /* === 404 PAGE === */
 
 .puppy404 {

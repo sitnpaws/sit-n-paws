@@ -7,7 +7,6 @@ var Promise = require('bluebird');
 //user schema
 usersSchema = new mongoose.Schema(
   {
-    username: { type: String, required: true }, // TODO: remove username
     password: { type: String, required: true },
     email: { type: String, required: true, index: { unique: true } },
     name: { type: String, required: false },

@@ -72,7 +72,6 @@ app.post('/login', (req, res) => {
           found.comparePassword(password).then(match => {
             if (match) {
               let payload = {
-                username: found.username,
                 email: found.email,
                 name: found.name
               };
@@ -81,8 +80,8 @@ app.post('/login', (req, res) => {
               });
               res.json({
                 success: true,
-                username: found.username,
                 email: found.email,
+                name: found.name,
                 token: token
               });
             }
@@ -90,7 +89,7 @@ app.post('/login', (req, res) => {
         } else {
           res.send(JSON.stringify({
             success: false,
-            error: 'Invalid Username/Password'
+            error: 'Invalid Login/Password'
           }));
         }
       }
@@ -99,7 +98,7 @@ app.post('/login', (req, res) => {
 
 //handles new user creations in db
 app.post('/signup', (req, res) => {
-  var username = req.body.username;
+  var name = req.body.name;
   var password = req.body.password;
   var email = req.body.email;
   User.findOne({ email: email })
@@ -115,16 +114,14 @@ app.post('/signup', (req, res) => {
         }));
       } else {
         User.create({
-          username: username,
           password: password,
           email: email,
-          name: '',
+          name: name,
           phone: '',
           address: ''
         })
         .then((newUser) => {
           let payload = {
-            username: newUser.username,
             name: newUser.name,
             email: newUser.email
           };
@@ -133,7 +130,7 @@ app.post('/signup', (req, res) => {
           });
           res.json({
             success: true,
-            username: newUser.username,
+            name: newUser.name,
             email: newUser.email,
             token: token
           });
@@ -143,6 +140,19 @@ app.post('/signup', (req, res) => {
         })
       }
     })
+});
+
+//handles fetching profiles in db
+app.get('/api/profile', jwtAuth, (req, res) => {
+  let email = req.tokenPayload.email;
+
+  User.findOne({email: email}, function(err, user) {
+    if(err) {
+      console.log(err);
+    } else {
+      res.json(user);
+    }
+  })
 });
 
 //handles updating profiles in db

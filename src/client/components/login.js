@@ -15,7 +15,7 @@ export default class Login extends React.Component {
     this.state = {
       email: '',
       password: '',
-      registerUsername: '',
+      registerName: '',
       registerPassword: '',
       registerEmail: ''
     }
@@ -26,7 +26,7 @@ export default class Login extends React.Component {
       if(register === 'register') {
         var url = masterUrl + '/signup';
         var credentials = {
-          username: this.state.registerUsername,
+          name: this.state.registerName,
           password: this.state.registerPassword,
           email: this.state.registerEmail
         };
@@ -103,8 +103,8 @@ export default class Login extends React.Component {
                 <label>e-mail</label>
                 <input type="email" name="registerEmail" value={this.state.registerEmail} />
                 <br />
-                <label>username</label>
-                <input type="text" name="registerUsername" value={this.state.registerUsername} />
+                <label>name</label>
+                <input type="text" name="registerName" value={this.state.registerName} />
                 <br />
                 <label>password</label>
                 <input type="password" name="registerPassword" value={this.state.registerPassword} />
