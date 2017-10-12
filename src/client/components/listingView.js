@@ -54,7 +54,7 @@ export default class ListingView extends React.Component {
           startDate: this.state.startDate.toISOString(),
           endDate: this.state.endDate.toISOString()
         }, // params object: headers
-        { headers: {'Authentication': this.token} }
+        { headers: {'Authorization': this.token} }
       ).then(resp => {
         console.log(resp); //TODO: remove this later
         this.setState({open: false});
