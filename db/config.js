@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 
 var url = 'mongodb://127.0.0.1/sitnpaws';
 mongoose.connect(url);
