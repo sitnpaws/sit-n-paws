@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
 import jwt from 'jsonwebtoken';
-import request from 'superagent';
+import axios from 'axios';
 import masterUrl from '../utils/masterUrl.js';
 import './listingView.css';
 
@@ -16,10 +16,7 @@ import './listingView.css';
 export default class ListingView extends React.Component {
   constructor(props) {
     super (props);
-
     this.state = {
-      hostEmail: props.listing.email,
-      ownerEmail: null,
       open: false,
       startDate: null,
       endDate: null,
@@ -45,48 +42,39 @@ export default class ListingView extends React.Component {
       this.setState({endDate: date});
     }
 
-    // Sends the email by posting to the /contacthost endpoint on the server
-    this.handleSendEmail = () => {
-      this.setState({open: false});
-      const url = `${masterUrl}/contacthost`;
-      request
-        .post(url)
-        .send({
-          ownerEmail: this.state.ownerEmail,
-          hostEmail: this.state.hostEmail,
-          date: JSON.stringify(this.state.date)
-        })
-        .end((err, res) => {
-          if (err) {
-            console.log('There was an error sending email: ', err)
-          } else {
-            console.log(res);
-          }
-        });
+    this.handleRequestStay = () => {
+      axios.post('/api/stays',
+        { // stay request data
+          listingId: this.props.listing._id,
+          startDate: this.state.startDate.toISOString(),
+          endDate: this.state.endDate.toISOString()
+        }, // params object: headers
+        { headers: {'Authentication': this.token} }
+      ).then(resp => {
+        console.log(resp);
+        this.setState({open: false});
+      }).catch(err => console.log('Server error: ', err));
     }
   }
 
-  // When component loads, retrieves and decodes jwt and extracts user's email
-  // from token.
   componentDidMount() {
-    var token = localStorage.jwt;
-    var decoded = jwt.decode(token);
-    this.setState({ownerEmail: decoded.email});
+    this.token = localStorage.jwt;
   }
 
   render() {
     // These are the action buttons for the Dialog
     const actions = [
-      <FlatButton
-      label="Cancel"
-      secondary={true}
-      onClick={this.handleClose}
+      <RaisedButton
+        className="modal-button"
+        label="Cancel"
+        secondary
+        onClick={this.handleClose}
       />,
-      <FlatButton
-        label="Send Message"
-        primary={true}
-        keyboardFocused={true}
-        onClick={this.handleSendEmail}
+      <RaisedButton
+        className="modal-button"
+        label="Request Stay"
+        primary
+        onClick={this.handleRequestStay}
       />
     ];
 
@@ -117,7 +105,7 @@ export default class ListingView extends React.Component {
             </div>
           </CardText>
           <CardActions>
-            <FlatButton label="Contact Me" onClick={this.handleOpen}/>
+            <FlatButton label="Request a stay" onClick={this.handleOpen}/>
             <Dialog
               title= {`Request a stay with ${this.props.listing.name}`}
               actions={actions}
