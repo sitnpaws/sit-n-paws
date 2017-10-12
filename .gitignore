@@ -17,3 +17,5 @@ uploads
 
 ## Webstorm ##
 .idea/
+
+package-lock.json
