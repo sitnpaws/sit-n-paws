@@ -298,8 +298,8 @@ app.post('/api/stays', jwtAuth, (req, res) => {
   const { listingId, startDate, endDate } = req.body;
   if (!listingId || !startDate || !endDate ) { res.status(400).send('bad request'); return; }
   let hostEmail = '';
-  let listing = Listing.findById(listingId);
-  let guest = User.findOne({email: guestEmail});
+  let listing = Listing.findById(listingId).exec();
+  let guest = User.findOne({email: guestEmail}).exec();
   const newStay = Promise.all([listing, guest]).then(([listing, guest]) => {
     if (!listing || !guest) {
       return res.status(400).send('Listing or guest not found.');
@@ -325,6 +325,46 @@ app.post('/api/stays', jwtAuth, (req, res) => {
     console.log('Server error: ', err);
     res.status(500).send('Oops! Server error.');
   });
+});
+
+//TODO: send email notifications on stay update
+app.put('/api/stay/cancel/:stayId', jwtAuth, (req, res) => {
+  Stay.findById(req.params.stayId).exec().then(stay => {
+    if (!stay) { throw new Error('Stay not found'); }
+    if (stay.status === 'closed') { throw new Error('Cannot modify a closed stay'); }
+    return stay.update({status: 'cancelled'}).exec();
+  }).then(() => res.status(200).json({stayId: req.params.stayId}))
+    .catch(err => res.status(400).send(err.message));
+});
+
+app.put('/api/stay/approve/:stayId', jwtAuth, (req, res) => {
+  const stayId = req.params.stayId;
+  const user = User.findOne({email: req.tokenPayload.email}).exec();
+  const stay = Stay.findById(stayId).exec();
+  Promise.all([user, stay]).then(([user, stay]) => {
+    if (!stay) { throw new Error('Stay not found'); }
+    if (!user) { throw new Error('User not found'); }
+    if (stay.status === 'closed') { throw new Error('Cannot modify a closed stay'); }
+    if (stay.hostId !== user._id) { throw new Error('Only host may approve or reject a stay'); }
+    return stay.update({status: 'approved'}).exec();
+  }).then(() => res.status(200).json({stayId: req.params.stayId}))
+    .catch(err => res.status(400).send(err.message));
+});
+
+app.put('/api/stay/reject/:stayId', jwtAuth, (req, res) => {
+  const stayId = req.params.stayId;
+  const user = User.findOne({email: req.tokenPayload.email}).exec();
+  const stay = Stay.findById(stayId).exec();
+  Promise.all([user, stay]).then(([user, stay]) => {
+    if (!stay) { throw new Error('Stay not found'); }
+    if (!user) { throw new Error('User not found'); }
+    if (stay.status === 'closed' || stay.status === 'approved') {
+      throw new Error('Cannot reject an approved or closed stay');
+    }
+    if (stay.hostId !== user._id) { throw new Error('Only host may approve or reject a stay'); }
+    return stay.update({status: 'rejected'}).exec();
+  }).then(() => res.status(200).json({stayId: req.params.stayId}))
+    .catch(err => res.status(400).send(err.message));
 });
 
 app.get('*', (req, res) => {
