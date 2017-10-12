@@ -86,13 +86,13 @@ class StayEntry extends React.Component {
   render() {
     const { stay } = this.props;
 
-    if (stay.hostEmail !== this.state.email) {
+    if (stay.role === 'guest') {
       // Guest View
       return(
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Stay with {stay.hostId}</strong></span>}
+              title={<span className="stay-title"><strong>Stay with {stay.listing.name}</strong></span>}
               subtitle={`Status: ${this.state.status}`}
               avatar={<Home style={this.iconStyles} />}
             />
@@ -114,13 +114,13 @@ class StayEntry extends React.Component {
           </Card>
         </div>
       )
-    } else {
+    } else if (stay.role === 'host') {
       // Host View
       return(
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Request from {stay.guestId}</strong></span>}
+              title={<span className="stay-title"><strong>Request from A Guest!</strong></span>}
               subtitle={`Status: ${this.state.status}`}
               avatar={<Pets style={this.iconStyles} />}
             >
