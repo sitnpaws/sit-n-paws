@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import ListingView from './listingView';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -8,6 +9,7 @@ import FontIcon from 'material-ui/FontIcon';
 import List from 'material-ui/List/List';
 import ListItem from 'material-ui/List/ListItem';
 import jwt from 'jsonwebtoken';
+import ProfileUpdate from './profileForm.js';
 
 import {
   blue300,
@@ -25,8 +27,7 @@ export default class ShowProfile extends React.Component {
     super(props);
 
     this.state = {
-      email: null,
-      name: null,
+      name: null
     }
 
     this.styles = {
@@ -34,14 +35,32 @@ export default class ShowProfile extends React.Component {
       height: 140
     }
 
+    this.handleUpdateProfile = this.handleUpdateProfile.bind(this);
+    this.getName = this.getName.bind(this);
+
   }
+
   componentDidMount() {
-    var token = localStorage.jwt;
-    var decoded = jwt.decode(token);
+    this.getName();
+  }
+
+  getName() {
+    this.token = localStorage.jwt;
+    let decoded = jwt.decode(this.token);
     this.setState({
-      email: decoded.email,
       name: decoded.name
     });
+  }
+
+  handleUpdateProfile(data) {
+    axios.put('/api/profile', data, { headers: {'Authorization': this.token} })
+      .then((res) => {
+        localStorage.setItem('jwt', res.data.token);
+        this.getName();
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   }
 
   render() {
@@ -51,10 +70,15 @@ export default class ShowProfile extends React.Component {
           <h1>{this.state.name}</h1>
         </div>
         <Avatar style={this.styles}
-        backgroundColor='rgba(0,0,0,0)'
-        alt="User Picture"
-        src="https://i.imgur.com/katTIZJ.png"
+          backgroundColor='none'
+          alt="User Picture"
+          src="https://i.imgur.com/katTIZJ.png"
         />
+        <div>
+          {
+            (this.props.editProfile) ? <ProfileUpdate handleUpdateProfile={this.handleUpdateProfile} /> : null
+          }
+        </div>
       </div>
     );
   };

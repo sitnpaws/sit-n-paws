@@ -110,10 +110,9 @@ export default class StaysView extends React.Component {
           <Stays />
           <Drawer width={400} openSecondary={true} open={this.state.openDrawer} >
             <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.touchTap} style={{background: '#C5BA9B'}}/>
-            <ShowProfile/>
+            <ShowProfile editProfile={this.state.renderProfile}/>
             <RaisedButton onClick={this.profileOnClick} label="Edit Profile" labelColor="#FFFFFF" style={this.styles} backgroundColor="#C5BA9B" />
             <RaisedButton onClick={this.logoutOnClick} label="Log Out" labelColor="#FFFFFF" style={this.styles} backgroundColor="#AB5E5E"/>
-            {this.state.renderProfile ? <ProfileUpdate/> : null}
             <div align="center">
               <RaisedButton style={{'marginTop':'25px'}} onClick={this.postListing} label="Become a Host!" labelColor="#000000"/>
             </div>
