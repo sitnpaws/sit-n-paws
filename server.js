@@ -2,6 +2,7 @@ const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const moment = require('moment');
 const User = require('./db/models/users');
 const Listing = require('./db/models/listing');
 const jwt = require('jsonwebtoken');
@@ -10,6 +11,7 @@ const cloudConfig = require('./cloudinary/config.js');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
 const upload = multer({dest: './uploads/'});
+const debug = process.env.DEBUG || true;
 
 // This is the shape of the object from the config file which is gitignored
 // const cloudConfig = {
@@ -257,27 +259,22 @@ app.post('/api/stays', jwtAuth, (req, res) => {
   console.log('token payload: ', req.tokenPayload);
   console.log('req body: ', req.body);
 
-  // var ownerEmail = req.body.ownerEmail;
-  // var hostEmail = req.body.hostEmail;
-  // var date = req.body.date;
-  //
-  // var transporter = nodemailer.createTransport({service: 'gmail', auth: EMAIL_AUTH});
-  // var mailOptions = {
-  //   to: hostEmail,
-  //   subject: 'Hi from Sit-n-Paws! A friend wants to stay at your house on ' + date,
-  //   text: 'Email the pet owner @ ' + ownerEmail + ' Please respond within 24 hours!'
-  // };
-  // transporter.sendMail(mailOptions, function(error, response) {
-  //   if (error) {
-  //     console.log(error);
-  //     res.json({hi: 'error here'})
-  //   } else {
-  //     console.log('Email sent: ' + response.response);
-  //     res.json({hi: response.response});
-  //   }
-  // });
+  const guestEmail = req.tokenPayload.email;
+  const startDate = req.body.startDate;
+  const endDate = req.body.endDate;
 
-
+  const transporter = nodemailer.createTransport({service: 'gmail', auth: EMAIL_AUTH});
+  const mailOptions = {
+    to: 'jmeek13@gmail.com',
+    subject: 'Hi from Sit-n-Paws! A friend wants to stay at your house from ' +
+              moment(startDate).format('LL') + ' to ' + moment(endDate).format('LL'),
+    text: 'Email the pet owner @ ' + guestEmail +
+    ' to discuss specifics, and login to approve or reject the stay. Please respond within 24 hours!',
+  };
+  transporter.sendMail(mailOptions).then((info) => {
+    if (debug) { console.log('Nodemailer details: ', info); }
+  });
+  
   res.status(201).send('ok');
 });
 
