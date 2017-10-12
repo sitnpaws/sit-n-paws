@@ -104,7 +104,7 @@ class StayEntry extends React.Component {
               {
                 this.state.status === 'closed'
                   ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/>
-                  : this.state.status === 'cancelled' || 'rejected' ? null : <FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/>
+                  : this.state.status === ('cancelled' || 'rejected') ? null : <FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/>
               }
             </CardActions>
           </Card>
