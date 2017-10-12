@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const User = require('./db/models/users');
 const Listing = require('./db/models/listing');
+const Stay = require('./db/models/stays');
 const jwt = require('jsonwebtoken');
 const cloudinary = require('cloudinary');
 const cloudConfig = require('./cloudinary/config.js');
@@ -255,14 +256,41 @@ app.get('/listings/:zipcode', (req, res) => {
 });
 
 app.post('/api/stays', jwtAuth, (req, res) => {
-  console.log('post to /api/stays received');
   console.log('token payload: ', req.tokenPayload);
   console.log('req body: ', req.body);
 
-  const guestEmail = req.tokenPayload.email;
-  const startDate = req.body.startDate;
-  const endDate = req.body.endDate;
+  const { email: guestEmail } = req.tokenPayload;
+  const { listingId, startDate, endDate } = req.body;
+  if (!listingId || !startDate || !endDate ) { res.status(400).send('bad request'); return; }
+  let hostEmail = '';
+  let listing = Listing.findById(listingId);
+  let guest = User.findOne({email: guestEmail});
+  const newStay = Promise.all([listing, guest]).then(([listing, guest]) => {
+    if (!listing || !guest) {
+      return res.status(400).send('Listing or guest not found.');
+    } else {
+      const days = Math.min(moment(endDate).diff(moment(startDate), 'days'), 1);
+      hostEmail = listing.email;
+      let newStay = new Stay({
+        listingId: listingId,
+        hostId: listing.userId,
+        guestId: guest._id,
+        startDate: startDate,
+        endDate: endDate,
+        status: 'pending',
+        pricePer: listing.cost,
+        totalPrice: Math.floor(listing.cost*(days)),
+      });
+      return newStay.save();
+    }
+  }).then(stay => {
+    if (hostEmail) { sendStayRequestMail(hostEmail, guestEmail, startDate, endDate); }
+    return res.status(201).json({message: 'stay created', stayId: stay._id});
+  }).catch(err => res.status(500).send('Server error: ', err));
+});
 
+// nodemailer function
+const sendStayRequestMail = (hostEmail, guestEmail, startDate, endDate) => {
   const transporter = nodemailer.createTransport({service: 'gmail', auth: EMAIL_AUTH});
   const mailOptions = {
     to: 'jmeek13@gmail.com',
@@ -274,10 +302,7 @@ app.post('/api/stays', jwtAuth, (req, res) => {
   transporter.sendMail(mailOptions).then((info) => {
     if (debug) { console.log('Nodemailer details: ', info); }
   });
-  
-  res.status(201).send('ok');
-});
-
+}
 
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
