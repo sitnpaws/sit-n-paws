@@ -23,6 +23,22 @@ const app = express();
 app.use(express.static((__dirname + '/src/public')));
 app.use(bodyParser.json());
 
+const JWT_KEY = 'who let the dogs in?!';
+const EMAIL_AUTH = {user: 'sitnpawsio@gmail.com', pass: 'sitnpaws13'};
+
+// AUTHENTICATION HELPER //
+const jwtAuth = (req, res, next) => {
+  const token = req.headers.authentication;
+  if (!token) { res.status(401).send(); return; }
+  try { // token validation
+    req.tokenPayload = jwt.verify(token, JWT_KEY);
+    next();
+  } catch(err) {
+    res.status(401).send();
+    return;
+  }
+};
+
 //handles log in information in the db, creates jwt
 app.post('/login', (req, res) => {
   var email = req.body.email;
@@ -41,7 +57,7 @@ app.post('/login', (req, res) => {
                 email: found.email,
                 name: found.name
               };
-              let token = jwt.sign(payload, 'Shaken, not stirred', {
+              let token = jwt.sign(payload, JWT_KEY, {
                 expiresIn: '1h'
               });
               res.json({
@@ -93,7 +109,7 @@ app.post('/signup', (req, res) => {
             name: newUser.name,
             email: newUser.email
           };
-          let token = jwt.sign(payload, 'Shaken, not stirred', {
+          let token = jwt.sign(payload, JWT_KEY, {
             expiresIn: '1h'
           });
           res.json({
@@ -108,8 +124,7 @@ app.post('/signup', (req, res) => {
         })
       }
     })
-    console.log(password);
-})
+});
 
 //handles updating profiles in db
 app.post('/profile', (req, res) => {
@@ -222,7 +237,7 @@ app.get('/listings', (req, res) => {
         res.send(listings);
       }
     })
-})
+});
 
 //handles getting listings by zipcode from search
 app.get('/listings/:zipcode', (req, res) => {
@@ -235,36 +250,37 @@ app.get('/listings/:zipcode', (req, res) => {
         res.send(listings);
         }
       })
-})
+});
 
-//handles requests for contacting host, sends email to host
-app.post('/contacthost', (req, res) => {
-  var ownerEmail = req.body.ownerEmail;
-  var hostEmail = req.body.hostEmail;
-  var date = req.body.date;
+app.post('/api/stays', jwtAuth, (req, res) => {
+  console.log('post to /api/stays received');
+  console.log('token payload: ', req.tokenPayload);
+  console.log('req body: ', req.body);
 
-  var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'sitnpawstophat@gmail.com', // Your email id
-      pass: 'SitNPawsHR1' // Your password
-    }
-  });
-  var mailOptions = {
-    to: hostEmail,
-    subject: 'Hi from Sit-n-Paws! A friend wants to stay at your house on ' + date,
-    text: 'Email the pet owner @ ' + ownerEmail + ' Please respond within 24 hours!'
-  };
-  transporter.sendMail(mailOptions, function(error, response) {
-    if (error) {
-      console.log(error);
-      res.json({hi: 'error here'})
-    } else {
-      console.log('Email sent: ' + response.response);
-      res.json({hi: response.response});
-    }
-  });
-})
+  // var ownerEmail = req.body.ownerEmail;
+  // var hostEmail = req.body.hostEmail;
+  // var date = req.body.date;
+  //
+  // var transporter = nodemailer.createTransport({service: 'gmail', auth: EMAIL_AUTH});
+  // var mailOptions = {
+  //   to: hostEmail,
+  //   subject: 'Hi from Sit-n-Paws! A friend wants to stay at your house on ' + date,
+  //   text: 'Email the pet owner @ ' + ownerEmail + ' Please respond within 24 hours!'
+  // };
+  // transporter.sendMail(mailOptions, function(error, response) {
+  //   if (error) {
+  //     console.log(error);
+  //     res.json({hi: 'error here'})
+  //   } else {
+  //     console.log('Email sent: ' + response.response);
+  //     res.json({hi: response.response});
+  //   }
+  // });
+
+
+  res.status(201).send('ok');
+});
+
 
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
