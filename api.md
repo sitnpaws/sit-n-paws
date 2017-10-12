@@ -72,7 +72,6 @@
 {
    "email": "brianG@random.edu",
    "password": "writer123"
-   
 }
 ```
 
@@ -80,14 +79,66 @@
 
 ```JSON
 {
-   "_": "?",
-   "__": "?",
-   "___": "?"
+   "success": true
+}
+```
+
+### Listings
+
+`/listings` POST
+
+#### Parameters
+
+| param |   description   | data type | examples |
+|------------|-----------|------------|-----------|
+| __name__ |  The user's name as input by the user | String | "brianG123" |
+| __zipcode__  |  The user's zipcode as input by the user   | String | "writer123" |
+| __dogSizePreference__  |  The user's preferred size of dog to host as input by the user |  String  | "small" |
+| __dogBreedPreference__ |  The user's preferred breed of dog to host as input by the user | String | "All" |
+| __dogTemperamentPreference__  |  The user's preferred temperament of dog to host as input by the user   | String | "chill" |
+| __dogActivityPreference__  |  The user's preferred activity level of dog to host as input by the user |  String  | "fast" |
+| __homeAttributes__ |  Type of living space as described by the user | String | "apartment" |
+| __cost__  |  The cost per night as decided by the user   | Number | 45.99 |
+
+
+#### Example Request format
+```JSON
+{
+   "name": "Angus Bafford",
+   "zipcode": 94106,
+   "dogSizePreference": "small",
+   "dogBreedPreference": "All",
+   "dogTemperamentPreference": "chill",
+   "dogActivityPreference": "fast",
+   "homeAttributes": "apartment",
+   "cost": 45
+}
+```
+#### Example Response format
+
+```JSON
+{
+   "success": true
 }
 ```
 
 ---
 
+### Profile
+
+`/profile` POST
+
+#### Parameters
+| param |   description   | data type | examples |
+|------------|-----------|------------|-----------|
+| __username__ |  The user's username as input by the user | String | "brianG123" |
+| __password__  |  The user's password as input by the user   | String | "writer123" |
+| __email__  |  The user's email as input by the user |  String  | "brianG@random.edu" |
+| __name__ |  The user's name as input by the user | String | "Brian Griffin" |
+| __phone__  |  The user's phone number as input by the user   | String | "555-235-1234" |
+| __address__  |  The user's address as input by the user |  String  | "31 Spooner Street" |
+
+#### Example Request format
 ```JSON
 {
    "username": "brianG123",
@@ -96,6 +147,14 @@
    "name": "Brian Griffin",
    "phone": "555-235-1234",
    "address": "31 Spooner Street"
+}
+```
+
+#### Example Response format
+
+```JSON
+{
+   "success": true
 }
 ```
 
@@ -117,3 +176,5 @@
    "cost": 57
 }
 ```
+
+
