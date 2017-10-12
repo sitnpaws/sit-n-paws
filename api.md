@@ -17,9 +17,6 @@
   "pricePer": "",
   "totalPrice": ""
 }
-
-
-
 ```
 
 ### API request to create initial booking:
@@ -53,11 +50,6 @@
   "stayId": "v3456yv456v46",
   "status": "pending"
 }
-
-
-
-
-
 ```
 
 ### API to signup:
@@ -96,8 +88,6 @@
 
 ---
 
-
-
 ```JSON
 {
    "username": "brianG123",
@@ -109,11 +99,9 @@
 }
 ```
 
-
-
 ---
 
-### Listing in the Database
+### Listing in listings collection
 
 ```JSON
 {
