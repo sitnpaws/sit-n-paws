@@ -5,7 +5,7 @@ var crypto = require('crypto');
 var Promise = require('bluebird');
 
 //user schema
-usersSchema = new mongoose.Schema(
+var usersSchema = new mongoose.Schema(
   {
     username: { type: String, required: true }, // TODO: remove username
     password: { type: String, required: true },
