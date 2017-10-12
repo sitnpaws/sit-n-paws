@@ -18,3 +18,12 @@
 .modal-button {
   margin: 10px;
 }
+
+.modal-warning {
+  margin-top: 10px;
+  color: red;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
