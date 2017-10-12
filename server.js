@@ -163,25 +163,16 @@ app.put('/api/profile', jwtAuth, (req, res) => {
     phone: req.body.phone,
     address: req.body.address
   };
-  User.findOneAndUpdate({email: email}, updateProfile, { new: true}, function(err, updated) {
-    if(err) {
-      console.log(err);
-    } else {
-      let payload = {
-        name: updated.name,
-        email: updated.email
-      };
-      let token = jwt.sign(payload, JWT_KEY, {
-        expiresIn: '1h'
-      });
-      res.json({
-        success: true,
-        name: updated.name,
-        email: updated.email,
-        token: token
-      });
-    }
-  })
+  User.findOneAndUpdate({email: email}, updateProfile, { new: true}).then((updated) => {
+    let payload = { name: updated.name, email: updated.email };
+    let token = jwt.sign(payload, JWT_KEY, { expiresIn: '1h' });
+    res.json({
+      success: true,
+      name: updated.name,
+      email: updated.email,
+      token: token
+    });
+  }).catch((err) => { res.json('error: ', err); });
 });
 
 //Check post listing for uploaded files and stores in req.files
