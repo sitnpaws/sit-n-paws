@@ -22,6 +22,7 @@ export default class StaysView extends React.Component {
     super(props);
     this.state = {
       openDrawer: false,
+      openPostListing: false,
       renderProfile: false,
       tabVal: 'stays'
     };
@@ -54,6 +55,7 @@ export default class StaysView extends React.Component {
     };
 
     this.touchTap = this.touchTap.bind(this);
+    this.postListing = this.postListing.bind(this);
     this.logoutOnClick = this.logoutOnClick.bind(this);
     this.profileOnClick = this.profileOnClick.bind(this);
     this.backToMain = this.backToMain.bind(this);
@@ -62,6 +64,11 @@ export default class StaysView extends React.Component {
   // Drawer - Opens the side drawer for my profile
   touchTap() {
     this.setState({openDrawer: !this.state.openDrawer});
+  }
+
+  // PostListing - Opens modal to post a listing
+  postListing () {
+    this.setState({openPostListing: !this.state.openPostListing});
   }
 
   // Drawer - Handles logout by removing jwt token and refreshing the page
@@ -92,7 +99,7 @@ export default class StaysView extends React.Component {
             title={<Tabs value={this.state.tabVal} tabItemContainerStyle={this.styles.tabItemContainer} inkBarStyle={{background: 'none'}}>
               <Tab label="Main" value="main" style={this.styles.tab} href="/main"/>
               <Tab label="Stays" value="stays" style={this.styles.tab} href="/stays"/>
-              </Tabs>}
+            </Tabs>}
             iconElementLeft={<IconButton><Pets/></IconButton>}
             iconElementRight={<IconButton><NavigationMenu/></IconButton>}
             onRightIconButtonTouchTap={this.touchTap}
@@ -107,7 +114,17 @@ export default class StaysView extends React.Component {
             <RaisedButton onClick={this.profileOnClick} label="Edit Profile" labelColor="white" style={this.styles} backgroundColor="rgb(197, 186, 155)" />
             <RaisedButton onClick={this.logoutOnClick} label="Log Out" labelColor="white" style={this.styles} backgroundColor="rgb(171, 94, 94)"/>
             {this.state.renderProfile ? <ProfileUpdate/> : null}
+            <div align="center">
+              <RaisedButton style={{'marginTop':'25px'}} onClick={this.postListing} label="Become a Host!" labelColor="black"/>
+            </div>
           </Drawer>
+          <Dialog
+            modal={false}
+            open={this.state.openPostListing}
+            onRequestClose={this.postListing}
+          >
+            <PostListing />
+          </Dialog>
       </div>
       </MuiThemeProvider>
     )
