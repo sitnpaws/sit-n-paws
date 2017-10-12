@@ -1,0 +1,29 @@
+.booking-form-container {
+  display: flex;
+  flex-flow: wrap;
+}
+
+.booking-form-row {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-right: 5px;
+}
+
+.booking-form-subtitle {
+  margin-right: 10px;
+}
+
+.modal-button {
+  margin: 10px;
+}
+
+.modal-warning {
+  margin-top: 10px;
+  color: red;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
