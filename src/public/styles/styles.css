@@ -233,3 +233,12 @@ input {
   font-weight: 700;
   background: #fff;
 }
+
+.stay-entry {
+  margin-top: 25px;
+  margin-bottom: 50px;
+}
+
+.stay-title {
+  vertical-align: middle;
+}
