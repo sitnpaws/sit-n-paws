@@ -60,9 +60,9 @@
 
 | param |   description   | data type | examples |
 |------------|-----------|------------|-----------|
-| __username__ |  The username as input by the user | String | "brianG123" |
+| __username__ |  The username as input by the user | String | "brianG123" | __Depricated__ |
 | __password__  |  The user's desired password as input by the user   | String | "writer123" |
-| __email__  |  Date to start the stay in UTC format  |  String  | "brianG@random.edu" |
+| __email__  |  The user's email address as input by the user |  String  | "brianG@random.edu" |
 
 #### Example JSON
 
@@ -70,9 +70,9 @@
 
 ```JSON
 {
-   "username": "brianG123",
-   "password": "writer123",
-   "email": "brianG@random.edu"
+   "email": "brianG@random.edu",
+   "password": "writer123"
+   
 }
 ```
 
