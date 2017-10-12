@@ -54,4 +54,78 @@
   "status": "pending"
 }
 
+
+
+
+
+```
+
+### API to signup:
+
+`/signup` POST
+
+### Parameters
+
+| param |   description   | data type | examples |
+|------------|-----------|------------|-----------|
+| __username__ |  The username as input by the user | String | "brianG123" |
+| __password__  |  The user's desired password as input by the user   | String | "writer123" |
+| __email__  |  Date to start the stay in UTC format  |  String  | "brianG@random.edu" |
+
+#### Example JSON
+
+##### Request format
+
+```JSON
+{
+   "username": "brianG123",
+   "password": "writer123",
+   "email": "brianG@random.edu"
+}
+```
+
+##### Response format
+
+```JSON
+{
+   "_": "?",
+   "__": "?",
+   "___": "?"
+}
+```
+
+---
+
+
+
+```JSON
+{
+   "username": "brianG123",
+   "password": "writer123",
+   "email": "brianG@random.edu",
+   "name": "Brian Griffin",
+   "phone": "555-235-1234",
+   "address": "31 Spooner Street"
+}
+```
+
+
+
+---
+
+### Listing in the Database
+
+```JSON
+{
+   "name": "Say Swinglehurst",
+   "zipcode": 94123,
+   "dogSizePreference": "small",
+   "dogBreedPreference": "ROSIE",
+   "dogTemperamentPreference": "Expanded",
+   "dogActivityPreference": "fusce",
+   "homeAttributes": "Support",
+   "hostPictures": "https://randomuser.me/api/portraits/men/55.jpg",
+   "homePictures": "https://farm1.staticflickr.com/48/111317752_7934d93e8a.jpg",
+   "cost": 57
+}
 ```
