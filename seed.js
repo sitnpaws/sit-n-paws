@@ -25,7 +25,7 @@ const mockCompleteUser = [
   {
     username: 'mary444',
     password: '1234',
-    email: 'mary@test.com',
+    email: 'jmeek13@gmail.com',
     name: 'Mary Tester',
     phone: '561-123-5155',
     address: '14 Main Street'
