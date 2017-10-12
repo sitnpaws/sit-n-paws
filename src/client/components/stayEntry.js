@@ -42,7 +42,7 @@ class StayEntry extends React.Component {
       headers: {'authorization': this.token}
     }).then((res) => {
       this.setState({
-        status: res.data.status
+        status: 'cancelled'
       });
     })
     .catch((err) => {
@@ -55,7 +55,7 @@ class StayEntry extends React.Component {
       headers: {'authorization': this.token}
     }).then((res) => {
       this.setState({
-        status: res.data.status
+        status: 'confirmed'
       });
     })
     .catch((err) => {
@@ -68,7 +68,7 @@ class StayEntry extends React.Component {
       headers: {'authorization': this.token}
     }).then((res) => {
       this.setState({
-        status: res.data.status
+        status: 'rejected'
       });
     })
     .catch((err) => {
@@ -104,7 +104,7 @@ class StayEntry extends React.Component {
               {
                 this.state.status === 'closed'
                   ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/>
-                  : this.state.status === 'cancelled' ? null : <FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/>
+                  : this.state.status === 'cancelled' || 'rejected' ? null : <FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/>
               }
             </CardActions>
           </Card>
