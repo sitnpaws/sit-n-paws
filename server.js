@@ -283,12 +283,15 @@ app.get('/api/stays', jwtAuth, (req, res) => {
       const guestStays = Stay.find({guestId: ObjectId(userId)}).populate('listing', 'name zipcode', 'Listing').exec();
       return Promise.all([hostStays, guestStays]).then(([hostStays, guestStays]) => {
         let stays = [];
-        hostStays.forEach(stay => { stay.role = 'host'; stays.push(stay); });
-        guestStays.forEach(stay => { stay.role = 'guest'; stays.push(stay); });
+        hostStays.forEach(stay => stays.push(Object.assign({role: 'host'}, stay.toObject())));
+        guestStays.forEach(stay => stays.push(Object.assign({role: 'guest'}, stay.toObject())));
         res.status(200).json(stays);
       });
     }
-  }).catch(err => res.status(500).send('Oops! Server error.'));
+  }).catch(err => {
+    console.log('Server error: ', err);
+    res.status(500).send('Oops! Server error.');
+  });
 });
 
 app.post('/api/stays', jwtAuth, (req, res) => {
