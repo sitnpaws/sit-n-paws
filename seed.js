@@ -69,4 +69,4 @@ const seedListingDB = () => {
   })
 }
 
-module.exports = seedListingDB;
+seedListingDB();
