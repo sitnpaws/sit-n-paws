@@ -8,6 +8,7 @@ import DatePicker from 'material-ui/DatePicker';
 import jwt from 'jsonwebtoken';
 import request from 'superagent';
 import masterUrl from '../utils/masterUrl.js';
+import './listingView.css';
 
 // This is the component for each individual listing.
 // It has its own state to manage the email information
@@ -20,7 +21,8 @@ export default class ListingView extends React.Component {
       hostEmail: props.listing.email,
       ownerEmail: null,
       open: false,
-      date: null,
+      startDate: null,
+      endDate: null,
     }
 
     // Opens the modal upon clicking contact me
@@ -34,9 +36,13 @@ export default class ListingView extends React.Component {
     }
 
     // Handles the date change in contact me
-    this.handleChangeDate = (e, date) => {
-      this.setState({date: date});
-      console.log(date);
+    this.handleChangeStartDate = (e, date) => {
+      let endDate = this.state.endDate;
+      this.setState({startDate: date, endDate: date > endDate ? null : endDate});
+    }
+
+    this.handleChangeEndDate = (e, date) => {
+      this.setState({endDate: date});
     }
 
     // Sends the email by posting to the /contacthost endpoint on the server
@@ -100,7 +106,7 @@ export default class ListingView extends React.Component {
             <img src={this.props.listing.homePictures} alt="Home Picture" width="360" height="270" />
           </CardMedia>
           <CardTitle title="5 Stars"
-           subtitle={`Max Dog Size:${this.props.listing.dogSizePreference}`} />
+            subtitle={`Max Dog Size:${this.props.listing.dogSizePreference}`} />
           <CardText>
             <div className = "listing">
               {`Preferred Dog Breed: ${this.props.listing.dogBreedPreference}. `}
@@ -113,18 +119,34 @@ export default class ListingView extends React.Component {
           <CardActions>
             <FlatButton label="Contact Me" onClick={this.handleOpen}/>
             <Dialog
-              title= {`Send ${this.props.listing.name} a message`}
+              title= {`Request a stay with ${this.props.listing.name}`}
               actions={actions}
               modal={false}
               open={this.state.open}
               onRequestClose={this.handleClose}
             >
-            One last thing...pick a date:
-            <DatePicker
-              hintText="Pick a Date"
-              value={this.state.date}
-              onChange={this.handleChangeDate}
-            />
+              <div className="booking-form-container">
+                <div className="booking-form-row">
+                  <div className="booking-form-subtitle"><span>Checkin</span></div>
+                  <DatePicker
+                    hintText="Checking in on..."
+                    value={this.state.startDate}
+                    minDate={(new Date())}
+                    onChange={this.handleChangeStartDate}
+                    autoOk
+                  />
+                </div>
+                <div className="booking-form-row">
+                  <div className="booking-form-subtitle"><span>Checkout</span></div>
+                  <DatePicker
+                    hintText="Checking out on..."
+                    value={this.state.endDate}
+                    minDate={this.state.startDate || (new Date())}
+                    onChange={this.handleChangeEndDate}
+                    autoOk
+                  />
+                </div>
+              </div>
             </Dialog>
         </CardActions>
         </Card>
