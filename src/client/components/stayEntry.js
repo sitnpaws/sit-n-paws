@@ -102,7 +102,7 @@ class StayEntry extends React.Component {
             </CardText>
             <CardActions>
               {
-                this.state.status === 'closed'
+                this.state.status === 'complete'
                   ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/>
                   : this.state.status === ('cancelled' || 'rejected')
                     ? null
@@ -136,7 +136,7 @@ class StayEntry extends React.Component {
                   this.state.status === 'pending'
                     ? <span><a href={`/chat/${stay._id}`}><FlatButton label="Chat with Guest" /></a><FlatButton label="Accept Guest" primary={true} onClick={this.handleGuestAccept}/>
                       <FlatButton label="Reject Guest" secondary={true} onClick={this.handleGuestReject}/></span>
-                    : this.state.status === ('closed' || 'cancelled') ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/> : null
+                    : this.state.status === ('complete' || 'cancelled') ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/> : null
               }
             </CardActions>
           </Card>
