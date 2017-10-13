@@ -26,10 +26,6 @@
   border-bottom: 1px solid lightgrey;
 }
 
-.messages-container {
-  flex: 1 0 auto;
-}
-
 .new-message-container {
   flex: 0 0 auto;
   display: flex;
@@ -43,4 +39,22 @@
 
 .new-message-button {
   box-shadow: none !important;
+}
+
+.messages-container {
+  flex: 1 0 auto;
+  padding: 10px;
+}
+
+.message-entry-container {
+  display: flex;
+}
+
+.message-author {
+  flex: 0 0 auto;
+  padding-right: 5px;
+}
+
+.message-text {
+  flex: 1 0 auto;
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import openSocket from 'socket.io-client';
 import './chat.css';
 
 export default class Chat extends Component {
@@ -20,6 +21,12 @@ export default class Chat extends Component {
   componentWillMount() {
     this.token = localStorage.jwt;
     this.getChatInfo();
+  }
+
+  componentDidMount() {
+    this.socket = openSocket('/');
+    this.socket.emit('enter chat', this.props.stayId);
+    this.socket.on('refresh', () => this.getMessages());
   }
 
   getChatInfo() {
@@ -45,7 +52,7 @@ export default class Chat extends Component {
     {headers: {'authorization': this.token}}).then(resp => {
       console.log('new message posted');
       this.setState({messageText: ''});
-      this.getMessages();
+      this.socket.emit('new message', this.props.stayId);
     }).catch(err => console.log('Error: ', err));
   }
 
@@ -72,7 +79,7 @@ export default class Chat extends Component {
 
 const MessageEntry = ({message}) => (
   <div className="message-entry-container">
-    <div className="message-author"><span>{message.user.name}</span></div>
+    <div className="message-author"><span>{message.user.name}:</span></div>
     <div className="message-text"><span>{message.text}</span></div>
   </div>
-);
+)
