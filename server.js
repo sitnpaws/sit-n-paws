@@ -402,7 +402,23 @@ app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
     msg.then(msgs => {
       res.status(200).json(msgs);
     });
-  });
+  }).catch(err => res.status(400).send(err.message));
+});
+
+app.get('/api/chat/:stayId', jwtAuth, (req, res) => {
+  let userId;
+  const user = User.findOne({email: req.tokenPayload.email}).exec().then(user => {
+    if (!user) { throw new Error('User not found'); }
+    userId = user._id;
+  }).then(() => Stay.findById(req.params.stayId).exec()).then(stay => {
+    if (!(userId.equals(stay.hostId) || userId.equals(stay.guestId))) {
+      throw new Error('Only host or guest may participate in chat');
+    }
+    return Chat.findById(req.params.stayId).exec();
+  }).then(chat => {
+    let resp = {userId: userId, hostId: chat.host, guestId: chat.guest};
+    res.status(200).json(resp);
+  }).catch(err => res.status(400).send(err.message));
 });
 
 app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
@@ -418,7 +434,7 @@ app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
     return newMsg.save();
   }).then(() => {
     res.status(201).send('Message created');
-  });
+  }).catch(err => res.status(400).send(err.message));
 });
 
 app.get('*', (req, res) => {
