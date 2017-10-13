@@ -11,7 +11,7 @@
 
 
   //todo: make role 'guest', populate with a new stay. Try to cancel.
-  //todo: make role 'guest', populate with a new stay, set status to 'complete'. Try to cancel.
+  //todo: make role 'guest', populate with a new stay, set status to 'complete'. Try to review.
 
   //todo: handle put to '/api/stay/cancel/' + this.props.stay._id , headers: {'authorization': this.token}, status: 'cancelled'
   //todo: handle put to '/api/stay/approve/' + this.props.stay._id,, headers: {'authorization': this.token}, status: 'confirmed'
