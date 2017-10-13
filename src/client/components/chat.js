@@ -12,7 +12,9 @@ export default class Chat extends Component {
       myName: '', myRole: '', myId: '',
       otherName: '', otherRole: '', otherId: '',
       messageText: '',
+      messages: [],
     };
+    this.postMessage = this.postMessage.bind(this);
   }
 
   componentWillMount() {
@@ -27,8 +29,24 @@ export default class Chat extends Component {
           chatId: resp.data.chatId,
           myName: resp.data.user.name, myRole: resp.data.user.role, myId: resp.data.user.id,
           otherName: resp.data.other.name, otherRole: resp.data.other.role, otherId: resp.data.other.id,
-        });
+        }, () => this.getMessages());
       });
+  }
+
+  getMessages() {
+    axios.get('/api/messages/'+this.props.stayId, {headers: {'authorization': this.token}})
+      .then(resp => this.setState({messages: resp.data}));
+  }
+
+  postMessage() {
+    console.log('posting message: ', this.state.messageText);
+    axios.post('/api/messages/'+this.props.stayId,
+    {text: this.state.messageText},
+    {headers: {'authorization': this.token}}).then(resp => {
+      console.log('new message posted');
+      this.setState({messageText: ''});
+      this.getMessages();
+    }).catch(err => console.log('Error: ', err));
   }
 
   render() {
@@ -39,15 +57,22 @@ export default class Chat extends Component {
             <span>Chat with {this.state.otherName}</span>
           </div>
           <div className="messages-container">
-            <span>Here's where the magic happens...</span>
+            {this.state.messages.map((msg, i) => <MessageEntry key={`msg${i}`} message={msg} />)}
           </div>
           <div className="new-message-container">
             <TextField className="new-message-field" id={`msgtextfield${this.state.chatId}`} multiLine={true} rows={1} rowsMax={3}
               hintText={`Send your ${this.state.otherRole} a message`} value={this.state.messageText} onChange={e => this.setState({messageText: e.target.value})} />
-            <RaisedButton className="new-message-button" primary label="Send" />
+            <RaisedButton className="new-message-button" primary label="Send" onClick={()=>this.postMessage()} />
           </div>
         </div>
       </div>
     );
   }
 }
+
+const MessageEntry = ({message}) => (
+  <div className="message-entry-container">
+    <div className="message-author"><span>{message.user.name}</span></div>
+    <div className="message-text"><span>{message.text}</span></div>
+  </div>
+);

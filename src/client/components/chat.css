@@ -15,11 +15,15 @@
   width: 60%;
   margin: auto;
   border: 1px solid lightgrey;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 
 .chat-header {
+  padding: 10px;
   font-size: 1.3em;
+  color: #c5ba9b;
   flex: 0 0 auto;
+  border-bottom: 1px solid lightgrey;
 }
 
 .messages-container {
