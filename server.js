@@ -4,9 +4,12 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const moment = require('moment');
+const socket = require('socket.io');
+const socketChat = require('./socketChat');
 const User = require('./db/models/users');
 const Listing = require('./db/models/listing');
 const Stay = require('./db/models/stays');
+const { Msg, Chat } = require('./db/models/chat');
 const jwt = require('jsonwebtoken');
 const cloudinary = require('cloudinary');
 const cloudConfig = require('./cloudinary/config.js');
@@ -332,8 +335,10 @@ app.post('/api/stays', jwtAuth, (req, res) => {
       return newStay.save();
     }
   }).then(stay => {
+    return new Chat({stay: stay._id, host: stay.hostId, guest: stay.guestId }).save();
+  }).then(chat => {
     if (hostEmail) { sendStayRequestMail(hostEmail, guestEmail, startDate, endDate); }
-    res.status(201).json({message: 'stay created', stayId: stay._id});
+    res.status(201).json({message: 'stay created', stayId: chat.stay});
   }).catch(err => {
     console.log('Server error: ', err);
     res.status(500).send('Oops! Server error.');
@@ -381,12 +386,81 @@ app.put('/api/stay/reject/:stayId', jwtAuth, (req, res) => {
     .catch(err => res.status(400).send(err.message));
 });
 
+app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
+  let userId;
+  const user = User.findOne({email: req.tokenPayload.email}).exec().then(user => {
+    if (!user) { throw new Error('User not found'); }
+    userId = user._id;
+  }).then(() => Stay.findById(req.params.stayId).exec()).then(stay => {
+    if (!(userId.equals(stay.hostId) || userId.equals(stay.guestId))) {
+      throw new Error('Only host or guest may participate in chat');
+    }
+    return Chat.findOne({stay: req.params.stayId}).exec();
+  }).then(chat => {
+    const msg = Msg.find({chatId: chat._id}).sort('-createdAt').limit(10)
+      .populate('user', '_id name').exec();
+    msg.then(msgs => {
+      res.status(200).json(msgs);
+    });
+  }).catch(err => res.status(400).send(err.message));
+});
+
+app.get('/api/chat/:stayId', jwtAuth, (req, res) => {
+  let user = req.tokenPayload;
+  let resp = {stay: {id: req.params.stayId}};
+  User.findOne({email: req.tokenPayload.email}).exec().then(foundUser => {
+    if (!foundUser) { throw new Error('User not found'); }
+    user.id = foundUser._id;
+  }).then(() => Stay.findById(resp.stay.id).populate('listing', 'name', 'Listing').exec())
+    .then(stay => {
+      if (!(user.id.equals(stay.hostId) || user.id.equals(stay.guestId))) {
+        throw new Error('Only host or guest may participate in chat');
+      }
+      resp.stay.listing = stay.listing;
+      return Chat.findOne({stay: req.params.stayId}).exec();
+  }).then(chat => {
+    resp.user = {id: user.id, name: user.name }
+    resp.chatId = chat._id;
+    if (user.id.equals(chat.host)) { // user is host
+      return User.findById(chat.guest).then(guest => {
+        resp.user.role = 'host';
+        resp.other = {id: guest._id, name: guest.name, role: 'guest'};
+      });
+    } else { // user is guest so go find the host
+      return User.findById(chat.host).then(host => {
+        resp.user.role = 'guest';
+        resp.other = {id: host._id, name: host.name, role: 'host'};
+      });
+    }
+  }).then(() => res.status(200).json(resp))
+    .catch(err => res.status(400).send(err.message));
+});
+
+app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
+  const user = User.findOne({email: req.tokenPayload.email}).exec();
+  const chat = Chat.findOne({stay: req.params.stayId}).exec();
+  Promise.all([user, chat]).then(([user, chat]) => {
+    if (!user) { throw new Error('User not found'); }
+    if (!chat) { throw new Error('Chat not found'); }
+    if (!(user._id.equals(chat.guest) || user._id.equals(chat.host))) {
+      throw new Error('Only host or guest may participate in chat');
+    }
+    let newMsg = new Msg({ text: req.body.text, user: user._id, chatId: chat._id});
+    return newMsg.save();
+  }).then(() => {
+    res.status(201).send('Message created');
+  }).catch(err => res.status(400).send(err.message));
+});
+
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
 })
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
   console.log('Listening on localhost:3000');
 });
+
+const io = socket(server);
+socketChat(io);
 
 module.exports = app;

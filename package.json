@@ -50,11 +50,14 @@
     "react-file-input": "^0.2.5",
     "react-router-dom": "^4.2.2",
     "require": "^2.4.20",
+    "socket.io": "^2.0.3",
+    "socket.io-client": "^2.0.3",
     "superagent": "^3.6.3",
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.9.1"
   },
   "devDependencies": {
+    "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
     "chai-things": "^0.2.0",

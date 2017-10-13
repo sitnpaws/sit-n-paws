@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter, Switch, Route, browserHistory } from 'react-router-dom';
 import Home from './home.js';
 import Main from './main.js';
-import StaysView from './StaysView.js';
+import StaysView from './staysView.js';
+import ChatView from './chatView.js';
 import Login from './login.js';
 import NotFound from './notfound.js';
 import PrivateRoute from './private.js';
@@ -41,6 +42,7 @@ export default class App extends React.Component {
         )}/>
         <PrivateRoute path='/main' checkAuth={this.authLogin} component={Main}/>
         <PrivateRoute path='/stays' checkAuth={this.authLogin} component={StaysView}/>
+        <PrivateRoute path='/chat/:stayId' checkAuth={this.authLogin} component={ChatView}/>
         <Route component={NotFound}/>
       </Switch>
     </BrowserRouter>
