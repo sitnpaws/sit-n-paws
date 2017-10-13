@@ -17,7 +17,6 @@ import Chat from './chat.js'
 export default class ChatView extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
     this.state = {
       openDrawer: false,
       openPostListing: false,
