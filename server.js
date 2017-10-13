@@ -395,6 +395,22 @@ app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
   });
 });
 
+app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
+  const user = User.findOne({email: req.tokenPayload.email}).exec();
+  const chat = Chat.findById(req.params.stayId).exec();
+  Promise.all([user, chat]).then(([user, chat]) => {
+    if (!user) { throw new Error('User not found'); }
+    if (!chat) { throw new Error('Chat not found'); }
+    if (!(user._id.equals(chat.guest) || user._id.equals(chat.host))) {
+      throw new Error('Only host or guest may participate in chat');
+    }
+    let newMsg = new Msg({ text: req.body.text, user: user._id, chatId: chat._id});
+    return newMsg.save();
+  }).then(() => {
+    res.status(201).send('Message created');
+  });
+});
+
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
 })
