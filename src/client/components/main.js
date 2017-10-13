@@ -4,7 +4,6 @@ import PostListing from './PostListing.js';
 import ProfileUpdate from './profileForm.js';
 import ShowProfile from './showProfile.js';
 import Search from './search.js'
-import masterUrl from '../utils/masterUrl.js';
 import request from 'superagent';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Drawer from 'material-ui/Drawer';
@@ -80,7 +79,7 @@ export default class Main extends React.Component {
 
     // Search - live search by zipcode
     this.handleSearch = (term) => {
-      const url = masterUrl + `/listings/${term}`;
+      const url = `/listings/${term}`;
       request.get(url, (err, res) => {
         if (err) {
           console.log(err);

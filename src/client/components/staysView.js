@@ -5,7 +5,6 @@ import ProfileUpdate from './profileForm.js';
 import ShowProfile from './showProfile.js';
 import Stays from './stays.js';
 import Search from './search.js'
-import masterUrl from '../utils/masterUrl.js';
 import request from 'superagent';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Drawer from 'material-ui/Drawer';

@@ -4,7 +4,6 @@ import ListingView from './listingView';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import LoginSubmit from '../utils/login';
-import masterUrl from '../utils/masterUrl.js';
 import jwt from 'jsonwebtoken'
 
 
