@@ -17,3 +17,6 @@ uploads
 
 ## Webstorm ##
 .idea/
+
+## snippets ##
+tools/test-snippets.js
