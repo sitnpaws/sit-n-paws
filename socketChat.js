@@ -17,6 +17,16 @@ module.exports = function (io) {
       io.in(chat).emit('refresh');
     });
 
+    socket.on('started typing', chat => {
+      console.log('user started typing in chat: ', chat);
+      socket.to(chat).emit('started typing');
+    })
+
+    socket.on('stopped typing', chat => {
+      console.log('user stopped typing in chat: ', chat);
+      socket.to(chat).emit('stopped typing');
+    })
+
     socket.on('disconnect', () => {
       console.log('user disconnected...');
     });

@@ -114,3 +114,14 @@
   color: black;
   border-radius: 5px;
 }
+
+.message-status-container {
+  font-size: .8em;
+  font-style: italic;
+  color: grey;
+  justify-content: center;
+  height: auto;
+  display: flex;
+  flex: 0 0 auto;
+  margin: 0 5px;
+}
