@@ -384,6 +384,17 @@ app.put('/api/stay/reject/:stayId', jwtAuth, (req, res) => {
     .catch(err => res.status(400).send(err.message));
 });
 
+app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
+  // TODO: protect this route by validating that user is either host or guest of stay
+  Chat.findById(req.params.stayId).exec().then(chat => {
+    const msg = Msg.find({chatId: chat._id}).sort('-createdAt').limit(10)
+      .populate('user', 'name').exec();
+    msg.then(msgs => {
+      res.status(200).json(msgs);
+    });
+  });
+});
+
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
 })
