@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import openSocket from 'socket.io-client';
@@ -16,8 +17,11 @@ export default class Chat extends Component {
       listingName: '',
       messageText: '',
       messages: [],
+      isTyping: false,
+      otherTyping: false,
     };
     this.postMessage = this.postMessage.bind(this);
+    this.stopTyping = _.debounce(this.stopTyping.bind(this), 1000, true);
   }
 
   componentWillMount() {
@@ -58,7 +62,29 @@ export default class Chat extends Component {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.stopPropagation();
       this.postMessage();
+    } else {
+      this.handleTyping();
     }
+  }
+
+  handleTyping() {
+    if (!this.state.isTyping) {
+      this.startTyping();
+    } else {
+      this.stopTyping(); // debounced so we can call it alot and be fine
+    }
+  }
+
+  startTyping() {
+    console.log('started typing!');
+    this.socket.emit('started typing', this.props.stayId);
+    this.setState({isTyping: true});
+  }
+
+  stopTyping() {
+    console.log('stopped typing!');
+    this.socket.emit('stopped typing', this.props.stayId);
+    this.setState({isTyping: false});
   }
 
   postMessage() {
