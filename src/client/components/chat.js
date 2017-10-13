@@ -148,7 +148,7 @@ const MessageEntry = ({message, role, me}) => {
     <div className={'message-entry-container ' + (me ? 'my-message' : 'other-message')}>
       <div className="message-header">
         <i className="material-icons">{icon}</i>
-        <span className="message-time">{moment(message.createdAt).fromNow()}</span>
+        <span className="message-time">{moment(message.createdAt).format('LT')}</span>
       </div>
       <div className="message-bubble">
         <span>{message.text}</span>
