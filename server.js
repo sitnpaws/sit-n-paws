@@ -7,6 +7,7 @@ const moment = require('moment');
 const User = require('./db/models/users');
 const Listing = require('./db/models/listing');
 const Stay = require('./db/models/stays');
+const { Msg, Chat } = require('./db/models/chat');
 const jwt = require('jsonwebtoken');
 const cloudinary = require('cloudinary');
 const cloudConfig = require('./cloudinary/config.js');
