@@ -64,12 +64,20 @@ export default class Chat extends Component {
         <div className="chat-container">
           <div className="chat-header">
             {this.state.myRole === 'guest' &&
-              <span>Chat with {this.state.otherName} about
+              <span>
+                Chat with {this.state.otherName} about
                 {`${this.state.myRole === 'guest' ? ' your ' : ' their '}`}
-                pet's stay with {this.state.listingName}</span>}
+                pet's stay with {this.state.listingName}
+              </span>}
           </div>
           <div className="messages-container">
-            {this.state.messages.map((msg, i) => <MessageEntry key={`msg${i}`} message={msg} />)}
+            {this.state.messages.map((msg, i) => (
+              <MessageEntry
+                key={`msg${i}`} message={msg}
+                role={msg.user._id === this.state.myId ? this.state.myRole : this.state.otherRole}
+                me = {msg.user._id === this.state.myId}
+              />
+            ))}
           </div>
           <div className="new-message-container">
             <TextField className="new-message-field" id={`msgtextfield${this.state.chatId}`} multiLine={true} rows={1} rowsMax={3}
@@ -82,9 +90,13 @@ export default class Chat extends Component {
   }
 }
 
-const MessageEntry = ({message}) => (
-  <div className="message-entry-container">
-    <div className="message-author"><span>{message.user.name}:</span></div>
-    <div className="message-text"><span>{message.text}</span></div>
-  </div>
-)
+const MessageEntry = ({message, role, me}) => {
+  const icon = role === 'guest' ? 'pets' : 'home';
+  return (
+    <div className={'message-entry-container' + (me ? 'my-message' : 'other-message')}>
+      <div className="message-author"><i className="material-icons">{icon}</i></div>
+      <div className="message-bubble">
+        <span>{message.text}</span>
+      </div>
+    </div>
+)}
