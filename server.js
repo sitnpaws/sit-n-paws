@@ -47,7 +47,7 @@ const jwtAuth = (req, res, next) => {
 const sendStayRequestMail = (hostEmail, guestEmail, startDate, endDate) => {
   const transporter = nodemailer.createTransport({service: 'gmail', auth: EMAIL_AUTH});
   const mailOptions = {
-    to: 'jmeek13@gmail.com',
+    to: hostEmail,
     subject: 'Hi from Sit-n-Paws! A friend wants to stay at your house from ' +
               moment(startDate).format('LL') + ' to ' + moment(endDate).format('LL'),
     text: 'Email the pet owner @ ' + guestEmail +
