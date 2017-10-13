@@ -382,6 +382,24 @@ app.put('/api/stay/reject/:stayId', jwtAuth, (req, res) => {
     .catch(err => res.status(400).send(err.message));
 });
 
+app.put('/api/stay/rate/:stayId', jwtAuth, (req, res) => {
+  console.log('rating request received!', req.body);
+  const stayId = req.params.stayId;
+  const role = req.body.role;
+  const rating = req.body.rating;
+  const user = User.findOne({email: req.tokenPayload.email}).exec();
+  const stay = Stay.findById(stayId).exec();
+  Promise.all([user, stay]).then(([user, stay]) => {
+    if (!stay) { throw new Error('Stay not found'); }
+    if (!user) { throw new Error('User not found'); }
+    // if (stay.status !== 'complete') { throw new Error('Cannot rate an open stay'); }
+    if (stay.guestId.equals(user._id)) { return stay.update({listingRating: rating}) }
+    if (stay.hostId.equals(user._id)) { return stay.update({guestRating: rating}) }
+    return stay.update({status: 'approved'}).exec();
+  }).then(() => res.status(200).json({rating: req.body.rating}))
+    .catch(err => res.status(400).send(err.message));
+});
+
 app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
   let userId;
   const user = User.findOne({email: req.tokenPayload.email}).exec().then(user => {
