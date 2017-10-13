@@ -407,31 +407,33 @@ app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
 
 app.get('/api/chat/:stayId', jwtAuth, (req, res) => {
   let user = req.tokenPayload;
+  let resp = {stay: {id: req.params.stayId}};
   User.findOne({email: req.tokenPayload.email}).exec().then(foundUser => {
     if (!foundUser) { throw new Error('User not found'); }
     user.id = foundUser._id;
-  }).then(() => Stay.findById(req.params.stayId).exec()).then(stay => {
-    if (!(user.id.equals(stay.hostId) || user.id.equals(stay.guestId))) {
-      throw new Error('Only host or guest may participate in chat');
-    }
-    return Chat.findOne({stay: req.params.stayId}).exec();
+  }).then(() => Stay.findById(resp.stay.id).populate('listing', 'name', 'Listing').exec())
+    .then(stay => {
+      if (!(user.id.equals(stay.hostId) || user.id.equals(stay.guestId))) {
+        throw new Error('Only host or guest may participate in chat');
+      }
+      resp.stay.listing = stay.listing;
+      return Chat.findOne({stay: req.params.stayId}).exec();
   }).then(chat => {
-    let resp = { user: {id: user.id, name: user.name }, chatId: chat._id};
+    resp.user = {id: user.id, name: user.name }
+    resp.chatId = chat._id;
     if (user.id.equals(chat.host)) { // user is host
       return User.findById(chat.guest).then(guest => {
         resp.user.role = 'host';
         resp.other = {id: guest._id, name: guest.name, role: 'guest'};
-        res.status(200).json(resp);
       });
-    } else if (user.id.equals(chat.guest)) { // user is guest
+    } else { // user is guest so go find the host
       return User.findById(chat.host).then(host => {
         resp.user.role = 'guest';
         resp.other = {id: host._id, name: host.name, role: 'host'};
-        res.status(200).json(resp);
       });
     }
-    res.status(200).json(resp);
-  }).catch(err => res.status(400).send(err.message));
+  }).then(() => res.status(200).json(resp))
+    .catch(err => res.status(400).send(err.message));
 });
 
 app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
