@@ -78,9 +78,7 @@ app.post('/login', (req, res) => {
                 email: found.email,
                 name: found.name
               };
-              let token = jwt.sign(payload, JWT_KEY, {
-                expiresIn: '1h'
-              });
+              let token = jwt.sign(payload, JWT_KEY);
               res.json({
                 success: true,
                 email: found.email,
@@ -128,9 +126,7 @@ app.post('/signup', (req, res) => {
             name: newUser.name,
             email: newUser.email
           };
-          let token = jwt.sign(payload, JWT_KEY, {
-            expiresIn: '1h'
-          });
+          let token = jwt.sign(payload, JWT_KEY);
           res.json({
             success: true,
             name: newUser.name,
@@ -168,7 +164,7 @@ app.put('/api/profile', jwtAuth, (req, res) => {
   };
   User.findOneAndUpdate({email: email}, updateProfile, { new: true}).then((updated) => {
     let payload = { name: updated.name, email: updated.email };
-    let token = jwt.sign(payload, JWT_KEY, { expiresIn: '1h' });
+    let token = jwt.sign(payload, JWT_KEY);
     res.json({
       success: true,
       name: updated.name,
