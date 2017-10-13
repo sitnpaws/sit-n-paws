@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import openSocket from 'socket.io-client';
@@ -30,6 +31,8 @@ export default class Chat extends Component {
     this.socket.on('refresh', () => this.getMessages());
   }
 
+  scrollToBottom () { this.messageStatus.scrollIntoView(); }
+
   getChatInfo() {
     axios.get('/api/chat/'+this.props.stayId, {headers: {'authorization': this.token}})
       .then(resp => {
@@ -38,21 +41,31 @@ export default class Chat extends Component {
           myName: resp.data.user.name, myRole: resp.data.user.role, myId: resp.data.user.id,
           otherName: resp.data.other.name, otherRole: resp.data.other.role, otherId: resp.data.other.id,
           listingName: resp.data.stay.listing.name
-        }, () => this.getMessages());
+        }, () => this.getMessages(true));
       });
   }
 
-  getMessages() {
+  getMessages(scroll) {
     axios.get('/api/messages/'+this.props.stayId, {headers: {'authorization': this.token}})
-      .then(resp => this.setState({messages: resp.data}));
+      .then(resp => {
+        let messages = resp.data;
+        messages.reverse();
+        this.setState({messages}, () => {if (scroll) {this.scrollToBottom()}});
+      });
+  }
+
+  handleMessageKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.stopPropagation();
+      this.postMessage();
+    }
   }
 
   postMessage() {
-    console.log('posting message: ', this.state.messageText);
+    if (!this.state.messageText) { return; }
     axios.post('/api/messages/'+this.props.stayId,
     {text: this.state.messageText},
     {headers: {'authorization': this.token}}).then(resp => {
-      console.log('new message posted');
       this.setState({messageText: ''});
       this.socket.emit('new message', this.props.stayId);
     }).catch(err => console.log('Error: ', err));
@@ -78,11 +91,16 @@ export default class Chat extends Component {
                 me = {msg.user._id === this.state.myId}
               />
             ))}
+            <div ref={el => { this.messageStatus = el; }} className="message-status-container">{this.state.messageStatus}</div>
           </div>
           <div className="new-message-container">
-            <TextField className="new-message-field" id={`msgtextfield${this.state.chatId}`} multiLine={true} rows={1} rowsMax={3}
-              hintText={`Send your ${this.state.otherRole} a message`} value={this.state.messageText} onChange={e => this.setState({messageText: e.target.value})} />
-            <RaisedButton className="new-message-button" primary label="Send" onClick={()=>this.postMessage()} />
+            <TextField className="new-message-field" id={`msgtextfield${this.state.chatId}`}
+              multiLine={true} rows={1} rowsMax={3}
+              hintText={`Send your ${this.state.otherRole} a message`}
+              value={this.state.messageText} onKeyDown={e => this.handleMessageKey(e)}
+              onChange={e => this.setState({messageText: e.target.value})}
+            />
+            <div className="new-message-submit"><i className="material-icons">send</i></div>
           </div>
         </div>
       </div>
@@ -93,8 +111,11 @@ export default class Chat extends Component {
 const MessageEntry = ({message, role, me}) => {
   const icon = role === 'guest' ? 'pets' : 'home';
   return (
-    <div className={'message-entry-container' + (me ? 'my-message' : 'other-message')}>
-      <div className="message-author"><i className="material-icons">{icon}</i></div>
+    <div className={'message-entry-container ' + (me ? 'my-message' : 'other-message')}>
+      <div className="message-header">
+        <i className="material-icons">{icon}</i>
+        <span className="message-time">{moment(message.createdAt).fromNow()}</span>
+      </div>
       <div className="message-bubble">
         <span>{message.text}</span>
       </div>
