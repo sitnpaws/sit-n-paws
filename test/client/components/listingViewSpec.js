@@ -5,6 +5,7 @@ import Adapter from 'enzyme-adapter-react-16';
 configure({ adapter: new Adapter() });
 import { shallow, mount, render } from 'enzyme';
 import sinon from 'sinon';
+import axios from 'axios';
 import Component from '../../../src/client/components/listingView.js';
 
 
@@ -28,27 +29,7 @@ function setup(saving) {
     listing: listing
   };
   return shallow(<Component {...props}/>);
-};
-
-
-/*
-
-after(function () {
-  // When the test either fails or passes, restore the original
-  // axios ajax function (Sinon.JS also provides tools to help
-  // test frameworks automate clean-up like this)
-  axios.post.restore();
-});
-
-*/
-
-it('makes a POST request to \'/api/stays\'', function () {
-  sinon.stub(axios, 'post');
-
-  assert(axios.ajax.calledWithMatch({ url: '/api/stays' }));
-});
-
-
+}
 
 
 
@@ -76,24 +57,32 @@ describe('<listingView />', () => {
   });
 });
 
+
 describe("Request Stay button", () => {
   let sandbox;
-  let server;
-  beforeEach(() => {
-    sandbox = sinon.sandbox.create();
-    server = sandbox.useFakeServer();
+  beforeEach(() => sandbox = sinon.sandbox.create());
+  afterEach(() => sandbox.restore());
+
+  it('should display the data', (done) => {
+    const data = ['john', 'doe', 'pogi'];
+    const resolved = new Promise((r) => r({ data }));
+    sandbox.stub(axios, 'get').returns(resolved);
+
+    const wrapper = shallow(<Component listing = {listing}/>);
+    wrapper.find('[label="Request Stay"]').simulate('click')
+    // .then(() => {
+    //   expect($('#users').innerHTML)
+    // .to.equal('john,doe,pogi') })
+    // .then(done, done);
   });
-  afterEach(() => {
-    server.restore();
-    sandbox.restore();
-  });
-  it("makes a POST request to '/api/stays'", (done) => {
-    const wrapper = shallow(<Component listing={listing}/>);
-    wrapper.find('[label="Request Stay"]').simulate('click').then(() => {
-      setTimeout(() => server.respond([
-        200,
-        {'Content-Type': 'application/json'},
-        '[]']), 0);
-    })
+
+  it('should display the data returned', (done) => {
+    const rejected = new Promise((_, r) => r());
+    sandbox.stub(axios, 'get').returns(rejected);
+    getUsers()
+    .catch(() => {
+      expect($('#users').innerHTML)
+    .to.equal('An error occured.') })
+    .then(done, done);
   });
 });
