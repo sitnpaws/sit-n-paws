@@ -13,8 +13,8 @@ module.exports = function (io) {
     });
 
     socket.on('new message', chat => {
-      console.log('user submitted new message: ', chat);
-      io.in(chat).emit('refresh messages', chat);
+      console.log('user submitted new message in chat: ', chat);
+      io.in(chat).emit('refresh');
     });
 
     socket.on('disconnect', () => {
