@@ -12,6 +12,7 @@ export default class Chat extends Component {
       chatId: '',
       myName: '', myRole: '', myId: '',
       otherName: '', otherRole: '', otherId: '',
+      listingName: '',
       messageText: '',
       messages: [],
     };
@@ -36,6 +37,7 @@ export default class Chat extends Component {
           chatId: resp.data.chatId,
           myName: resp.data.user.name, myRole: resp.data.user.role, myId: resp.data.user.id,
           otherName: resp.data.other.name, otherRole: resp.data.other.role, otherId: resp.data.other.id,
+          listingName: resp.data.stay.listing.name
         }, () => this.getMessages());
       });
   }
@@ -61,7 +63,10 @@ export default class Chat extends Component {
       <div className="chat-window">
         <div className="chat-container">
           <div className="chat-header">
-            <span>Chat with {this.state.otherName}</span>
+            {this.state.myRole === 'guest' &&
+              <span>Chat with {this.state.otherName} about
+                {`${this.state.myRole === 'guest' ? ' your ' : ' their '}`}
+                pet's stay with {this.state.listingName}</span>}
           </div>
           <div className="messages-container">
             {this.state.messages.map((msg, i) => <MessageEntry key={`msg${i}`} message={msg} />)}
