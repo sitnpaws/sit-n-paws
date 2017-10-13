@@ -21,7 +21,7 @@ export default class Chat extends Component {
       otherTyping: false,
     };
     this.postMessage = this.postMessage.bind(this);
-    this.stopTyping = _.debounce(this.stopTyping.bind(this), 1000, true);
+    this.debStopTyping = _.debounce(this.stopTyping.bind(this), 1500, true);
   }
 
   componentWillMount() {
@@ -33,9 +33,15 @@ export default class Chat extends Component {
     this.socket = openSocket('/');
     this.socket.emit('enter chat', this.props.stayId);
     this.socket.on('refresh', () => this.getMessages());
+    this.socket.on('started typing', () => {
+      this.setState({otherTyping: true});
+    });
+    this.socket.on('stopped typing', () => {
+      this.setState({otherTyping: false});
+    })
   }
 
-  scrollToBottom () { this.messageStatus.scrollIntoView(); }
+  scrollToBottom () { this.msgContainerBottom.scrollIntoView(); }
 
   getChatInfo() {
     axios.get('/api/chat/'+this.props.stayId, {headers: {'authorization': this.token}})
@@ -71,18 +77,16 @@ export default class Chat extends Component {
     if (!this.state.isTyping) {
       this.startTyping();
     } else {
-      this.stopTyping(); // debounced so we can call it alot and be fine
+      this.debStopTyping(); // debounced so we can call it alot and be fine
     }
   }
 
   startTyping() {
-    console.log('started typing!');
     this.socket.emit('started typing', this.props.stayId);
     this.setState({isTyping: true});
   }
 
   stopTyping() {
-    console.log('stopped typing!');
     this.socket.emit('stopped typing', this.props.stayId);
     this.setState({isTyping: false});
   }
@@ -94,6 +98,7 @@ export default class Chat extends Component {
     {headers: {'authorization': this.token}}).then(resp => {
       this.setState({messageText: ''});
       this.socket.emit('new message', this.props.stayId);
+      this.stopTyping();
     }).catch(err => console.log('Error: ', err));
   }
 
@@ -117,7 +122,10 @@ export default class Chat extends Component {
                 me = {msg.user._id === this.state.myId}
               />
             ))}
-            <div ref={el => { this.messageStatus = el; }} className="message-status-container">{this.state.messageStatus}</div>
+            <div ref={el => { this.msgContainerBottom = el; }}></div>
+          </div>
+          <div className="message-status-container">
+            <span>{this.state.otherTyping ? this.state.otherName + ' is typing...' : ''}</span>
           </div>
           <div className="new-message-container">
             <TextField className="new-message-field" id={`msgtextfield${this.state.chatId}`}
