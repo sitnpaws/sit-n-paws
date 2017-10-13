@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Switch, Route, browserHistory } from 'react-router-dom';
 import Home from './home.js';
 import Main from './main.js';
-import StaysView from './StaysView.js';
+import StaysView from './staysView.js';
 import Login from './login.js';
 import NotFound from './notfound.js';
 import PrivateRoute from './private.js';

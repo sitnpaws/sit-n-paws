@@ -7,7 +7,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
-import masterUrl from '../utils/masterUrl.js';
 import './listingView.css';
 
 // This is the component for each individual listing.
