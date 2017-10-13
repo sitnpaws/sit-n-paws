@@ -7,7 +7,7 @@
   },
   "main": "server.js",
   "scripts": {
-    "test": "mocha test/**/*.js* --grep View --require ./tools/test-helper.js -r mock-local-storage --recursive --compilers js:babel-register --exit",
+    "test": "mocha test/**/*.js* --require ./tools/test-helper.js -r mock-local-storage --recursive --compilers js:babel-register --exit",
     "start": "nodemon server.js",
     "build": "webpack",
     "server": "nodemon server.js",

@@ -1,8 +1,3 @@
-
-
-
-
-
 import React from 'react';
 import { expect } from 'chai';
 import { configure } from 'enzyme';
@@ -11,7 +6,6 @@ configure({ adapter: new Adapter() });
 import { shallow, mount, render } from 'enzyme';
 import sinon from 'sinon';
 import Component from '../../../src/client/components/listingView.js';
-
 
 
 const listing = {
@@ -27,11 +21,40 @@ const listing = {
   "cost": 57.99
 };
 
+//Optional setup which would wrap the entire test
+
+function setup(saving) {
+  const props = {
+    listing: listing
+  };
+  return shallow(<Component {...props}/>);
+};
+
+
+/*
+
+after(function () {
+  // When the test either fails or passes, restore the original
+  // axios ajax function (Sinon.JS also provides tools to help
+  // test frameworks automate clean-up like this)
+  axios.post.restore();
+});
+
+*/
+
+it('makes a POST request to \'/api/stays\'', function () {
+  sinon.stub(axios, 'post');
+
+  assert(axios.ajax.calledWithMatch({ url: '/api/stays' }));
+});
+
+
+
 
 
 describe('<listingView />', () => {
-  it('renders as a div', () => {
-    const wrapper = shallow(<Component listing = {listing}/>);
+  it('renders with CardHeader element', () => {
+    const wrapper = setup();
     expect(wrapper.find('CardHeader')).to.have.length(1);
   });
 
@@ -39,6 +62,38 @@ describe('<listingView />', () => {
     const wrapper = shallow(<Component listing = {listing}/>);
     expect(wrapper.find('.listing').text()).to.include('ROSIE');
   });
+
+  it('sets open state to true when the "request a stay" button is clicked', () => {
+    const wrapper = shallow(<Component listing = {listing}/>);
+    wrapper.find('FlatButton').simulate('click');
+    expect(wrapper.state('open')).to.equal(true);
+  });
+
+  it('sends a POST request when "request stay" is clicked', () => {
+    const wrapper = shallow(<Component listing = {listing}/>);
+    wrapper.find('[label="Request Stay"]').simulate('click');
+    expect(wrapper.state('open')).to.equal(true);
+  });
 });
 
-
+describe("Request Stay button", () => {
+  let sandbox;
+  let server;
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+    server = sandbox.useFakeServer();
+  });
+  afterEach(() => {
+    server.restore();
+    sandbox.restore();
+  });
+  it("makes a POST request to '/api/stays'", (done) => {
+    const wrapper = shallow(<Component listing={listing}/>);
+    wrapper.find('[label="Request Stay"]').simulate('click').then(() => {
+      setTimeout(() => server.respond([
+        200,
+        {'Content-Type': 'application/json'},
+        '[]']), 0);
+    })
+  });
+});
