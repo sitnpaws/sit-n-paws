@@ -29,7 +29,7 @@ var setup = function(saving) {
     listing: listing
   };
   return shallow(<Component {...props}/>);
-}
+};
 
 
 
