@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const moment = require('moment');
+const socket = require('socket.io');
+const socketChat = require('./socketChat');
 const User = require('./db/models/users');
 const Listing = require('./db/models/listing');
 const Stay = require('./db/models/stays');
@@ -415,8 +417,11 @@ app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
 })
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
   console.log('Listening on localhost:3000');
 });
+
+const io = socket(server);
+socketChat(io);
 
 module.exports = app;
