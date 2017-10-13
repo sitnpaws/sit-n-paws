@@ -116,7 +116,9 @@ export default class Main extends React.Component {
             </AppBar>
           </div>
           <br/>
-          <Search onChange={this.handleSearch}/>
+          <div className="search">
+            <Search onChange={this.handleSearch}/>
+          </div>
           <br/>
           <ListingsContainer listings={this.state.listings} />
           <Drawer width={400} openSecondary={true} open={this.state.openDrawer} >
