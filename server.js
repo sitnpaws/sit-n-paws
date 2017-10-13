@@ -387,11 +387,28 @@ app.put('/api/stay/reject/:stayId', jwtAuth, (req, res) => {
 });
 
 app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
-  // TODO: protect this route by validating that user is either host or guest of stay
-  Chat.findById(req.params.stayId).exec().then(chat => {
+  let userId;
+  let hostId;
+  let guestId;
+  const user = User.findOne({email: req.tokenPayload.email}).exec().then(user => {
+    if (!user) { throw new Error('User not found'); }
+    userId = user._id;
+  }).then(() => Stay.findById(req.params.stayId).exec()).then(stay => {
+    if (!(userId.equals(stay.hostId) || userId.equals(stay.guestId))) {
+      throw new Error('Only host or guest may participate in chat');
+    }
+    return Chat.findById(req.params.stayId).exec();
+  }).then(chat => {
     const msg = Msg.find({chatId: chat._id}).sort('-createdAt').limit(10)
-      .populate('user', 'name').exec();
+      .populate('user', '_id name').exec();
     msg.then(msgs => {
+      resMsgs = [];
+      msgs.forEach(msg => {
+        resMsgs.push(Object.assign({
+          role: (msg.user._id.equals(guestId)) ? 'guest' : 'host',
+          me: (msg.user._id.equals(userId))
+        }, stay.toObject()));
+      });
       res.status(200).json(msgs);
     });
   });
