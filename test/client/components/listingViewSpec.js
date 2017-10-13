@@ -2,12 +2,10 @@ import React from 'react';
 import { expect } from 'chai';
 import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-configure({ adapter: new Adapter() });
 import { shallow, mount, render } from 'enzyme';
-import sinon from 'sinon';
-import axios from 'axios';
 import Component from '../../../src/client/components/listingView.js';
 
+configure({ adapter: new Adapter() });
 
 const listing = {
   "name": "Say Swinglehurst",
@@ -21,17 +19,6 @@ const listing = {
   "homePictures": "https://farm1.staticflickr.com/48/111317752_7934d93e8a.jpg",
   "cost": 57.99
 };
-
-//Optional setup which would wrap the entire test
-
-var setup = function(saving) {
-  const props = {
-    listing: listing
-  };
-  return shallow(<Component {...props}/>);
-};
-
-
 
 describe('<listingView />', () => {
   it('renders with CardHeader element', () => {
@@ -50,39 +37,8 @@ describe('<listingView />', () => {
     expect(wrapper.state('open')).to.equal(true);
   });
 
-  it('sends a POST request when "request stay" is clicked', () => {
-    const wrapper = shallow(<Component listing = {listing}/>);
-    wrapper.find('[label="Request Stay"]').simulate('click');
-    expect(wrapper.state('open')).to.equal(true);
-  });
 });
 
+//todo: loads a get request to listings
 
-describe("Request Stay button", () => {
-  let sandbox;
-  beforeEach(() => sandbox = sinon.sandbox.create());
-  afterEach(() => sandbox.restore());
-
-  it('should display the data', (done) => {
-    const data = ['john', 'doe', 'pogi'];
-    const resolved = new Promise((r) => r({ data }));
-    sandbox.stub(axios, 'get').returns(resolved);
-
-    const wrapper = shallow(<Component listing = {listing}/>);
-    wrapper.find('[label="Request Stay"]').simulate('click')
-    // .then(() => {
-    //   expect($('#users').innerHTML)
-    // .to.equal('john,doe,pogi') })
-    // .then(done, done);
-  });
-
-  it('should display the data returned', (done) => {
-    const rejected = new Promise((_, r) => r());
-    sandbox.stub(axios, 'get').returns(rejected);
-    getUsers()
-    .catch(() => {
-      expect($('#users').innerHTML)
-    .to.equal('An error occured.') })
-    .then(done, done);
-  });
-});
+//todo Shows listings form the GET request to '/listings'
