@@ -1,0 +1,22 @@
+.chat-window {
+  height: calc(100vh - 64px);
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 80%;
+}
+
+.chat-header {
+  font-size: 1.3em;
+  flex: 0 0 auto;
+}
+
+.messages-container {
+  flex: 0 0 auto;
+}
+
+.new-message-container {
+  flex: 0 0 auto;
+}
