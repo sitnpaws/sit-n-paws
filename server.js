@@ -395,7 +395,7 @@ app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
     if (!(userId.equals(stay.hostId) || userId.equals(stay.guestId))) {
       throw new Error('Only host or guest may participate in chat');
     }
-    return Chat.findById(req.params.stayId).exec();
+    return Chat.findOne({stay: req.params.stayId}).exec();
   }).then(chat => {
     const msg = Msg.find({chatId: chat._id}).sort('-createdAt').limit(10)
       .populate('user', '_id name').exec();
@@ -406,24 +406,37 @@ app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
 });
 
 app.get('/api/chat/:stayId', jwtAuth, (req, res) => {
-  let userId;
-  const user = User.findOne({email: req.tokenPayload.email}).exec().then(user => {
-    if (!user) { throw new Error('User not found'); }
-    userId = user._id;
+  let user = req.tokenPayload;
+  User.findOne({email: req.tokenPayload.email}).exec().then(foundUser => {
+    if (!foundUser) { throw new Error('User not found'); }
+    user.id = foundUser._id;
   }).then(() => Stay.findById(req.params.stayId).exec()).then(stay => {
-    if (!(userId.equals(stay.hostId) || userId.equals(stay.guestId))) {
+    if (!(user.id.equals(stay.hostId) || user.id.equals(stay.guestId))) {
       throw new Error('Only host or guest may participate in chat');
     }
-    return Chat.findById(req.params.stayId).exec();
+    return Chat.findOne({stay: req.params.stayId}).exec();
   }).then(chat => {
-    let resp = {userId: userId, hostId: chat.host, guestId: chat.guest};
+    let resp = { user: {id: user.id, name: user.name }, chatId: chat._id};
+    if (user.id.equals(chat.host)) { // user is host
+      return User.findById(chat.guest).then(guest => {
+        resp.user.role = 'host';
+        resp.other = {id: guest._id, name: guest.name, role: 'guest'};
+        res.status(200).json(resp);
+      });
+    } else if (user.id.equals(chat.guest)) { // user is guest
+      return User.findById(chat.host).then(host => {
+        resp.user.role = 'guest';
+        resp.other = {id: host._id, name: host.name, role: 'host'};
+        res.status(200).json(resp);
+      });
+    }
     res.status(200).json(resp);
   }).catch(err => res.status(400).send(err.message));
 });
 
 app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
   const user = User.findOne({email: req.tokenPayload.email}).exec();
-  const chat = Chat.findById(req.params.stayId).exec();
+  const chat = Chat.findOne({stay: req.params.stayId}).exec();
   Promise.all([user, chat]).then(([user, chat]) => {
     if (!user) { throw new Error('User not found'); }
     if (!chat) { throw new Error('Chat not found'); }
