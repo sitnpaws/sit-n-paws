@@ -24,7 +24,7 @@ const listing = {
 
 //Optional setup which would wrap the entire test
 
-function setup(saving) {
+var setup = function(saving) {
   const props = {
     listing: listing
   };
