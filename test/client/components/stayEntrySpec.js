@@ -6,6 +6,7 @@ const stay = {
   "_id": "2340k728234jjf87",
   "listingId": "3cv45765nb75467",
   "guestId": "3vg5980u34cvg5",
+  "hostId": "3vg598ertuciyu",
   "guestName": "Brian Griffin",
   "startDate": "2016-05-18T16:00:00Z",
   "endDate": "2016-05-18T16:00:00Z",
@@ -25,12 +26,18 @@ const stay = {
 
 
   //todo: make role 'guest', populate with a new stay. Try to cancel.
-  //todo: make role 'guest', populate with a new stay, set status to 'complete'. Try to review.
+
 
   //todo: handle put to '/api/stay/cancel/' + this.props.stay._id , headers: {'authorization': this.token}, status: 'cancelled'
-  //todo: handle put to '/api/stay/approve/' + this.props.stay._id,, headers: {'authorization': this.token}, status: 'confirmed'
-  //todo: handle put to /api/stay/reject/ + stayId, headers: {'authorization': this.token}, status: 'rejected'
+  //todo: as role: 'host', handle put to '/api/stay/approve/' + this.props.stay._id,, headers: {'authorization': this.token}, status: 'confirmed'
+  //todo: as role: 'host', handle put to /api/stay/reject/ + stayId, headers: {'authorization': this.token}, status: 'rejected'
 
 
   //todo: make role 'host', populate with a new stay. Try to reject.
-  //todo: make role 'host', populate with a new stay, set status to 'complete'. Try to review.
+  //todo: make role 'host', populate with a new stay. Try to approve.
+
+
+//Review not yet implimented
+
+//todo: make role 'host', populate with a new stay, set status to 'complete'. Try to review.
+//todo: make role 'guest', populate with a new stay, set status to 'complete'. Try to review.
