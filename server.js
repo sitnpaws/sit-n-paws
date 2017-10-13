@@ -388,8 +388,6 @@ app.put('/api/stay/reject/:stayId', jwtAuth, (req, res) => {
 
 app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
   let userId;
-  let hostId;
-  let guestId;
   const user = User.findOne({email: req.tokenPayload.email}).exec().then(user => {
     if (!user) { throw new Error('User not found'); }
     userId = user._id;
@@ -402,13 +400,6 @@ app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
     const msg = Msg.find({chatId: chat._id}).sort('-createdAt').limit(10)
       .populate('user', '_id name').exec();
     msg.then(msgs => {
-      resMsgs = [];
-      msgs.forEach(msg => {
-        resMsgs.push(Object.assign({
-          role: (msg.user._id.equals(guestId)) ? 'guest' : 'host',
-          me: (msg.user._id.equals(userId))
-        }, stay.toObject()));
-      });
       res.status(200).json(msgs);
     });
   });
