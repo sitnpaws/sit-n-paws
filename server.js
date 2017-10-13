@@ -334,6 +334,7 @@ app.post('/api/stays', jwtAuth, (req, res) => {
     }
   }).then(stay => {
     if (hostEmail) { sendStayRequestMail(hostEmail, guestEmail, startDate, endDate); }
+    let newChat = new Chat({stay: stay._id, host: stay.hostId, guest: stay.guestId }).save();
     res.status(201).json({message: 'stay created', stayId: stay._id});
   }).catch(err => {
     console.log('Server error: ', err);
