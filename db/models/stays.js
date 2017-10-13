@@ -9,7 +9,7 @@ var staySchema = new mongoose.Schema(
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     status: { type: String, required: true },
-    hostRating: Number,
+    listingRating: Number,
     guestRating: Number,
     pricePer: { type: Number, required: true },
     totalPrice: { type: Number, required: true }
