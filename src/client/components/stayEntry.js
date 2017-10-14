@@ -8,6 +8,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Avatar from 'material-ui/Avatar';
 import FileFolder from 'material-ui/svg-icons/file/folder';
+import Star from 'material-ui/svg-icons/toggle/star';
 import FontIcon from 'material-ui/FontIcon';
 import List from 'material-ui/List/List';
 import ListItem from 'material-ui/List/ListItem';
@@ -21,13 +22,16 @@ class StayEntry extends React.Component {
     super(props);
     this.state = {
       status: this.props.stay.status,
+      name: null,
+      avgRating: null,
       rating: 0,
       listingRating: this.props.stay.listingRating,
       guestRating: this.props.stay.guestRating
     }
 
     this.iconStyles = {
-      marginRight: 5
+      marginRight: 5,
+      verticalAlign: 'middle'
     };
 
     this.cardStyles = {
@@ -42,7 +46,11 @@ class StayEntry extends React.Component {
     this.handleSubmitRating = this.handleSubmitRating.bind(this);
   }
 
-  componentWillMount() { this.token = localStorage.jwt; }
+  componentWillMount() { this.token = localStorage.jwt; this.getRating(); }
+
+  componentDidMount() {
+
+  }
 
   handleCancelStay() {
     axios.put('/api/stay/cancel/' + this.props.stay._id, null, {
@@ -89,11 +97,11 @@ class StayEntry extends React.Component {
 
   handleSubmitRating() {
     if (this.state.rating > 0) {
-      const roleAndRating = {
+      const params = {
         role: this.props.stay.role,
         rating: this.state.rating
       };
-      axios.put('/api/stay/rate/' + this.props.stay._id, roleAndRating, {
+      axios.put('/api/stay/rating/' + this.props.stay._id, params, {
         headers: {'authorization': this.token}
       }).then((res) => {
         this.props.stay.role === 'guest'
@@ -107,6 +115,25 @@ class StayEntry extends React.Component {
     }
   }
 
+  getRating() {
+    const userId = this.props.stay.role === 'guest' ? this.props.stay.hostId : this.props.stay.guestId;
+    const role = this.props.stay.role;
+    const params = {
+      role: role,
+      userId: userId
+    };
+    axios.get('/api/stay/rating/' + role + '/' + userId, {
+      headers: {'authorization': this.token}
+    }).then((res) => {
+      this.setState({
+        name: res.data.name,
+        avgRating: res.data.rating || 0
+      });
+    }).catch((err) => {
+      console.log(err);
+    });
+  }
+
   render() {
     const { stay } = this.props;
 
@@ -116,7 +143,7 @@ class StayEntry extends React.Component {
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Stay with {stay.listing.name}</strong></span>}
+              title={<span className="stay-title"><strong>Stay with {this.state.name}</strong> (<Star style={{'verticalAlign': 'middle'}}/> {this.state.avgRating})</span>}
               subtitle={`Status: ${this.state.status}`}
               avatar={<Home style={this.iconStyles} />}
             >
@@ -167,7 +194,7 @@ class StayEntry extends React.Component {
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Request from A Guest!</strong></span>}
+              title={<span className="stay-title"><strong>Request from {this.state.name}</strong>(<Star style={{'verticalAlign': 'middle'}}/> {this.state.avgRating})</span>}
               subtitle={`Status: ${this.state.status}`}
               avatar={<Pets style={this.iconStyles} />}
             >

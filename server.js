@@ -149,6 +149,7 @@ app.get('/api/profile', jwtAuth, (req, res) => {
     if(err) {
       console.log(err);
     } else {
+      console.log(user);
       res.json(user);
     }
   })
@@ -382,8 +383,7 @@ app.put('/api/stay/reject/:stayId', jwtAuth, (req, res) => {
     .catch(err => res.status(400).send(err.message));
 });
 
-app.put('/api/stay/rate/:stayId', jwtAuth, (req, res) => {
-  console.log('rating request received!', req.body);
+app.put('/api/stay/rating/:stayId', jwtAuth, (req, res) => {
   const stayId = req.params.stayId;
   const role = req.body.role;
   const rating = req.body.rating;
@@ -395,9 +395,54 @@ app.put('/api/stay/rate/:stayId', jwtAuth, (req, res) => {
     // if (stay.status !== 'complete') { throw new Error('Cannot rate an open stay'); }
     if (stay.guestId.equals(user._id)) { return stay.update({listingRating: rating}) }
     if (stay.hostId.equals(user._id)) { return stay.update({guestRating: rating}) }
-    return stay.update({status: 'approved'}).exec();
   }).then(() => res.status(200).json({rating: req.body.rating}))
     .catch(err => res.status(400).send(err.message));
+});
+
+app.get('/api/stay/rating/guest/:userId', jwtAuth, (req, res) => {
+  const userId = req.params.userId;
+  let name;
+  User.findById(userId).then((user) => {
+    name = user.name;
+  }).then(() => {
+    return Stay.find({hostId: ObjectId(userId)}).exec();
+  }).then((stays) => {
+    let ratingTotal = 0;
+    let ratingCount = 0;
+    stays.forEach((stay) => {
+      if (stay.listingRating) {
+        ratingTotal += stay.listingRating;
+        ratingCount++;
+      }
+    });
+    let avgRating = (ratingTotal / ratingCount).toFixed(1);
+    res.status(200).json({name: name, rating: avgRating > 0 ? avgRating : 'no rating'})
+  }).catch((err) => {
+    res.status(400).send(err.message);
+  });
+});
+
+app.get('/api/stay/rating/host/:userId', jwtAuth, (req, res) => {
+  const userId = req.params.userId;
+  let name;
+  User.findById(userId).then((user) => {
+    name = user.name;
+  }).then(() => {
+    return Stay.find({guestId: ObjectId(userId)}).exec();
+  }).then((stays) => {
+    let ratingTotal = 0;
+    let ratingCount = 0;
+    stays.forEach((stay) => {
+      if (stay.guestRating) {
+        ratingTotal += stay.guestRating;
+        ratingCount++;
+      }
+    });
+    let avgRating = (ratingTotal / ratingCount).toFixed(1);
+    res.status(200).json({name: name, rating: avgRating > 0 ? avgRating : 'no rating'})
+  }).catch((err) => {
+    res.status(400).send(err.message);
+  });
 });
 
 app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
