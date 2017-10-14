@@ -19,6 +19,7 @@ export default class Chat extends Component {
       messages: [],
       isTyping: false,
       otherTyping: false,
+      atBeginningOfChat: false,
     };
     this.postMessage = this.postMessage.bind(this);
     this.debStopTyping = _.debounce(this.stopTyping.bind(this), 1500, true);
@@ -38,7 +39,20 @@ export default class Chat extends Component {
     });
     this.socket.on('stopped typing', () => {
       this.setState({otherTyping: false});
-    })
+    });
+  }
+
+  componentWillUpdate() {
+    this.isScrolledToBottom = this.messagesContainer.scrollTop + this.messagesContainer.offsetHeight === this.messagesContainer.scrollHeight;
+    this.oldScrollHeight = this.messagesContainer.scrollHeight;
+  }
+
+  componentDidUpdate() {
+    if (this.isScrolledToBottom) { // if at bottom, stay at bottom as new msgs come in
+      this.scrollToBottom();
+    } else { // else stay where you are
+      this.messagesContainer.scrollTop = this.messagesContainer.scrollTop + (this.messagesContainer.scrollHeight - this.oldScrollHeight);
+    }
   }
 
   scrollToBottom () { this.msgContainerBottom.scrollIntoView(); }
@@ -71,7 +85,10 @@ export default class Chat extends Component {
     }).then(resp => {
       let olderMessages = resp.data;
       olderMessages.reverse();
-      this.setState({messages: olderMessages.concat(this.state.messages)});
+      this.setState({
+        messages: olderMessages.concat(this.state.messages),
+        atBeginningOfChat: (olderMessages.length < 20),
+      });
     });
   }
 
@@ -100,6 +117,12 @@ export default class Chat extends Component {
       this.startTyping();
     } else {
       this.debStopTyping(); // debounced so we can call it alot and be fine
+    }
+  }
+
+  handleScroll(e) {
+    if (e.target.scrollTop === 0 && !this.state.atBeginningOfChat) {
+      this.getMessageHistory();
     }
   }
 
@@ -136,7 +159,7 @@ export default class Chat extends Component {
                 pet's stay with {this.state.listingName}
               </span>}
           </div>
-          <div className="messages-container">
+          <div ref={el => { this.messagesContainer = el}} className="messages-container" onScroll={e => this.handleScroll(e)}>
             {this.state.messages.map((msg, i) => (
               <MessageEntry
                 key={`msg${i}`} message={msg}
