@@ -5,6 +5,9 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
+import 'react-dates/initialize';
+import { DateRangePicker } from 'react-dates';
+import 'react-dates/lib/css/_datepicker.css';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import './listingView.css';
@@ -22,6 +25,7 @@ export default class ListingView extends React.Component {
       startDate: null,
       endDate: null,
       formWarning: '',
+      focusedInput: null,
     }
 
     // Opens the modal upon clicking contact me
@@ -35,14 +39,14 @@ export default class ListingView extends React.Component {
     }
 
     // Handles the date change in contact me
-    this.handleChangeStartDate = (e, date) => {
-      let endDate = this.state.endDate;
-      this.setState({startDate: date, endDate: date > endDate ? null : endDate});
-    }
-
-    this.handleChangeEndDate = (e, date) => {
-      this.setState({endDate: date});
-    }
+    // this.handleChangeStartDate = (e, date) => {
+    //   let endDate = this.state.endDate;
+    //   this.setState({startDate: date, endDate: date > endDate ? null : endDate});
+    // }
+    //
+    // this.handleChangeEndDate = (e, date) => {
+    //   this.setState({endDate: date});
+    // }
 
     this.handleRequestStay = () => {
       if (!this.state.startDate || !this.state.endDate) {
@@ -132,26 +136,17 @@ export default class ListingView extends React.Component {
               modal={false}
               open={this.state.open}
               onRequestClose={this.handleClose}
+              bodyClassName="date-picker-dialog-body"
             >
               <div className="booking-form-container">
                 <div className="booking-form-row">
-                  <div className="booking-form-subtitle"><span>Checkin</span></div>
-                  <DatePicker
-                    hintText="Checking in on..."
-                    value={this.state.startDate}
-                    minDate={(new Date())}
-                    onChange={this.handleChangeStartDate}
-                    autoOk
-                  />
-                </div>
-                <div className="booking-form-row">
-                  <div className="booking-form-subtitle"><span>Checkout</span></div>
-                  <DatePicker
-                    hintText="Checking out on..."
-                    value={this.state.endDate}
-                    minDate={this.state.startDate || (new Date())}
-                    onChange={this.handleChangeEndDate}
-                    autoOk
+                  <div className="booking-form-subtitle"><span>What dates are you thinking?</span></div>
+                  <DateRangePicker
+                    startDate={this.state.startDate} // momentPropTypes.momentObj or null,
+                    endDate={this.state.endDate} // momentPropTypes.momentObj or null,
+                    onDatesChange={({ startDate, endDate }) => this.setState({ startDate, endDate })} // PropTypes.func.isRequired,
+                    focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
+                    onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
                   />
                 </div>
               </div>
