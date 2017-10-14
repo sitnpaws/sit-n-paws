@@ -4,7 +4,6 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import DatePicker from 'material-ui/DatePicker';
 import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
@@ -111,10 +110,6 @@ export default class ListingView extends React.Component {
           <CardText>
             <div className = "listing">
               {`Preferred Dog Breed: ${this.props.listing.dogBreedPreference}. `}
-              {`Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-              Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-              Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.`}
             </div>
           </CardText>
           <CardActions>
@@ -151,4 +146,3 @@ export default class ListingView extends React.Component {
     )
   }
 }
-// ListingView.propTypes = {listing: PropTypes.object.isRequired};
