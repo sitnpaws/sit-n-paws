@@ -8,8 +8,18 @@ const mongoose = require('mongoose');
 const db = require('../db/config');
 const Listing = require('../db/models/listing');
 const User = require('../db/models/users');
+const Stay = require('../db/models/stays');
+const Chat = require('../db/models/chat');
 
 chai.use(require('chai-things'));
+
+// Clear Database
+
+// Stay.remove({});
+// Listing.remove({});
+// User.remove({});
+
+
 
 // ##################################
 // TEST DATA FOR USERS AND LISTINGS
@@ -18,17 +28,14 @@ chai.use(require('chai-things'));
 // user test data for required schema fields only
 const basicTestUsers = [
   {
-    username: 'brianG123',
     password: 'writer123',
     email: 'brianG@random.edu'
   },
   {
-    username: 'Lois456',
     password: 'Pewterschmidt',
     email: 'Lois456@yahoo.com'
   },
   {
-    username: 'flyguy123',
     password: 'giggity',
     email: 'flyguy@flight.com'
   }
@@ -37,7 +44,6 @@ const basicTestUsers = [
 // user test data for completed schema fields
 const completeTestUsers = [
   {
-    username: 'brianG123',
     password: 'writer123',
     email: 'brianG@random.edu',
     name: 'Brian Griffin',
@@ -45,7 +51,6 @@ const completeTestUsers = [
     address: '31 Spooner Street'
   },
   {
-    username: 'Lois456',
     password: 'Pewterschmidt',
     email: 'Lois456@yahoo.com',
     name: 'Lois Griffin',
@@ -53,7 +58,6 @@ const completeTestUsers = [
     address: '31 Spooner Street'
   },
   {
-    username: 'flyguy123',
     password: 'giggity',
     email: 'flyguy@flight.com',
     name: 'Glenn Quagmire',
@@ -76,11 +80,23 @@ const listingsData = [
   {"name":"Lily Feake","zipcode":94106,"dogSizePreference":"medium","dogBreedPreference":"All","dogTemperamentPreference":"time-frame","dogActivityPreference":"vel","homeAttributes":"Training","hostPictures":"https://randomuser.me/api/portraits/men/59.jpg","homePictures":"https://farm4.staticflickr.com/3163/2780745441_a39b974e55.jpg","cost":55}
 ];
 
+
+
+
 // test listing formatted for FormData
 const testFormListing = [
   {
-  "name":"Lily Feake","zipcode":94106,"dogSizePreference":"medium","dogBreedPreference":"All","dogTemperamentPreference":"time-frame","dogActivityPreference":"vel","homeAttributes":"Training","cost":55
-  }
+    "name":"Camp Snoopy",
+    "zipcode":94106,
+    "dogSizePreference":"medium",
+    "dogBreedPreference":"Corgi",
+    "email":"sitnpawsio+host1@gmail.com",
+    "dogActivityPreference":"rutrum",
+    "homeAttributes":"Great home with lots of space",
+    "hostPictures":"https://randomuser.me/api/portraits/women/44.jpg",
+    "homePictures":"https://farm7.staticflickr.com/6076/6080657644_19cfe82456.jpg",
+    "cost":35},
+
 ]
 
 // test images for uploading to cloudinary service
@@ -116,28 +132,30 @@ describe('Server and Client Are Active', function() {
 
 describe('User APIs and Database', function() {
 
-  // create array of usernames from mock user data for testing
-  var userNames = [];
+  // create array of emails from mock user data for testing
+  var emails = [];
     for(var i = 0; i < basicTestUsers.length; i++) {
-      userNames.push(basicTestUsers[i].username);
+      emails.push(basicTestUsers[i].email);
     }
 
   beforeEach(function(done) {
     // assure mock users are removed from database
-    User.remove({ username: { "$in": userNames } }).exec();
+    User.remove({ email: { "$in": emails } }).exec().then(() => {
+        // add one user for tests
+        var newUser = new User(basicTestUsers[0]);
+        return newUser.save();
+      }).then(()=> done());
+    });
 
-    // add one user for tests
-    var newUser = new User(basicTestUsers[0])
-    newUser.save();
-    done();
-  })
+  //done();
 
-  after(function() {
+  after(function(done) {
     // remove mock users from database after test completion
-    User.remove({ username: { "$in": userNames } }).exec();
-  })
+    User.remove({ email: { "$in": emails } }).exec().then(() => done())
+  });
 
-  // a new user added to database will return a response with success, username, and token
+  // a new user added to database will return a response with success, email, and token
+  //todo: failing
   it('Adds new user to database', function(done) {
     request(server)
       .post('/signup')
@@ -150,7 +168,7 @@ describe('User APIs and Database', function() {
   })
 
   // a user already in the database will return an empty object
-  it('Prevents same username being added to database', function(done) {
+  it('Prevents same email being added to database', function(done) {
     request(server)
       .post('/signup')
       .send(basicTestUsers[0])
@@ -179,6 +197,7 @@ describe('User APIs and Database', function() {
 // ##################################
 // Test Listings APIs and database
 // ##################################
+//todo: replace the listings data
 
 describe('Listings APIs and database', function() {
 
@@ -192,15 +211,17 @@ describe('Listings APIs and database', function() {
     }
 
     // assure mock listings are removed from database
-    Listing.remove({ name: { "$in": listingsNamesData } }).exec();
-    done();
-  })
+    Listing.remove({ name: { "$in": listingsNamesData } }).exec().then(()=> done());
+
+  });
 
   // add one listing to database using formData supertest field and attach
+  //todo: failing
   it('Add one listing to the database', function(done) {
     request(server)
       .post('/listings')
       .field('name', 'Lily Feake')
+      .field('email', 'Lily@Feake.com')
       .field('zipcode', 94106)
       .field('dogSizePreference', 'medium')
       .field('dogBreedPreference', 'All')
@@ -212,12 +233,13 @@ describe('Listings APIs and database', function() {
       .attach('homePictures', testImage2)
       .expect(200)
       .expect(function(res) {
-        expect(res.body.success).to.equal(true);
+        expect(JSON.stringify(res.body)).to.equal(true);
       })
       .end(done);
   })
 
   // returns one total listing from database
+  //todo: failing. Is not length 1, has other entries.
   it('Returns all(i.e. one seeded) listing in database', function(done) {
     request(server)
       .get('/listings')
