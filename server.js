@@ -399,7 +399,7 @@ app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
     let msg = Msg.find({chatId: chat._id});
     if (req.query.before) { msg = msg.where('createdAt').lt(req.query.before); }
     if (req.query.after) { msg = msg.where('createdAt').gt(req.query.after); }
-    msg.sort('-createdAt').limit(10).populate('user', '_id name').exec().then(msgs => {
+    msg.sort('-createdAt').limit(20).populate('user', '_id name').exec().then(msgs => {
       res.status(200).json(msgs);
     });
   }).catch(err => res.status(400).send(err.message));
