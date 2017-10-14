@@ -20,9 +20,16 @@ const listing = {
   "cost": 57.99
 };
 
+var wrapComponent = function(saving) {
+  const props = {
+    listing: listing
+  };
+  return shallow(<Component {...props}/>);
+};
+
 describe('<listingView />', () => {
   it('renders with CardHeader element', () => {
-    const wrapper = setup();
+    const wrapper = wrapComponent();
     expect(wrapper.find('CardHeader')).to.have.length(1);
   });
 
