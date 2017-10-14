@@ -61,7 +61,6 @@ export default class ListingView extends React.Component {
         }, // params object: headers
         { headers: {'Authorization': this.token} }
       ).then(resp => {
-        console.log(resp); //TODO: remove this later
         this.setState({open: false});
       }).catch(err => this.setState({formWarning: 'Server error: ' + err}));
     }
