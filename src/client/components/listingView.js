@@ -38,16 +38,6 @@ export default class ListingView extends React.Component {
       this.setState({open: false, formWarning: ''});
     }
 
-    // Handles the date change in contact me
-    // this.handleChangeStartDate = (e, date) => {
-    //   let endDate = this.state.endDate;
-    //   this.setState({startDate: date, endDate: date > endDate ? null : endDate});
-    // }
-    //
-    // this.handleChangeEndDate = (e, date) => {
-    //   this.setState({endDate: date});
-    // }
-
     this.handleRequestStay = () => {
       if (!this.state.startDate || !this.state.endDate) {
         this.setState({formWarning: 'Please fill in both dates.'});
