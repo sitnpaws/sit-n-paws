@@ -27,3 +27,11 @@
   justify-content: center;
   align-items: center;
 }
+
+.DateRangePicker_picker {
+  z-index: 2000;
+}
+
+.date-picker-dialog-body {
+  overflow-y: visible !important;
+}
