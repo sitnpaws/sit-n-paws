@@ -16,6 +16,8 @@ export default class ListingView extends React.Component {
   constructor(props) {
     super (props);
     this.state = {
+      name: null,
+      avgRating: null,
       open: false,
       startDate: null,
       endDate: null,
@@ -59,10 +61,24 @@ export default class ListingView extends React.Component {
         this.setState({open: false});
       }).catch(err => this.setState({formWarning: 'Server error: ' + err}));
     }
+
+    this.getNameAndRating = () => {
+      axios.get('/api/stay/rating/guest/' + this.props.listing.userId, {
+        headers: {'authorization': this.token}
+      }).then((res) => {
+        this.setState({
+          name: res.data.name,
+          avgRating: res.data.rating
+        });
+      }).catch((err) => {
+        console.log(err);
+      });
+    }
   }
 
   componentDidMount() {
     this.token = localStorage.jwt;
+    this.getNameAndRating();
   }
 
   render() {
@@ -97,7 +113,7 @@ export default class ListingView extends React.Component {
           >
             <img src={this.props.listing.homePictures} alt="Home Picture" width="360" height="270" />
           </CardMedia>
-          <CardTitle title="5 Stars"
+          <CardTitle title={`${this.state.avgRating} Stars`}
             subtitle={`Max Dog Size:${this.props.listing.dogSizePreference}`} />
           <CardText>
             <div className = "listing">

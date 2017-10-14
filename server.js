@@ -416,7 +416,7 @@ app.get('/api/stay/rating/guest/:userId', jwtAuth, (req, res) => {
       }
     });
     let avgRating = (ratingTotal / ratingCount).toFixed(1);
-    res.status(200).json({name: name, rating: avgRating > 0 ? avgRating : 'no rating'})
+    res.status(200).json({name: name, rating: avgRating > 0 ? avgRating : 0})
   }).catch((err) => {
     res.status(400).send(err.message);
   });
@@ -439,7 +439,7 @@ app.get('/api/stay/rating/host/:userId', jwtAuth, (req, res) => {
       }
     });
     let avgRating = (ratingTotal / ratingCount).toFixed(1);
-    res.status(200).json({name: name, rating: avgRating > 0 ? avgRating : 'no rating'})
+    res.status(200).json({name: name, rating: avgRating > 0 ? avgRating : 0})
   }).catch((err) => {
     res.status(400).send(err.message);
   });
