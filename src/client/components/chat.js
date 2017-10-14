@@ -20,6 +20,7 @@ export default class Chat extends Component {
       isTyping: false,
       otherTyping: false,
       atBeginningOfChat: false,
+      newMessageLoc: '',
     };
     this.postMessage = this.postMessage.bind(this);
     this.debStopTyping = _.debounce(this.stopTyping.bind(this), 1500, true);
@@ -48,9 +49,9 @@ export default class Chat extends Component {
   }
 
   componentDidUpdate() {
-    if (this.isScrolledToBottom) { // if at bottom, stay at bottom as new msgs come in
+    if (this.isScrolledToBottom) { // if at bottom, stay at bottom as new msgs come in, no matter what
       this.scrollToBottom();
-    } else { // else stay where you are
+    } else if (this.state.newMessageLoc === 'top') { // else stay where you are
       this.messagesContainer.scrollTop = this.messagesContainer.scrollTop + (this.messagesContainer.scrollHeight - this.oldScrollHeight);
     }
   }
@@ -74,7 +75,7 @@ export default class Chat extends Component {
       .then(resp => {
         let messages = resp.data;
         messages.reverse();
-        this.setState({messages}, () => {
+        this.setState({messages, atBeginningOfChat: messages.length < 20, newMessageLoc: 'bottom' }, () => {
           this.scrollToBottom();
           if (this.messagesContainer.scrollTop === 0) { this.getMessageHistory(); }
         });
@@ -82,6 +83,7 @@ export default class Chat extends Component {
   }
 
   getMessageHistory() {
+    if (!this.state.messages.length) { return; } // can't get message history if there are no messages!
     axios.get('/api/messages/'+this.props.stayId, {
       headers: {'authorization': this.token},
       params: { before: this.state.messages[0].createdAt }
@@ -91,18 +93,20 @@ export default class Chat extends Component {
       this.setState({
         messages: olderMessages.concat(this.state.messages),
         atBeginningOfChat: (olderMessages.length < 20),
+        newMessageLoc: 'top'
       });
     });
   }
 
   getNewMessages() {
+    let after = this.state.messages.length ? this.state.messages[this.state.messages.length - 1].createdAt : 0;
     axios.get('/api/messages/'+this.props.stayId, {
       headers: {'authorization': this.token},
-      params: { after: this.state.messages[this.state.messages.length - 1].createdAt }
+      params: { after }
     }).then(resp => {
       let newMessages = resp.data;
       newMessages.reverse();
-      this.setState({messages: this.state.messages.concat(newMessages)});
+      this.setState({messages: this.state.messages.concat(newMessages), newMessageLoc: 'bottom'});
     });
   }
 
