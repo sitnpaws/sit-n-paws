@@ -64,6 +64,28 @@ export default class Chat extends Component {
       });
   }
 
+  getMessageHistory() {
+    axios.get('/api/messages/'+this.props.stayId, {
+      headers: {'authorization': this.token},
+      params: { before: this.state.messages[0].createdAt }
+    }).then(resp => {
+      let olderMessages = resp.data;
+      olderMessages.reverse();
+      this.setState({messages: olderMessages.concat(this.state.messages)});
+    });
+  }
+
+  getNewMessages() {
+    axios.get('/api/messages/'+this.props.stayId, {
+      headers: {'authorization': this.token},
+      params: { after: this.state.messages[this.state.messages.length - 1].createdAt }
+    }).then(resp => {
+      let newMessages = resp.data;
+      newMessages.reverse();
+      this.setState({messages: this.state.messages.concat(newMessages)});
+    });
+  }
+
   handleMessageKey(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.stopPropagation();
