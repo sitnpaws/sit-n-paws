@@ -113,7 +113,7 @@ class StayEntry extends React.Component {
 
   getNameAndRating() {
     const userId = this.props.stay.role === 'guest' ? this.props.stay.hostId : this.props.stay.guestId;
-    const role = this.props.stay.role;
+    const role = this.props.stay.role === 'guest' ? 'host' : 'guest';
     const params = {
       role: role,
       userId: userId
