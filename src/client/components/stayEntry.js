@@ -240,7 +240,7 @@ class StayEntry extends React.Component {
             <CardActions>
               {
                 this.state.status === 'complete'
-                  ? (this.state.listingRating)
+                  ? (this.state.guestRating)
                     ? <div className="stay-rating">You have rated {this.state.firstName}: {this.state.listingRating} out of 5 Stars</div>
                     : <div className="stay-rating">
                       <span style={{verticalAlign:'-20px', lineHeight:'20px', marginRight:'5px'}}><SelectField
