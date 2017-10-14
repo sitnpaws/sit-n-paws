@@ -399,7 +399,7 @@ app.put('/api/stay/rating/:stayId', jwtAuth, (req, res) => {
     .catch(err => res.status(400).send(err.message));
 });
 
-app.get('/api/stay/rating/guest/:userId', jwtAuth, (req, res) => {
+app.get('/api/stay/rating/host/:userId', jwtAuth, (req, res) => {
   const userId = req.params.userId;
   let name;
   User.findById(userId).then((user) => {
@@ -422,7 +422,7 @@ app.get('/api/stay/rating/guest/:userId', jwtAuth, (req, res) => {
   });
 });
 
-app.get('/api/stay/rating/host/:userId', jwtAuth, (req, res) => {
+app.get('/api/stay/rating/guest/:userId', jwtAuth, (req, res) => {
   const userId = req.params.userId;
   let name;
   User.findById(userId).then((user) => {

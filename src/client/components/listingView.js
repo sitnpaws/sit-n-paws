@@ -55,7 +55,7 @@ export default class ListingView extends React.Component {
     }
 
     this.getNameAndRating = () => {
-      axios.get('/api/stay/rating/guest/' + this.props.listing.userId, {
+      axios.get('/api/stay/rating/host/' + this.props.listing.userId, {
         headers: {'authorization': this.token}
       }).then((res) => {
         this.setState({
