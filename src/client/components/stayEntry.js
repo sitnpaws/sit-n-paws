@@ -46,11 +46,7 @@ class StayEntry extends React.Component {
     this.handleSubmitRating = this.handleSubmitRating.bind(this);
   }
 
-  componentWillMount() { this.token = localStorage.jwt; this.getRating(); }
-
-  componentDidMount() {
-
-  }
+  componentWillMount() { this.token = localStorage.jwt; this.getNameAndRating(); }
 
   handleCancelStay() {
     axios.put('/api/stay/cancel/' + this.props.stay._id, null, {
@@ -115,7 +111,7 @@ class StayEntry extends React.Component {
     }
   }
 
-  getRating() {
+  getNameAndRating() {
     const userId = this.props.stay.role === 'guest' ? this.props.stay.hostId : this.props.stay.guestId;
     const role = this.props.stay.role;
     const params = {
@@ -127,7 +123,7 @@ class StayEntry extends React.Component {
     }).then((res) => {
       this.setState({
         name: res.data.name,
-        avgRating: res.data.rating || 0
+        avgRating: res.data.rating
       });
     }).catch((err) => {
       console.log(err);
