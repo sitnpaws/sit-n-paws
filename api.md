@@ -73,7 +73,7 @@
 
 | param |   description   | data type | examples |
 |------------|-----------|------------|-----------|
-| __name__ |  The user's name as input by the user | String | "Brian Griffin" |
+| __name__ |  The name of the property/listing | String | "Brian's Awesome Home" |
 | __zipcode__  |  The user's zipcode as input by the user   | String | "writer123" |
 | __dogSizePreference__  |  The user's preferred size of dog to host as input by the user |  String  | "small" |
 | __dogBreedPreference__ |  The user's preferred breed of dog to host as input by the user | String | "All" |
@@ -86,7 +86,7 @@
 #### Example Request format
 ```JSON
 {
-   "name": "Angus Bafford",
+   "name": "Best House NA",
    "zipcode": 94106,
    "dogSizePreference": "small",
    "dogBreedPreference": "All",
@@ -116,7 +116,6 @@
 | ***_id*** |  Id representing this specific stay | String | "354673bv46736bv" |
 | __listingId__  |  The Id of the associated listing   | String | "5426g3bv4673b4673" |
 | __guestId__  |  The Id of the guest who will be staying |  String  | "f354987hnc39870n7c3y5" |
-| __guestName__  |  The name of the guest who will be staying |  String  | "Brian Griffin" |
 | __startDate__ |  The start date of the stay in UTC | String | "2016-05-18T16:00:00Z" |
 | __status__  |  The end date of the stay in UTC | String | "2016-05-18T16:00:00Z" |
 | __hostRating__  |  The rating given to the stay by the host |  Number  | 5 |
@@ -129,7 +128,6 @@
   "_id": "2340k728234jjf87",
   "listingId": "3cv45765nb75467",
   "guestId": "3vg5980u34cvg5",
-  "guestName": "Brian Griffin",
   "startDate": "2016-05-18T16:00:00Z",
   "endDate": "2016-05-18T16:00:00Z",
   "status": "pending, confirmed, closed, cancelled",
@@ -145,7 +143,7 @@
 #### Fields
 | param |   description   | data type | examples |
 |------------|-----------|------------|-----------|
-| __name__ |  The host's name | String | "brianG123" |
+| __name__ |  The property/listing name | String | "Dog Mansion" |
 | __zipcode__  |  The zipcode of the listing   | String | "95024" |
 | __dogSizePreference__  |  The dog's size preferred by the host |  String  | "Small" |
 | __dogBreedPreference__ |  The dog's breed preferred by the host | String | "Beagle" |
@@ -158,7 +156,7 @@
 
 ```JSON
 {
-   "name": "Say Swinglehurst",
+   "name": "Camp Snoopy",
    "zipcode": 94123,
    "dogSizePreference": "small",
    "dogBreedPreference": "ROSIE",
