@@ -32,7 +32,7 @@ export default class Chat extends Component {
   componentDidMount() {
     this.socket = openSocket('/');
     this.socket.emit('enter chat', this.props.stayId);
-    this.socket.on('refresh', () => this.getMessages());
+    this.socket.on('refresh', () => this.getNewMessages());
     this.socket.on('started typing', () => {
       this.setState({otherTyping: true});
     });
@@ -129,7 +129,7 @@ export default class Chat extends Component {
       <div className="chat-window">
         <div className="chat-container">
           <div className="chat-header">
-            {this.state.myRole === 'guest' &&
+            {this.state.myRole &&
               <span>
                 Chat with {this.state.otherName} about
                 {`${this.state.myRole === 'guest' ? ' your ' : ' their '}`}
