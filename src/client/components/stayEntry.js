@@ -139,7 +139,7 @@ class StayEntry extends React.Component {
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Stay with {this.state.name}</strong> (<Star style={{'verticalAlign': 'middle'}}/> {this.state.avgRating})</span>}
+              title={<span className="stay-title"><strong>Stay with {this.state.name} at {stay.listing.name}</strong> (<Star style={{'verticalAlign': 'middle'}}/> {this.state.avgRating})</span>}
               subtitle={`Status: ${this.state.status}`}
               avatar={<Home style={this.iconStyles} />}
             >
@@ -190,7 +190,7 @@ class StayEntry extends React.Component {
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Request from {this.state.name}</strong>(<Star style={{'verticalAlign': 'middle'}}/> {this.state.avgRating})</span>}
+              title={<span className="stay-title"><strong>Request from {this.state.name} at {stay.listing.name}</strong>(<Star style={{'verticalAlign': 'middle'}}/> {this.state.avgRating})</span>}
               subtitle={`Status: ${this.state.status}`}
               avatar={<Pets style={this.iconStyles} />}
             >

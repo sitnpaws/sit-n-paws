@@ -93,7 +93,7 @@ export default class PostListing extends React.Component {
             <div className="postListing">
               <div className="postListing-label">
 
-                <label>Name:</label><br />
+                <label>Property Name:</label><br />
                 <input type="text" name="name" value={this.state.name} /><br />
 
                 <label>Email:</label><br />
