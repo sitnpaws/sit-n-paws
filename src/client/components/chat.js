@@ -65,16 +65,19 @@ export default class Chat extends Component {
           myName: resp.data.user.name, myRole: resp.data.user.role, myId: resp.data.user.id,
           otherName: resp.data.other.name, otherRole: resp.data.other.role, otherId: resp.data.other.id,
           listingName: resp.data.stay.listing.name
-        }, () => this.getMessages(true));
+        }, () => this.getMessages());
       });
   }
 
-  getMessages(scroll) {
+  getMessages() {
     axios.get('/api/messages/'+this.props.stayId, {headers: {'authorization': this.token}})
       .then(resp => {
         let messages = resp.data;
         messages.reverse();
-        this.setState({messages}, () => {if (scroll) {this.scrollToBottom()}});
+        this.setState({messages}, () => {
+          this.scrollToBottom();
+          if (this.messagesContainer.scrollTop === 0) { this.getMessageHistory(); }
+        });
       });
   }
 
