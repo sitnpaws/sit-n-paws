@@ -84,8 +84,8 @@ const testFormListing = [
 ]
 
 // test images for uploading to cloudinary service
-const testImage1 = path.join(__dirname, '..\\test\\TESTimage1.png');
-const testImage2 = path.join(__dirname, '..\\test\\TESTimage2.png');
+const testImage1 = path.join(__dirname, '..', 'test', 'TESTimage1.png');
+const testImage2 = path.join(__dirname, '..', 'test', 'TESTimage2.png');
 
 // ##################################
 // Test Server and Client Are Active
