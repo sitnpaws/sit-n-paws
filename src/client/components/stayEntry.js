@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {greenA700, red500, amber600, grey500, blueGrey200} from 'material-ui/styles/colors';
 import Stays from './stays';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -22,6 +23,7 @@ class StayEntry extends React.Component {
     super(props);
     this.state = {
       status: this.props.stay.status,
+      statusColor: blueGrey200,
       name: null,
       avgRating: null,
       rating: 0,
@@ -30,13 +32,21 @@ class StayEntry extends React.Component {
     }
 
     this.iconStyles = {
-      marginRight: 5,
+      marginRight: '5px',
+      width: '42px',
+      height: '42px',
       verticalAlign: 'middle'
     };
 
+    this.starStyle = {
+      width: '20px',
+      height: '20px',
+      verticalAlign: 'middle'
+    }
+
     this.cardStyles = {
       'maxWidth':'70%',
-      'textAlign':'left'
+      'textAlign':'left',
     };
 
     this.handleCancelStay = this.handleCancelStay.bind(this);
@@ -46,14 +56,36 @@ class StayEntry extends React.Component {
     this.handleSubmitRating = this.handleSubmitRating.bind(this);
   }
 
-  componentWillMount() { this.token = localStorage.jwt; this.getNameAndRating(); }
+  componentWillMount() {
+    this.token = localStorage.jwt;
+    this.getNameAndRating();
+  }
+
+  componentDidMount() {
+    this.setStatusColor();
+  }
+
+  setStatusColor() {
+    const statusColors = {
+      pending: amber600,
+      approved: greenA700,
+      rejected: red500,
+      cancelled: red500,
+      complete: grey500
+    };
+
+    this.setState({
+      statusColor: statusColors[this.state.status]
+    });
+  }
 
   handleCancelStay() {
     axios.put('/api/stay/cancel/' + this.props.stay._id, null, {
       headers: {'authorization': this.token}
     }).then((res) => {
       this.setState({
-        status: 'cancelled'
+        status: 'cancelled',
+        statusColor: red500
       });
     })
     .catch((err) => {
@@ -66,7 +98,8 @@ class StayEntry extends React.Component {
       headers: {'authorization': this.token}
     }).then((res) => {
       this.setState({
-        status: 'confirmed'
+        status: 'approved',
+        statusColor: greenA700
       });
     })
     .catch((err) => {
@@ -79,7 +112,8 @@ class StayEntry extends React.Component {
       headers: {'authorization': this.token}
     }).then((res) => {
       this.setState({
-        status: 'rejected'
+        status: 'rejected',
+        statusColor: red500
       });
     })
     .catch((err) => {
@@ -121,8 +155,10 @@ class StayEntry extends React.Component {
     axios.get('/api/stay/rating/' + role + '/' + userId, {
       headers: {'authorization': this.token}
     }).then((res) => {
+      const name = res.data.name.split(' ')
       this.setState({
         name: res.data.name,
+        firstName: name[0],
         avgRating: res.data.rating
       });
     }).catch((err) => {
@@ -139,47 +175,44 @@ class StayEntry extends React.Component {
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Stay with {this.state.name} at {stay.listing.name}</strong> (<Star style={{'verticalAlign': 'middle'}}/> {this.state.avgRating})</span>}
-              subtitle={`Status: ${this.state.status}`}
-              avatar={<Home style={this.iconStyles} />}
+              title={<span className="stay-title"><strong>Stay with {this.state.name} at {stay.listing.name}</strong></span>}
+              subtitle={<span>Average Rating: {this.state.avgRating} Stars</span>}
+              avatar={<Home style={this.iconStyles} color={this.state.statusColor}/>}
             >
-              {
-                (this.state.listingRating)
-                  ? <div style={{'float':'right'}}>{this.state.listingRating} out of 5 stars</div>
-                  : <div style={{'float':'right'}}>
-                    <SelectField
-                      value={this.state.rating}
-                      floatingLabelText="Rate Your Stay"
-                      onChange={this.handleChangeRating}>
-                      <MenuItem value={0} primaryText="Rating" />
-                      <MenuItem value={5} primaryText="5/5 Perfect!" />
-                      <MenuItem value={4} primaryText="4/5 Great!" />
-                      <MenuItem value={3} primaryText="3/5 Good!" />
-                      <MenuItem value={2} primaryText="2/5 Meh..." />
-                      <MenuItem value={1} primaryText="1/5 Horrible!" />
-                    </SelectField>
-                    <div align="right">
-                      <RaisedButton label="Submit Rating" onClick={this.handleSubmitRating}/>
-                    </div>
-                  </div>
-              }
 
             </CardHeader>
             <CardText>
-              <div className = "stayDetail">
-                <div>{`Date: ${moment(stay.startDate).calendar()} to ${moment(stay.endDate).calendar()}`}</div>
-                <div>{`Price Per Night: $${stay.pricePer}`}</div>
-                <div>{`Total: $${stay.totalPrice}`}</div>
+              <div className="stay-detail">
+                <div className="stay-date"><strong>Date: </strong>From <strong>{moment(stay.startDate).calendar()}</strong> to <strong> {moment(stay.endDate).calendar()}</strong></div>
+                <div><strong>Status: </strong> <span className="stay-status">{this.state.status}</span></div>
+                <div><strong>Price: </strong> ${stay.pricePer} Per Night</div>
+                <div className="stay-total"><strong>Total: </strong> ${stay.totalPrice}</div>
               </div>
             </CardText>
             <CardActions>
               {
                 this.state.status === 'complete'
-                  ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/>
-                  : this.state.status === ('cancelled' || 'rejected')
+                  ? (this.state.listingRating)
+                    ? <div className="stay-rating">You have rated {stay.listing.name}: {this.state.listingRating} out of 5 Stars</div>
+                    : <div className="stay-rating">
+                      <span style={{verticalAlign:'-20px', lineHeight:'20px', marginRight:'5px'}}><SelectField
+                        value={this.state.rating}
+                        floatingLabelText="Rate Your Stay"
+                        onChange={this.handleChangeRating}>
+                        <MenuItem value={0} primaryText="Rating" />
+                        <MenuItem value={5} primaryText="5/5 Perfect!" />
+                        <MenuItem value={4} primaryText="4/5 Great!" />
+                        <MenuItem value={3} primaryText="3/5 Good!" />
+                        <MenuItem value={2} primaryText="2/5 Meh..." />
+                        <MenuItem value={1} primaryText="1/5 Horrible!" />
+                      </SelectField></span>
+                      <RaisedButton label="Submit Rating" onClick={this.handleSubmitRating}/>
+                    </div>
+                  : this.state.status === 'cancelled' || this.state.status === 'rejected'
                     ? null
-                    : <span><a href={`/chat/${stay._id}`}><FlatButton label="Chat with Host" /></a><FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/></span>
+                    : <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`} /></a><FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/></span>
               }
+
             </CardActions>
           </Card>
         </div>
@@ -190,45 +223,47 @@ class StayEntry extends React.Component {
         <div className="stay-entry" align="center">
           <Card style={this.cardStyles}>
             <CardHeader
-              title={<span className="stay-title"><strong>Request from {this.state.name} at {stay.listing.name}</strong>(<Star style={{'verticalAlign': 'middle'}}/> {this.state.avgRating})</span>}
-              subtitle={`Status: ${this.state.status}`}
-              avatar={<Pets style={this.iconStyles} />}
+              title={<span className="stay-title"><strong>Request from {this.state.name} for {stay.listing.name}</strong></span>}
+              subtitle={<span>Average Rating: {this.state.avgRating} Stars</span>}
+              avatar={<Pets style={this.iconStyles} color={this.state.statusColor}/>}
             >
-              {
-                (this.state.guestRating)
-                  ? <div style={{'float':'right'}}>{this.state.guestRating} out of 5 stars</div>
-                  : <div style={{'float':'right'}}>
-                    <SelectField
-                      value={this.state.rating}
-                      floatingLabelText="Rate Your Stay"
-                      onChange={this.handleChangeRating}>
-                      <MenuItem value={0} primaryText="Rating" />
-                      <MenuItem value={5} primaryText="5/5 Perfect!" />
-                      <MenuItem value={4} primaryText="4/5 Great!" />
-                      <MenuItem value={3} primaryText="3/5 Good!" />
-                      <MenuItem value={2} primaryText="2/5 Meh..." />
-                      <MenuItem value={1} primaryText="1/5 Horrible!" />
-                    </SelectField>
-                    <div align="right">
-                      <RaisedButton label="Submit Rating" onClick={this.handleSubmitRating}/>
-                    </div>
-                  </div>
-              }
-            </CardHeader>
 
+            </CardHeader>
             <CardText>
-              <div className = "stayDetail">
-                <div>{`Date: ${moment(stay.startDate).calendar()} to ${moment(stay.endDate).calendar()}`}</div>
-                <div>{`Price Per Night: $${stay.pricePer}`}</div>
-                <div>{`Total: $${stay.totalPrice}`}</div>
+              <div className="stay-detail">
+                <div className="stay-date"><strong>Date: </strong>From <strong>{moment(stay.startDate).calendar()}</strong> to <strong> {moment(stay.endDate).calendar()}</strong></div>
+                <div><strong>Status: </strong> <span className="stay-status">{this.state.status}</span></div>
+                <div><strong>Price: </strong> ${stay.pricePer} Per Night</div>
+                <div className="stay-total"><strong>Total: </strong> ${stay.totalPrice}</div>
               </div>
             </CardText>
             <CardActions>
               {
-                  this.state.status === 'pending'
-                    ? <span><a href={`/chat/${stay._id}`}><FlatButton label="Chat with Guest" /></a><FlatButton label="Accept Guest" primary={true} onClick={this.handleGuestAccept}/>
-                      <FlatButton label="Reject Guest" secondary={true} onClick={this.handleGuestReject}/></span>
-                    : this.state.status === ('complete' || 'cancelled') ? <FlatButton label="Leave Review" secondary={true} onClick={this.handleReview}/> : null
+                this.state.status === 'complete'
+                  ? (this.state.listingRating)
+                    ? <div className="stay-rating">You have rated {this.state.firstName}: {this.state.listingRating} out of 5 Stars</div>
+                    : <div className="stay-rating">
+                      <span style={{verticalAlign:'-20px', lineHeight:'20px', marginRight:'5px'}}><SelectField
+                        value={this.state.rating}
+                        floatingLabelText="Rate Your Guest"
+                        onChange={this.handleChangeRating}>
+                        <MenuItem value={0} primaryText="Rating" />
+                        <MenuItem value={5} primaryText="5/5 Perfect!" />
+                        <MenuItem value={4} primaryText="4/5 Great!" />
+                        <MenuItem value={3} primaryText="3/5 Good!" />
+                        <MenuItem value={2} primaryText="2/5 Meh..." />
+                        <MenuItem value={1} primaryText="1/5 Horrible!" />
+                      </SelectField></span>
+                      <RaisedButton label="Submit Rating" onClick={this.handleSubmitRating}/>
+                    </div>
+                  : this.state.status === 'rejected' || this.state.status === 'cancelled'
+                    ? null
+                    : this.state.status === 'approved'
+                      ? <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`}/></a></span>
+                      : <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`}/></a>
+                        <FlatButton label="Accept Guest" primary={true} onClick={this.handleGuestAccept}/>
+                        <FlatButton label="Reject Guest" secondary={true} onClick={this.handleGuestReject}/></span>
+
               }
             </CardActions>
           </Card>
