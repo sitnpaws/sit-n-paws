@@ -3,4 +3,5 @@ node_js:
   - '6'
   - 'node'
 sudo: enabled
+services: mongodb
 script: npm run travis
