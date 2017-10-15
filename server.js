@@ -175,8 +175,8 @@ app.put('/api/profile', jwtAuth, (req, res) => {
   }).catch((err) => { res.json('error: ', err); });
 });
 
-//Check post listing for uploaded files and stores in req.files
-let listingsUpload = upload.fields([{
+//middleware from multer - Check post listing for uploaded files and stores in req.files
+const listingsUpload = upload.fields([{
   name: 'hostPictures',
   maxCount: 1
 }, {
@@ -184,79 +184,69 @@ let listingsUpload = upload.fields([{
   maxCount: 1
 }]);
 
-//handles posts for listings in db
-app.post('/listings', listingsUpload, (req, res, next) => {
-  // The 'next()' is important as it ensures the images get sent
-  // to the Cloudinary servers after the Listing and responses are
-  // sent to the client, making the upload responsive
-  Listing.findOne({email: req.body.email})
-  .then((found) => {
-    if (found) {
-      // update Listing
-      Listing.update(req.body);
-      res.json({success: true, message: 'Thank you, your listing has been successfully updated!', listing: found});
-      next();
-    } else {
-      // Create new Listing and save in database
-      var newListing = new Listing({
-        name: req.body.name,
-        email: req.body.email,
-        zipcode: req.body.zipcode,
-        dogSizePreference: req.body.dogSizePreference,
-        dogBreedPreference: req.body.dogBreedPreference,
-        // dogTemperamentPreference: req.body.dogTemperamentPreference,
-        dogActivityPreference: req.body.dogActivityPreference,
-        homeAttributes: req.body.homeAttributes,
-        hostPictures: 'Image is being uploaded...',
-        homePictures: 'Image is being uploaded...',
-        cost: req.body.cost
-      });
-      newListing.save((err, host) => {
-        if (err) {
-          res.json({success: false, message: err});
-        } else {
-          res.json({success: true, message: 'Thank you, your listing has been successfully saved!', listing: host});
-        }
+const listingLocalHandler = (req, res, next) => {
+  const { email: userEmail } = req.tokenPayload;
+  User.findOne({email: userEmail}).then(user => {
+    if (!user) { throw new Error('User not found'); }
+    return user;
+  }).then(user => {
+    Listing.findOne({email: req.body.email}).then(listing => {
+      if (listing) {
+        Listing.update(req.body);
+        res.json({success: true, message: 'Thank you, your listing has been successfully updated!', listing: listing});
         next();
-      });
-    }
-  }).catch((err) => {
-    res.json({success: false, message: err});
-    next();
+      } else {
+        var newListing = new Listing({
+          userId: user._id,
+          name: req.body.name,
+          email: req.body.email,
+          zipcode: req.body.zipcode,
+          dogSizePreference: req.body.dogSizePreference,
+          dogBreedPreference: req.body.dogBreedPreference,
+          dogActivityPreference: req.body.dogActivityPreference,
+          hostPictures: 'Image is being uploaded...',
+          homePictures: 'Image is being uploaded...',
+          cost: req.body.cost
+        });
+        return newListing.save();
+      }
+    }).then(newListing => {
+      res.json({success: true, message: 'Thank you, your listing has been successfully saved!', listing: newListing});
+      next();
+    }).catch(err => {
+      console.log('Listing local handler caught error: ', err);
+      res.status(500).json({success: false, message: err});
+    });
   });
-}, (req, res) => {
+}
+
+const listingCloudinaryHandler = (req, res, next) => {
   // Sends files to the Cloudinary servers and updates entries in the database
   if (req.files.hostPictures) {
-    console.log('Send to cloudinary!', req.files.hostPictures[0].path);
+    if (debug) { console.log('Send to cloudinary!', req.files.hostPictures[0].path); }
     cloudinary.v2.uploader.upload(req.files.hostPictures[0].path, (err, result) => {
-      if(err) {
-        console.log('Cloudinary error: ', err);
-      }
-      console.log('Host Picture url: ', result.url)
-      Listing.findOneAndUpdate({name: req.body.name}, {hostPictures: result.url}, (err, found) => {
-        if (err) {
-          console.log(err);
-        }
-        console.log('Updated Host Pictures: ', found);
+      if(err) { console.log('Cloudinary error: ', err); }
+      if (debug) { console.log('Host Picture url: ', result.url); }
+      Listing.findOneAndUpdate({email: req.body.email}, {hostPictures: result.url}, (err, found) => {
+        if (err) { console.log(err); }
+        if (debug) { console.log('Updated Host Pictures: ', found); }
       });
     });
   }
   if (req.files.homePictures) {
-    console.log('Send to cloudinary!', req.files.homePictures[0].path);
+    if (debug) { console.log('Send to cloudinary!', req.files.homePictures[0].path); }
     cloudinary.v2.uploader.upload(req.files.homePictures[0].path, (err, result) => {
-      if (err) {
-        console.log('Cloudinary error: ', err);
-      }
-      console.log('Home Picture url: ', result.url);
-      Listing.findOneAndUpdate({name: req.body.name}, {homePictures: result.url}, (err, found) => {
-        if (err) {
-          console.log(err);
-        }
-        console.log('Updated Home Pictures: ', found)
+      if (err) { console.log('Cloudinary error: ', err); }
+      if (debug) { console.log('Home Picture url: ', result.url); }
+      Listing.findOneAndUpdate({email: req.body.email}, {homePictures: result.url}, (err, found) => {
+        if (err) { console.log(err); }
+        if (debug) { console.log('Updated Home Pictures: ', found); }
       });
     });
   }
-});
+}
+
+app.post('/listings', jwtAuth, listingsUpload, listingLocalHandler, listingCloudinaryHandler);
 
 //handles getting all listings that exist
 app.get('/listings', (req, res) => {
