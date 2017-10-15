@@ -76,11 +76,6 @@ describe('<stayEntry />', () => {
     expect(wrapper.find('CardActions')).to.have.length(1);
   });
 
-  it('renders with stay details', () => {
-    const wrapper = wrapComponent();
-    expect(wrapper.find('.stayDetail')).to.have.length(1);
-  });
-
   it('contains a card with actions and a "Cancel Stay" button"', () => {
     const wrapper = wrapComponent();
     expect(wrapper.find('CardActions').find('FlatButton')).to.have.length(2);
