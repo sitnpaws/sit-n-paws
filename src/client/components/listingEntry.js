@@ -9,7 +9,7 @@ import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
-import './listingView.css';
+import './listingEntry.css';
 
 // This is the component for each individual listing.
 // It has its own state to manage the email information
