@@ -1,18 +1,13 @@
+// libraries
 import React from 'react';
-import ListingsContainer from './listingsContainer.js';
-import PostListing from './PostListing.js';
-import ProfileUpdate from './profileForm.js';
-import ShowProfile from './showProfile.js';
-import Search from './search.js'
-import request from 'superagent';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Drawer from 'material-ui/Drawer';
-import { AppBar, Tabs, Tab } from 'material-ui';
+
+// material ui components
+import AppBar from 'material-ui/AppBar';
+import Tabs from 'material-ui/Tabs';
+import Tab from 'material-ui/Tab';
 import IconButton from 'material-ui/IconButton';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import Pets from 'material-ui/svg-icons/action/pets';
-import RaisedButton from 'material-ui/RaisedButton';
-import Dialog from 'material-ui/Dialog';
 
 // styles
 const styles = {
