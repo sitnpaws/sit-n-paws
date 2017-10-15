@@ -1,6 +1,7 @@
 const chai = require('chai');
 const expect = chai.expect;
 const request = require('supertest');
+const axios = require('axios');
 const path = require('path');
 const server = require('../server.js');
 const mongoose = require('mongoose');
@@ -19,7 +20,7 @@ chai.use(require('chai-things'));
 // Listing.remove({});
 // User.remove({});
 
-
+var authToken = '';
 
 // ##################################
 // TEST DATA FOR USERS AND LISTINGS
@@ -205,21 +206,31 @@ describe('Listings APIs and database', function() {
 
     // create listings names array for future testing
     var listingsNamesData = [];
-
     for(var i = 0; i < listingsData.length; i++) {
       listingsNamesData.push(listingsData[i].name);
     }
-
     // assure mock listings are removed from database
-    Listing.remove({ name: { "$in": listingsNamesData } }).exec().then(()=> done());
+    var clearListings = Listing.remove({ name: { "$in": listingsNamesData } });
 
+    // once listings are clear, login a user we know is there
+    clearListings.then(() => {
+      request(server).post('/signup').send(basicTestUsers[0])
+        .then(resp => {
+          authToken = resp.body.token;
+          done();
+        });
+    });
+  });
+
+  after(function(done) {
+    User.remove({email: basicTestUsers[0].email}).then(() => done());
   });
 
   // add one listing to database using formData supertest field and attach
   //todo: failing
   it('Add one listing to the database', function(done) {
     request(server)
-      .post('/listings')
+      .post('/listings').set('authorization', authToken)
       .field('name', 'Lily Feake')
       .field('email', 'Lily@Feake.com')
       .field('zipcode', 94106)
@@ -233,16 +244,15 @@ describe('Listings APIs and database', function() {
       .attach('homePictures', testImage2)
       .expect(200)
       .expect(function(res) {
-        expect(JSON.stringify(res.body)).to.equal(true);
-      })
-      .end(done);
+        expect(res.body.success).to.equal(true);
+      }).end(done);
   })
 
   // returns one total listing from database
   //todo: failing. Is not length 1, has other entries.
   it('Returns all(i.e. one seeded) listing in database', function(done) {
     request(server)
-      .get('/listings')
+      .get('/listings').set('authorization', authToken)
       .expect(200)
       .expect(function(res) {
         expect(res.body).to.be.an('array').to.have.lengthOf(1);
@@ -253,7 +263,7 @@ describe('Listings APIs and database', function() {
   // returns search query for zipcode
   it('Returns search query for zipcode', function(done) {
     request(server)
-      .get('/listings/94106')
+      .get('/listings/94106').set('authorization', authToken)
       .expect(200)
       .expect(function(res) {
         expect(res.body[0].zipcode).to.be.equal(94106);
@@ -264,8 +274,9 @@ describe('Listings APIs and database', function() {
   // returns multiple listings from search query for zipcode with more than one database entry
   it('Returns multiple listings from search query for zipcode', function(done) {
     request(server)
-      .post('/listings')
+      .post('/listings').set('authorization', authToken)
       .field('name', 'Angus Bafford')
+      .field('email', 'angus@example.com')
       .field('zipcode', 94106)
       .field('dogSizePreference', 'small')
       .field('dogBreedPreference', 'All')
