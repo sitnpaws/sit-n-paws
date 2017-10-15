@@ -232,7 +232,7 @@ class StayEntry extends React.Component {
             </CardHeader>
             <CardText>
               <div className="stay-detail">
-                <div className="stay-date"><strong>Date: </strong>From <strong>{moment(stay.startDate).calendar()}</strong> to <strong> {moment(stay.endDate).calendar()}</strong></div>
+                <div className="stay-date"><strong>Date: </strong>From <strong>{moment(stay.startDate).format('MM/DD/YYYY')}</strong> to <strong> {moment(stay.endDate).format('MM/DD/YYYY')}</strong></div>
                 <div><strong>Status: </strong> <span className="stay-status">{this.state.status}</span></div>
                 <div><strong>Price: </strong> ${stay.pricePer} Per Night</div>
                 <div className="stay-total"><strong>Total: </strong> ${stay.totalPrice}</div>
