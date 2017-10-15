@@ -53,9 +53,10 @@ export default class PostListing extends React.Component {
 
       axios.post('/listings', formData, {headers: {'authorization': this.token}})
         .then(resp => {
+          console.log('resp: ', resp);
           if (resp.data.success === true) {
             console.log('Listing submitted!');
-            this.setState({message: res.message, submitted: true});
+            this.setState({message: resp.data.message, submitted: true});
           }
         }).catch(err => console.log('error: ', err));
     }
