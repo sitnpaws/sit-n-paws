@@ -9,15 +9,22 @@
   - __Scrum Master__: Dominic Ma
   - __Development Team Members__: Ed Plato, Chris Pfaff
 
+## Legacy Team
+
+  - __Product Owner__: Jonathan Lewis
+  - __Scrum Master__: Jared Meek
+  - __Development Team Members__: Jacob Yoo
+
 ## Table of Contents
 
+1. [Team](#team)
+1. [Legacy Team](#legacy-team)
 1. [Usage](#usage)
 1. [Requirements](#requirements)
 1. [Development](#development)
     1. [Installing Dependencies](#installing-dependencies)
     1. [Testing](#testing)
     1. [Roadmap](#roadmap)
-1. [Team](#team)
 1. [Contributing](#contributing)
 
 ## Usage
@@ -94,7 +101,7 @@ npm test
 
 ### Roadmap
 
-View the project roadmap [here](https://github.com/TopHatHR/sit-n-paws/issues)
+View the project roadmap [here](https://github.com/hrhuffles/sit-n-paws/issues)
 
 ## Contributing
 
