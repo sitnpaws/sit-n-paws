@@ -8,7 +8,7 @@ const sweepStays = (() => {
   Stay.find({}).where('endDate').lt(today).exec().then((stays) => {
     stays.forEach((stay) => {
       if (stay.status === 'pending') {
-        stay.update({'status': 'rejected'}).exec();
+        stay.update({'status': 'expired'}).exec();
       } else if (stay.status === 'approved') {
         stay.update({'status': 'complete'}).exec();
       }
