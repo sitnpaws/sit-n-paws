@@ -71,6 +71,7 @@ class StayEntry extends React.Component {
       approved: greenA700,
       rejected: red500,
       cancelled: red500,
+      expired: grey500,
       complete: grey500
     };
 
@@ -208,7 +209,7 @@ class StayEntry extends React.Component {
                       </SelectField></span>
                       <RaisedButton label="Submit Rating" onClick={this.handleSubmitRating}/>
                     </div>
-                  : this.state.status === 'cancelled' || this.state.status === 'rejected'
+                  : this.state.status === 'cancelled' || this.state.status === 'rejected' || this.state.status === 'expired'
                     ? null
                     : <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`} /></a><FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/></span>
               }
@@ -256,7 +257,7 @@ class StayEntry extends React.Component {
                       </SelectField></span>
                       <RaisedButton label="Submit Rating" onClick={this.handleSubmitRating}/>
                     </div>
-                  : this.state.status === 'rejected' || this.state.status === 'cancelled'
+                  : this.state.status === 'rejected' || this.state.status === 'cancelled' || this.state.status === 'expired'
                     ? null
                     : this.state.status === 'approved'
                       ? <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`}/></a></span>
