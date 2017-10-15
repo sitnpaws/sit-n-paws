@@ -1,24 +1,25 @@
+// libraries
 import React from 'react';
-import { BrowserRouter, Switch, Route, browserHistory } from 'react-router-dom';
-import { AppBar, Tabs, Tab } from 'material-ui';
-import Home from './home.js';
-import Main from './main.js';
-import StaysView from './staysView.js';
-import ChatView from './chatView.js';
-import Login from './login.js';
-import NotFound from './notfound.js';
-import PrivateRoute from './private.js';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import jwt from 'jsonwebtoken';
 
-// App is the top level component that links to the other component
-// and is where the router is located.
+// material ui components
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+// app modules
+import MainAppBar from './main-app-bar.js';
+import ProfileDrawer from './profile-drawer.js';
+import Home from './home.js';
+import Login from './login.js';
+import StaysView from './staysView.js';
+import ChatView from './chatView.js';
+import NotFound from './notfound.js';
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
-
     const jwt = window.localStorage.getItem('sitnpaws_jwt') || '';
     const loggedIn = !!jwt;
-
     this.state = {
       isLoggedIn: false,
       jwtToken: '',
@@ -38,22 +39,44 @@ export default class App extends React.Component {
 
   getToken() { return this.state.jwtToken; }
 
+  renderLogin() {
+    return (
+      <MuiThemeProvider>
+        <Switch>
+          <Route path='/login' render={props => (<Login {...props} onLogin={token => this.onLogin(token))} />)} />
+          <Route exact path='/' component={Home} />
+          <Redirect to='/' />
+        </Switch>
+      </MuiThemeProvider>
+    );
+  }
+
+  renderApp() {
+    return (
+      <MuiThemeProvider>
+        <MainAppBar />
+        <br/>
+        <Switch>
+          <Route path='/listings' component={Listings} />
+          <Route path='/stays' component={Stays} />
+          <Route path='/chat/:stayId' component={Chats} />
+          <Redirect to='/listings' />
+        </Switch>
+        {/* <div className="search">
+            <Search onChange={this.handleSearch}/>
+            </div>
+            <br/>
+        <ListingsContainer listings={this.state.listings} /> */}
+        <ProfileDrawer onLogout={() => this.onLogout()} />
+      </MuiThemeProvider>
+    );
+  }
+
   render() {
-    return(
-    <BrowserRouter history={browserHistory}>
-      <Switch>
-        <Route exact path='/' component={Home}/>
-        <Route path='/login' render={(props) => (
-          <Login {...props}
-            handleLogin={this.authLogin}
-          />
-        )}/>
-        <PrivateRoute path='/main' checkAuth={this.authLogin} component={Main}/>
-        <PrivateRoute path='/stays' checkAuth={this.authLogin} component={StaysView}/>
-        <PrivateRoute path='/chat/:stayId' checkAuth={this.authLogin} component={ChatView}/>
-        <Route component={NotFound}/>
-      </Switch>
-    </BrowserRouter>
-    )
+    return ( this.state.isLoggedIn ) ? (
+      {this.renderLogin()}
+    ) : (
+      {this.renderApp()}
+    );
   }
 }
