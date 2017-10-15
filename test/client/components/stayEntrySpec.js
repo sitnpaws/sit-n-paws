@@ -11,6 +11,11 @@ import propTypes from 'prop-types';
 
 configure({ adapter: new Adapter() });
 
+// AJAX testing
+import sinon from 'sinon';
+import axios from 'axios';
+import moxios from 'moxios';
+
 const listing = {
   _id: "59e10080705f9771fe252800",
   name: "Niels Larson",
@@ -91,6 +96,41 @@ describe('<stayEntry />', () => {
   });
 
 });
+
+
+describe('stays entry AJAX', () => {
+  var axiosPut;
+
+  beforeEach(() => {
+    axiosPut = sinon.spy(axios, "put");
+  });
+
+  afterEach(() => {
+
+    axiosPut.restore();
+  });
+
+  it('should initiate a PUT request when "Cancel Stay" is clicked', () => {
+
+    const wrapper = wrapComponent();
+    wrapper.find('CardActions').find('[label="Cancel Stay"]').simulate('click');
+    expect(axiosPut.calledOnce).to.equal(true);
+
+  });
+  it('should send a PUT request to "/api/stay/cancel/"', () => {
+
+    const wrapper = wrapComponent();
+    wrapper.find('CardActions').find('[label="Cancel Stay"]').simulate('click');
+
+    axiosPut.withArgs('/api/stay/cancel/' + stay._id); // only counts if run with these args;
+    var spyCall = axiosPut.getCall(0);
+    expect(spyCall.args[0]).to.equal('/api/stay/cancel/' + stay._id);
+
+  });
+
+});
+
+
 
 
   //todo: make role 'guest', populate with a new stay. Try to cancel.
