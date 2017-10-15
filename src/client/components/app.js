@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route, browserHistory } from 'react-router-dom';
+import { AppBar, Tabs, Tab } from 'material-ui';
 import Home from './home.js';
 import Main from './main.js';
 import StaysView from './staysView.js';
@@ -15,21 +16,28 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
 
-    // USING JWT AUTHENTICATION: Checks for current existence of a json web token
-    // Returns true if found, false if not.
-    // Can be decoded to extract username and expiration date for stricter login validation
-    // Token becomes null upon logout
-    this.authLogin = () => {
-      let token = localStorage.getItem('jwt');
-      if (token !== "undefined" && token !== null && token !== undefined) {
-        return true;
-      } else {
-        return false;
-      }
+    const jwt = window.localStorage.getItem('sitnpaws_jwt') || '';
+    const loggedIn = !!jwt;
+
+    this.state = {
+      isLoggedIn: false,
+      jwtToken: '',
+      drawerOpen: false,
     }
   }
 
-  // if checkAuth is true, then allow access to /main
+  onLogin(token) {
+    window.localStorage.setItem('sitnpaws_jwt', token);
+    this.setState({ isLoggedIn: true, token: token });
+  }
+
+  onLogout() {
+    window.localStorage.removeItem('sitnpaws_jwt');
+    this.setState({ isLoggedIn: false, token: '' });
+  }
+
+  getToken() { return this.state.jwtToken; }
+
   render() {
     return(
     <BrowserRouter history={browserHistory}>
