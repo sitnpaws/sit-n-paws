@@ -12,16 +12,14 @@ export default class ListingsContainer extends React.Component {
   // If listings.length is 0, shows message on line 22
   render() {
     return (
-      <div>
-      <div className="wrapper">
-        {this.props.listings.map((listing, i) => {
+        <div className="wrapper">
+          {this.props.listings.map((listing, i) => {
             return (
               <ListingView listing={listing} key={listing.name} />
             )
-        })}
-      </div>
-      {this.props.listings.length === 0 ? <div className="messageBox"><h2><em>Please Try A Different Zipcode</em></h2></div> : ''}
-      </div>
+          })}
+          {this.props.listings.length === 0 ? <div className="messageBox"><h2><em>Please Try A Different Zipcode</em></h2></div> : ''}
+        </div>
     );
   };
 }
