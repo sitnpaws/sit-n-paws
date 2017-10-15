@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import FlatButton from 'material-ui/FlatButton';
-import submitListing from '../utils/submitListing.js';
+import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
 
@@ -15,7 +15,6 @@ export default class PostListing extends React.Component {
       dogSizePreference: '',
       dogBreedPreference: '',
       dogActivityPreference: '',
-      homeAttributes: '',
       hostPictures: null,
       homePictures: null,
       cost: '',
@@ -48,37 +47,21 @@ export default class PostListing extends React.Component {
       formData.append("dogSizePreference", this.state.dogSizePreference);
       formData.append("dogBreedPreference", this.state.dogBreedPreference);
       formData.append("dogActivityPreference", this.state.dogActivityPreference);
-      formData.append("homeAttributes", this.state.homeAttributes);
       formData.append("hostPictures", this.state.hostPictures);
       formData.append("homePictures", this.state.homePictures);
       formData.append("cost", this.state.cost);
 
-      for (var pair of formData.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-      }
-
-      let url = '/listings';
-
-      submitListing(url, formData, (res) => {
-        if (res.success === true) {
-          console.log('Listing submitted!');
-          this.setState({message: res.message});
-          this.setState({submitted: true});
-        } else {
-          console.log('Error: ', res.error);
-        }
-      });
+      axios.post('/listings', formData, {headers: {'authorization': this.token}})
+        .then(resp => {
+          if (resp.data.success === true) {
+            console.log('Listing submitted!');
+            this.setState({message: res.message, submitted: true});
+          }
+        }).catch(err => console.log('error: ', err));
     }
   }
 
-  componentDidMount() {
-    let token = localStorage.getItem('jwt');
-    let decoded = jwt.decode(token);
-    this.setState({
-      name: decoded.name,
-      email: decoded.email
-    });
-  }
+  componentDidMount() { this.token = localStorage.getItem('jwt'); }
 
   render() {
     if (this.state.submitted === true) {
