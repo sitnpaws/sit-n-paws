@@ -11,7 +11,6 @@ var listingSchema = new mongoose.Schema(
     dogSizePreference: { type: String, required: true },
     dogBreedPreference: { type: String, required: true },
     dogActivityPreference: { type: String, required: true },
-    homeAttributes: { type: String, required: true },
     hostPictures: { type: String, required: true },
     homePictures: { type: String, required: true },
     cost: { type: Number, required: true }
