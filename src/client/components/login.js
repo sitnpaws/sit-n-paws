@@ -41,12 +41,10 @@ export default class Login extends React.Component {
       // Calls LoginSubmit function in utils, if crentials are correct, server
       // replies with a jwt, which is then stored in localStorage.
       LoginSubmit(url, credentials, (res) => {
-        if(res.success === true) {
-          localStorage.setItem('jwt', res.token);
-          props.history.push('/main');
+        if (res.success) {
+          this.props.onLogin(res.token);
         } else {
           console.log(res.error);
-          props.history.push('/main');
         }
       })
     }
@@ -54,15 +52,6 @@ export default class Login extends React.Component {
     // This handles the field changes for the forms
     this.setField = (e) => {
       this.setState({[e.target.name]: e.target.value});
-    }
-
-  }
-
-  // Login component checks for presence of jwt before it loads, if exists, redirects user to main
-  componentWillMount() {
-    let token = localStorage.getItem('jwt');
-    if (token !== "undefined" && token !== null && token !== undefined) {
-      this.props.history.push('/main');
     }
   }
 
