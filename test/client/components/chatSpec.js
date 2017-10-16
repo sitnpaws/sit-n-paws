@@ -15,7 +15,8 @@ import moxios from 'moxios';
 
 var wrapComponent = function() {
   const props = {
-    stayId: '59e274ea41b7301f67a332e1'
+    match: {params: {stayId: '59e274ea41b7301f67a332e1'}},
+    getToken: () => 'abc123',
   };
   return mount(
     <MuiThemeProvider>
