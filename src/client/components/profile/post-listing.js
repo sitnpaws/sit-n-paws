@@ -1,9 +1,10 @@
+// libraries
 import React from 'react';
 import PropTypes from 'prop-types';
-import FlatButton from 'material-ui/FlatButton';
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
 
+// material-ui components
+import FlatButton from 'material-ui/FlatButton';
 
 export default class PostListing extends React.Component {
   constructor(props) {

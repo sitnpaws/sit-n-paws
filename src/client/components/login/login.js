@@ -1,8 +1,12 @@
+// libraries
 import React from 'react';
 import PropTypes from 'prop-types';
+
+// material-ui components
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import FlatButton from 'material-ui/FlatButton';
-import jwt from 'jsonwebtoken';
+
+// app utilities
 import LoginSubmit from '../../utils/login';
 
 // login form that takes username and password
