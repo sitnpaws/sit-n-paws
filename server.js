@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -17,7 +19,10 @@ const multer = require('multer');
 const nodemailer = require('nodemailer');
 const upload = multer({dest: './uploads/'});
 const debug = process.env.DEBUG || true;
+const http = require('http');
+const https = require('https');
 const httpPort = process.env.PORT || 8080;
+const httpsPort = process.env.HTTPS_PORT || 8443;
 
 // This is the shape of the object from the config file which is gitignored
 // const cloudConfig = {
@@ -25,6 +30,13 @@ const httpPort = process.env.PORT || 8080;
 //   api_key: 'API_KEY',
 //   api_secret: 'API_SECRET'
 // };
+
+// redirect non secure traffic to https
+
+const httpsRoute = function (req, res, next) {
+  if (debug) { console.log((req.secure ? 'Secure' : 'Insecure') + ' connection received to: ', req.url); }
+  if (req.secure) { next(); } else { res.redirect('https://' + req.hostname + req.path); }
+};
 
 cloudinary.config(cloudConfig);
 const app = express();
@@ -503,13 +515,22 @@ app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
   }).catch(err => res.status(400).send(err.message));
 });
 
+app.get('*', httpsRoute);
+
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
 })
 
-const server = app.listen(httpPort, () => {
-  console.log('Listening on localhost on ', httpPort);
-});
+const httpsOptions = {
+  key: fs.readFileSync(path.join(__dirname, 'cert', 'domain.key')),
+  cert: fs.readFileSync(path.join(__dirname, 'cert', 'domain.crt'))
+};
+
+http.createServer(app).listen(httpPort);
+const server = https.createServer(httpsOptions, app).listen(httpsPort);
+
+console.log('HTTP Server now listening on port ' + httpPort);
+console.log('HTTPS Server now listening on port ' + httpsPort);
 
 const io = socket(server);
 socketChat(io);
