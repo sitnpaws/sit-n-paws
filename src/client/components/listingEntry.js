@@ -1,19 +1,22 @@
+// libraries
 import React from 'react';
-import PropTypes from 'prop-types';
+import axios from 'axios';
+
+// material ui components
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
+
+// airbnb datepicker libraries
 import 'react-dates/initialize';
-import { DateRangePicker } from 'react-dates';
+import ReactDatePicker from 'react-dates/lib/components/DateRangePicker';
 import 'react-dates/lib/css/_datepicker.css';
-import jwt from 'jsonwebtoken';
-import axios from 'axios';
+
+// styles
 import './listingEntry.css';
 
 // This is the component for each individual listing.
-// It has its own state to manage the email information
-// of each individual listing.
 export default class ListingView extends React.Component {
   constructor(props) {
     super (props);
@@ -56,7 +59,7 @@ export default class ListingView extends React.Component {
 
     this.getNameAndRating = () => {
       axios.get('/api/stay/rating/host/' + this.props.listing.userId, {
-        headers: {'authorization': this.token}
+        headers: {'authorization': this.props.getToken()}
       }).then((res) => {
         this.setState({
           name: res.data.name,
@@ -69,7 +72,6 @@ export default class ListingView extends React.Component {
   }
 
   componentDidMount() {
-    this.token = localStorage.jwt;
     this.getNameAndRating();
   }
 
