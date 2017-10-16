@@ -57,12 +57,11 @@ export default class ListingView extends React.Component {
       }).catch(err => this.setState({formWarning: 'Server error: ' + err}));
     }
 
-    this.getNameAndRating = () => {
-      axios.get('/api/stay/rating/host/' + this.props.listing.userId, {
+    this.getListingRating = () => {
+      axios.get('/api/stay/rating/listing/' + this.props.listing._id, {
         headers: {'authorization': this.props.getToken()}
       }).then((res) => {
         this.setState({
-          name: res.data.name,
           avgRating: res.data.rating
         });
       }).catch((err) => {
@@ -71,7 +70,7 @@ export default class ListingView extends React.Component {
     }
   }
 
-  componentDidMount() { this.getNameAndRating(); }
+  componentDidMount() { this.getListingRating(); }
 
   render() {
     // These are the action buttons for the Dialog
