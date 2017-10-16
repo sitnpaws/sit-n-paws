@@ -1,22 +1,23 @@
+// libraries
 import React from 'react';
 import axios from 'axios';
+import moment from 'moment';
+
+// material-ui components
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import {greenA700, red500, amber600, grey500, blueGrey200} from 'material-ui/styles/colors';
-import Stays from './stays';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Avatar from 'material-ui/Avatar';
-import FileFolder from 'material-ui/svg-icons/file/folder';
 import Star from 'material-ui/svg-icons/toggle/star';
-import FontIcon from 'material-ui/FontIcon';
 import List from 'material-ui/List/List';
-import ListItem from 'material-ui/List/ListItem';
 import Pets from 'material-ui/svg-icons/action/pets';
 import Home from 'material-ui/svg-icons/action/home';
-import jwt from 'jsonwebtoken';
-import moment from 'moment';
+
+// app modules / components
+import Stays from './stays';
 
 class StayEntry extends React.Component {
   constructor(props) {
