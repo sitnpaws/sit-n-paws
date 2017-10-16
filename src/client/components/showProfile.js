@@ -1,23 +1,13 @@
+// libraries
 import React from 'react';
 import axios from 'axios';
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import Avatar from 'material-ui/Avatar';
-import FileFolder from 'material-ui/svg-icons/file/folder';
-import FontIcon from 'material-ui/FontIcon';
-import List from 'material-ui/List/List';
-import ListItem from 'material-ui/List/ListItem';
 import jwt from 'jsonwebtoken';
-import ProfileUpdate from './profileForm.js';
 
-import {
-  blue300,
-  indigo900,
-  orange200,
-  deepOrange300,
-  pink400,
-  purple500,
-} from 'material-ui/styles/colors';
+// material-ui components
+import Avatar from 'material-ui/Avatar';
+
+// app modules / components
+import ProfileForm from './profileForm.js';
 
 // Shows the profile in the drawer
 export default class ShowProfile extends React.Component {
@@ -57,7 +47,7 @@ export default class ShowProfile extends React.Component {
         />
         <div>
           {
-            (this.props.editProfile) ? <ProfileUpdate handleUpdateProfile={this.handleUpdateProfile} /> : null
+            (this.props.editProfile) ? <ProfileForm getToken={this.props.getToken} handleUpdateProfile={this.handleUpdateProfile} /> : null
           }
         </div>
       </div>
