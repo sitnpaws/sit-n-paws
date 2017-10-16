@@ -2,17 +2,18 @@
   "name": "sit-n-paws",
   "version": "1.0.0",
   "description": "Putting a woof over your head",
-  "engines": {
-    "node": "8.6.0"
-  },
+  "engines": {},
   "main": "server.js",
   "scripts": {
     "test": "mocha test/**/*Spec.js* --require ./tools/test-helper.js -r mock-local-storage --recursive --compilers js:babel-register --exit",
     "start": "nodemon server.js",
     "build": "webpack",
+    "build:prod": "webpack --config webpack.prod.js",
     "server": "nodemon server.js",
     "dev": "webpack && nodemon server.js",
-    "travis": "webpack & npm test"
+    "travis": "webpack --config webpack.prod.js & npm test",
+    "istanbul": "istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec",
+    "codecov": "codecov"
   },
   "repository": {
     "type": "git",
@@ -60,6 +61,8 @@
     "webpack-dev-server": "^2.9.1"
   },
   "devDependencies": {
+    "babel-minify": "^0.2.0",
+    "babel-minify-webpack-plugin": "^0.2.0",
     "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
@@ -75,6 +78,8 @@
     "react-test-renderer": "^16.0.0",
     "sinon": "^4.0.1",
     "style-loader": "^0.18.2",
-    "supertest": "^3.0.0"
+    "supertest": "^3.0.0",
+    "uglify-es": "^3.1.3",
+    "uglifyjs-webpack-plugin": "^1.0.0-beta.3"
   }
 }
