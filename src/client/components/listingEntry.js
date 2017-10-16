@@ -10,7 +10,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 // airbnb datepicker libraries
 import 'react-dates/initialize';
-import ReactDatePicker from 'react-dates/lib/components/DateRangePicker';
+import DateRangePicker from 'react-dates/lib/components/DateRangePicker';
 import 'react-dates/lib/css/_datepicker.css';
 
 // styles
