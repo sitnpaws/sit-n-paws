@@ -14,7 +14,7 @@ import DateRangePicker from 'react-dates/lib/components/DateRangePicker';
 import 'react-dates/lib/css/_datepicker.css';
 
 // styles
-import './listingEntry.css';
+import './listing-entry.css';
 
 // This is the component for each individual listing.
 export default class ListingView extends React.Component {

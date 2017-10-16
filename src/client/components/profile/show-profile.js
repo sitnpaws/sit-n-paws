@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import Avatar from 'material-ui/Avatar';
 
 // app modules / components
-import ProfileForm from './profileForm.js';
+import ProfileForm from './profile-form.js';
 
 // Shows the profile in the drawer
 export default class ShowProfile extends React.Component {
