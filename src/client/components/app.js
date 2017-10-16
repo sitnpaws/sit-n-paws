@@ -56,14 +56,16 @@ export default class App extends React.Component {
   renderApp() {
     return (
       <MuiThemeProvider>
-        <MainAppBar />
-        <Switch>
-          <Route path='/listings' render={props => (<Listings {...props} getToken={this.getToken} />)} />
-          <Route path='/stays' render={props => (<Stays {...props} getToken={this.getToken} />)} />
-          <Route path='/chat/:stayId' render={props => (<Chat {...props} getToken={this.getToken} />)} />
-          <Redirect to='/listings' />
-        </Switch>
-        <ProfileDrawer onLogout={() => this.onLogout()} />
+        <div>
+          <MainAppBar />
+          <Switch>
+            <Route path='/listings' render={props => (<Listings {...props} getToken={this.getToken} />)} />
+            <Route path='/stays' render={props => (<Stays {...props} getToken={this.getToken} />)} />
+            <Route path='/chat/:stayId' render={props => (<Chat {...props} getToken={this.getToken} />)} />
+            <Redirect to='/listings' />
+          </Switch>
+          <ProfileDrawer onLogout={() => this.onLogout()} />
+        </div>
       </MuiThemeProvider>
     );
   }
