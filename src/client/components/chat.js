@@ -1,10 +1,15 @@
+// libraries
 import React, { Component } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import _ from 'lodash';
+import openSocket from 'socket.io-client';
+
+// material-ui components
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import openSocket from 'socket.io-client';
+
+// styles
 import './chat.css';
 
 export default class Chat extends Component {
