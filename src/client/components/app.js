@@ -19,10 +19,9 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     const jwt = window.localStorage.getItem('sitnpaws_jwt') || '';
-    const isLoggedIn = !!jwt;
     this.state = {
-      isLoggedIn: false,
-      jwtToken: '',
+      isLoggedIn: !!jwt,
+      jwtToken: jwt,
       drawerOpen: false,
     }
 
@@ -78,9 +77,9 @@ export default class App extends React.Component {
 
   render() {
     return ( this.state.isLoggedIn ) ? (
-      this.renderLogin()
-    ) : (
       this.renderApp()
+    ) : (
+      this.renderLogin()
     );
   }
 }
