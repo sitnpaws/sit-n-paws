@@ -1,4 +1,3 @@
-
 const chai = require('chai');
 const expect = chai.expect;
 const request = require('supertest');
@@ -160,7 +159,7 @@ describe('User APIs and Database', function() {
   //todo: failing
   it('Adds new user to database', function(done) {
     request(server)
-      .post('/signup')
+      .post('/api/signup')
       .send(basicTestUsers[1])
       .expect(200)
       .expect(function(res) {
@@ -172,7 +171,7 @@ describe('User APIs and Database', function() {
   // a user already in the database will return an empty object
   it('Prevents same email being added to database', function(done) {
     request(server)
-      .post('/signup')
+      .post('/api/signup')
       .send(basicTestUsers[0])
       .expect(200)
       .expect(function(res) {
@@ -185,7 +184,7 @@ describe('User APIs and Database', function() {
   it('Allows valid user to be logged in', function(done) {
 
     request(server)
-      .post('/login')
+      .post('/api/login')
       .send(basicTestUsers[0])
       .expect(200)
       .expect(function(res) {
@@ -215,7 +214,7 @@ describe('Listings APIs and database', function() {
 
     // once listings are clear, login a user we know is there
     clearListings.then(() => {
-      request(server).post('/signup').send(basicTestUsers[0])
+      request(server).post('/api/signup').send(basicTestUsers[0])
         .then(resp => {
           authToken = resp.body.token;
           done();
@@ -231,7 +230,7 @@ describe('Listings APIs and database', function() {
   //todo: failing
   it('Add one listing to the database', function(done) {
     request(server)
-      .post('/listings').set('authorization', authToken)
+      .post('/api/listings').set('authorization', authToken)
       .field('name', 'Lily Feake')
       .field('email', 'Lily@Feake.com')
       .field('zipcode', 94106)
@@ -253,7 +252,7 @@ describe('Listings APIs and database', function() {
   //todo: failing. Is not length 1, has other entries.
   it('Returns all(i.e. one seeded) listing in database', function(done) {
     request(server)
-      .get('/listings').set('authorization', authToken)
+      .get('/api/listings').set('authorization', authToken)
       .expect(200)
       .expect(function(res) {
         expect(res.body).to.be.an('array').to.have.lengthOf(1);
@@ -264,7 +263,7 @@ describe('Listings APIs and database', function() {
   // returns search query for zipcode
   it('Returns search query for zipcode', function(done) {
     request(server)
-      .get('/listings/94106').set('authorization', authToken)
+      .get('/api/listings/94106').set('authorization', authToken)
       .expect(200)
       .expect(function(res) {
         expect(res.body[0].zipcode).to.be.equal(94106);
@@ -275,7 +274,7 @@ describe('Listings APIs and database', function() {
   // returns multiple listings from search query for zipcode with more than one database entry
   it('Returns multiple listings from search query for zipcode', function(done) {
     request(server)
-      .post('/listings').set('authorization', authToken)
+      .post('/api/listings').set('authorization', authToken)
       .field('name', 'Angus Bafford')
       .field('email', 'angus@example.com')
       .field('zipcode', 94106)
@@ -294,7 +293,7 @@ describe('Listings APIs and database', function() {
       .end(function() {
 
         request(server)
-          .get('/listings/94106')
+          .get('/api/listings/94106')
           .expect(200)
           .expect(function(res) {
             expect(res.body).to.be.an('array').to.have.lengthOf(2);
@@ -305,4 +304,3 @@ describe('Listings APIs and database', function() {
 
 });
 //TODO: Update testing for endpoints: post-/api/stays get-/api/stays , and signup/login (just username to email switch)
-
