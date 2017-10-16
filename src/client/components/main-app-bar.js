@@ -35,7 +35,7 @@ export default class MainAppBar extends React.Component {
         }
         iconElementLeft={<IconButton><Pets/></IconButton>}
         iconElementRight={<IconButton><NavigationMenu/></IconButton>}
-        onRightIconButtonTouchTap={this.touchTap} style={styles.appBar}
+        onRightIconButtonTouchTap={this.props.toggleDrawer} style={styles.appBar}
       >
       </AppBar>
     )
