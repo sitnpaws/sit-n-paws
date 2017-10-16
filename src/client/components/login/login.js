@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import FlatButton from 'material-ui/FlatButton';
 import jwt from 'jsonwebtoken';
-import LoginSubmit from '../utils/login';
+import LoginSubmit from '../../utils/login';
 
 // login form that takes username and password
 export default class Login extends React.Component {
