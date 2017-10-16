@@ -6,7 +6,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import { shallow, mount, render } from 'enzyme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import propTypes from 'prop-types';
-import Component from '../../../src/client/components/login.js';
+import Component from '../../../src/client/components/login/login.js';
 
 configure({ adapter: new Adapter() });
 

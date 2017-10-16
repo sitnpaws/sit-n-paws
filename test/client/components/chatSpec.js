@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { shallow, mount, render } from 'enzyme';
-import Chat from '../../../src/client/components/chat.js';
+import Chat from '../../../src/client/components/chat/chat.js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 configure({ adapter: new Adapter() });
 
