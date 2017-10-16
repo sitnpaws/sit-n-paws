@@ -293,7 +293,7 @@ describe('Listings APIs and database', function() {
       .end(function() {
 
         request(server)
-          .get('/api/listings/94106')
+          .get('/api/listings/94106').set('authorization', authToken)
           .expect(200)
           .expect(function(res) {
             expect(res.body).to.be.an('array').to.have.lengthOf(2);
