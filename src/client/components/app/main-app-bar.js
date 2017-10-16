@@ -14,8 +14,8 @@ export default class MainAppBar extends React.Component {
           <div className="main-app-bar-title"><span>Sit-N-Paws</span></div>
         </div>
         <div className="main-app-bar-nav-group">
-          <div className="main-app-bar-link-div"><Link to="/listings">Listings</Link></div>
-          <div className="main-app-bar-link-div"><Link to="/stays">Stays</Link></div>
+          <Link className="main-app-bar-link-wrapper" to="/listings"><span>Listings</span></Link>
+          <Link className="main-app-bar-link-wrapper" to="/stays"><span>Stays</span></Link>
         </div>
         <div className="main-app-bar-right-group" onClick={this.props.toggleDrawer}>
           <div className="main-app-bar-icon">
