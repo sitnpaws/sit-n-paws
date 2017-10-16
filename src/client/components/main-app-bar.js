@@ -3,8 +3,7 @@ import React from 'react';
 
 // material ui components
 import AppBar from 'material-ui/AppBar';
-import Tabs from 'material-ui/Tabs';
-import Tab from 'material-ui/Tab';
+import { Tabs, Tab } from 'material-ui/Tabs';
 import IconButton from 'material-ui/IconButton';
 import NavigationMenu from 'material-ui/svg-icons/navigation/menu';
 import Pets from 'material-ui/svg-icons/action/pets';
