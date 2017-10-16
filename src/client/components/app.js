@@ -33,12 +33,12 @@ export default class App extends React.Component {
 
   onLogin(token) {
     window.localStorage.setItem('sitnpaws_jwt', token);
-    this.setState({ isLoggedIn: true, token: token });
+    this.setState({ isLoggedIn: true, jwtToken: token });
   }
 
   onLogout() {
     window.localStorage.removeItem('sitnpaws_jwt');
-    this.setState({ isLoggedIn: false, token: '' });
+    this.setState({ isLoggedIn: false, jwtToken: '' });
   }
 
   getToken() { return this.state.jwtToken; }
