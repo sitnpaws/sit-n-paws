@@ -5,9 +5,9 @@ import axios from 'axios';
 
 // app components
 import Search from './search.js';
-import ListingsContainer from './listingsContainer.js';
+import ListingEntry from './listingEntry.js';
 
-export default class ListingsContainer extends React.Component {
+export default class Listings extends React.Component {
   constructor(props) {
     super(props);
     this.state = { listings: [] }
@@ -15,14 +15,13 @@ export default class ListingsContainer extends React.Component {
   }
 
   // Search - live search by zipcode
-  handleSearch = (term) => {
+  handleSearch(term) {
     axios.get(`/listings/${term}`, {headers: {'authorization': this.props.getToken()}})
       .then(resp => {
         console.log('listings search response: ', response);
         this.setState({ listings: resp.data});
       }).catch(err => console.log('Listings search error: ', err));
-
-    // const url = `/listings/${term}`; request.get(url, (err, res) => {  if (err) {  console.log(err); } else { this.setState({ listings:res.body }); } });
+      // holding onto this until i can get to testing -> const url = `/listings/${term}`; request.get(url, (err, res) => {  if (err) {  console.log(err); } else { this.setState({ listings:res.body }); } });
   }
 
   render() {
@@ -31,7 +30,10 @@ export default class ListingsContainer extends React.Component {
         <div className="search">
           <Search onChange={this.handleSearch}/>
         </div>
-        <ListingsContainer listings={this.state.listings} />
+        <div className="wrapper">
+          {this.state.listings.map((listing, i) => (<ListingEntry listing={listing} key={listing.name} />))}
+          {this.props.listings.length === 0 ? <div className="messageBox"><h2><em>Please Try A Different Zipcode</em></h2></div> : ''}
+        </div>
       </div>
     );
   };
