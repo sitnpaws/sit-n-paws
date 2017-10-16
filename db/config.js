@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
-var url = 'mongodb://127.0.0.1/sitnpaws';
+var url = 'mongodb://localhost/sitnpaws';
 mongoose.connect(url);
 
 var sitnpaws = mongoose.connection;
