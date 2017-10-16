@@ -16,9 +16,6 @@ import List from 'material-ui/List/List';
 import Pets from 'material-ui/svg-icons/action/pets';
 import Home from 'material-ui/svg-icons/action/home';
 
-// app modules / components
-import Stays from './stays';
-
 class StayEntry extends React.Component {
   constructor(props) {
     super(props);
@@ -57,14 +54,9 @@ class StayEntry extends React.Component {
     this.handleSubmitRating = this.handleSubmitRating.bind(this);
   }
 
-  componentWillMount() {
-    this.token = localStorage.jwt || '';
-    this.getNameAndRating();
-  }
+  componentWillMount() { this.getNameAndRating(); }
 
-  componentDidMount() {
-    this.setStatusColor();
-  }
+  componentDidMount() { this.setStatusColor(); }
 
   setStatusColor() {
     const statusColors = {
@@ -76,51 +68,31 @@ class StayEntry extends React.Component {
       complete: grey500
     };
 
-    this.setState({
-      statusColor: statusColors[this.state.status]
-    });
+    this.setState({ statusColor: statusColors[this.state.status] });
   }
 
   handleCancelStay() {
     axios.put('/api/stay/cancel/' + this.props.stay._id, null, {
-      headers: {'authorization': this.token}
+      headers: {'authorization': this.props.getToken()}
     }).then((res) => {
-      this.setState({
-        status: 'cancelled',
-        statusColor: red500
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      this.setState({ status: 'cancelled', statusColor: red500 });
+    }).catch((err) => console.log(err));
   }
 
   handleGuestAccept() {
     axios.put('/api/stay/approve/' + this.props.stay._id, null, {
-      headers: {'authorization': this.token}
+      headers: {'authorization': this.props.getToken()}
     }).then((res) => {
-      this.setState({
-        status: 'approved',
-        statusColor: greenA700
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      this.setState({ status: 'approved', statusColor: greenA700 });
+    }).catch((err) =>console.log(err));
   }
 
   handleGuestReject() {
     axios.put('/api/stay/reject/' + this.props.stay._id, null, {
-      headers: {'authorization': this.token}
+      headers: {'authorization': this.props.getToken()}
     }).then((res) => {
-      this.setState({
-        status: 'rejected',
-        statusColor: red500
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      this.setState({ status: 'rejected', statusColor: red500 });
+    }).catch((err) => console.log(err));
   }
 
   handleChangeRating(event, index, value) {
@@ -129,21 +101,18 @@ class StayEntry extends React.Component {
 
   handleSubmitRating() {
     if (this.state.rating > 0) {
-      const params = {
-        role: this.props.stay.role,
-        rating: this.state.rating
-      };
+      const params = { role: this.props.stay.role, rating: this.state.rating };
       axios.put('/api/stay/rating/' + this.props.stay._id, params, {
         headers: {'authorization': this.token}
       }).then((res) => {
-        this.props.stay.role === 'guest'
-        ? this.setState({ listingRating: this.state.rating })
-        : this.setState({ guestRating: this.state.rating });
-      }).catch((err) => {
-        console.log(err);
-      });
+        if (this.props.stay.role === 'guest') {
+          this.setState({ listingRating: this.state.rating })
+        } else {
+          this.setState({ guestRating: this.state.rating });
+        }
+      }).catch((err) => console.log(err));
     } else {
-      console.log('pick a rating before submitting');
+      console.log('Please pick a rating before submitting!');
     }
   }
 
@@ -170,7 +139,6 @@ class StayEntry extends React.Component {
 
   render() {
     const { stay } = this.props;
-
     if (stay.role === 'guest') {
       // Guest View
       return(
@@ -181,11 +149,12 @@ class StayEntry extends React.Component {
               subtitle={<span>Average Rating: {this.state.avgRating} Stars</span>}
               avatar={<Home style={this.iconStyles} color={this.state.statusColor}/>}
             >
-
             </CardHeader>
             <CardText>
               <div className="stay-detail">
-                <div className="stay-date"><strong>Date: </strong>From <strong>{moment(stay.startDate).format('MM/DD/YYYY')}</strong> to <strong> {moment(stay.endDate).format('MM/DD/YYYY')}</strong></div>
+                <div className="stay-date">
+                  <strong>Date: </strong>From <strong>{moment(stay.startDate).format('MM/DD/YYYY')}</strong> to <strong> {moment(stay.endDate).format('MM/DD/YYYY')}</strong>
+                </div>
                 <div><strong>Status: </strong> <span className="stay-status">{this.state.status}</span></div>
                 <div><strong>Price: </strong> ${stay.pricePer} Per Night</div>
                 <div className="stay-total"><strong>Total: </strong> ${stay.totalPrice}</div>
@@ -197,24 +166,25 @@ class StayEntry extends React.Component {
                   ? (this.state.listingRating)
                     ? <div className="stay-rating">You have rated {stay.listing.name}: {this.state.listingRating} out of 5 Stars</div>
                     : <div className="stay-rating">
-                      <span style={{verticalAlign:'-20px', lineHeight:'20px', marginRight:'5px'}}><SelectField
-                        value={this.state.rating}
-                        floatingLabelText="Rate Your Stay"
-                        onChange={this.handleChangeRating}>
-                        <MenuItem value={0} primaryText="Rating" />
-                        <MenuItem value={5} primaryText="5/5 Perfect!" />
-                        <MenuItem value={4} primaryText="4/5 Great!" />
-                        <MenuItem value={3} primaryText="3/5 Good!" />
-                        <MenuItem value={2} primaryText="2/5 Meh..." />
-                        <MenuItem value={1} primaryText="1/5 Horrible!" />
-                      </SelectField></span>
+                      <span style={{verticalAlign:'-20px', lineHeight:'20px', marginRight:'5px'}}>
+                        <SelectField
+                          value={this.state.rating}
+                          floatingLabelText="Rate Your Stay"
+                          onChange={this.handleChangeRating}>
+                          <MenuItem value={0} primaryText="Rating" />
+                          <MenuItem value={5} primaryText="5/5 Perfect!" />
+                          <MenuItem value={4} primaryText="4/5 Great!" />
+                          <MenuItem value={3} primaryText="3/5 Good!" />
+                          <MenuItem value={2} primaryText="2/5 Meh..." />
+                          <MenuItem value={1} primaryText="1/5 Horrible!" />
+                        </SelectField>
+                      </span>
                       <RaisedButton label="Submit Rating" onClick={this.handleSubmitRating}/>
                     </div>
                   : this.state.status === 'cancelled' || this.state.status === 'rejected' || this.state.status === 'expired'
                     ? null
                     : <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`} /></a><FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/></span>
               }
-
             </CardActions>
           </Card>
         </div>
@@ -245,17 +215,18 @@ class StayEntry extends React.Component {
                   ? (this.state.guestRating)
                     ? <div className="stay-rating">You have rated {this.state.firstName}: {this.state.listingRating} out of 5 Stars</div>
                     : <div className="stay-rating">
-                      <span style={{verticalAlign:'-20px', lineHeight:'20px', marginRight:'5px'}}><SelectField
-                        value={this.state.rating}
-                        floatingLabelText="Rate Your Guest"
-                        onChange={this.handleChangeRating}>
-                        <MenuItem value={0} primaryText="Rating" />
-                        <MenuItem value={5} primaryText="5/5 Perfect!" />
-                        <MenuItem value={4} primaryText="4/5 Great!" />
-                        <MenuItem value={3} primaryText="3/5 Good!" />
-                        <MenuItem value={2} primaryText="2/5 Meh..." />
-                        <MenuItem value={1} primaryText="1/5 Horrible!" />
-                      </SelectField></span>
+                      <span style={{verticalAlign:'-20px', lineHeight:'20px', marginRight:'5px'}}>
+                        <SelectField
+                          value={this.state.rating}
+                          floatingLabelText="Rate Your Guest"
+                          onChange={this.handleChangeRating}>
+                          <MenuItem value={0} primaryText="Rating" />
+                          <MenuItem value={5} primaryText="5/5 Perfect!" />
+                          <MenuItem value={4} primaryText="4/5 Great!" />
+                          <MenuItem value={3} primaryText="3/5 Good!" />
+                          <MenuItem value={2} primaryText="2/5 Meh..." />
+                          <MenuItem value={1} primaryText="1/5 Horrible!" />
+                        </SelectField></span>
                       <RaisedButton label="Submit Rating" onClick={this.handleSubmitRating}/>
                     </div>
                   : this.state.status === 'rejected' || this.state.status === 'cancelled' || this.state.status === 'expired'
@@ -265,7 +236,6 @@ class StayEntry extends React.Component {
                       : <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`}/></a>
                         <FlatButton label="Accept Guest" primary={true} onClick={this.handleGuestAccept}/>
                         <FlatButton label="Reject Guest" secondary={true} onClick={this.handleGuestReject}/></span>
-
               }
             </CardActions>
           </Card>
