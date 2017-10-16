@@ -1,10 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-
 
 module.exports = {
   entry: './src/client/index.js',
@@ -21,7 +17,7 @@ module.exports = {
         exclude: [/node_modules/],
         use: [{
           loader: 'babel-loader',
-          options: { presets: ['env', 'react', 'stage-3', 'es2015', 'minify'] },
+          options: { presets: ['env', 'react', 'stage-3'] },
         }],
       }, {
         test: /\.css$/,
@@ -42,7 +38,7 @@ module.exports = {
       React: 'react',
       ReactDOM: 'react-dom'
     }),
-    new CleanWebpackPlugin(['dist'])
+      new UglifyJSPlugin()
   ],
   devServer: {
     contentBase: path.resolve(__dirname, 'dist'),
