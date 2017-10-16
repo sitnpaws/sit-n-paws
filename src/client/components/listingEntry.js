@@ -71,9 +71,7 @@ export default class ListingView extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.getNameAndRating();
-  }
+  componentDidMount() { this.getNameAndRating(); }
 
   render() {
     // These are the action buttons for the Dialog
