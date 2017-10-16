@@ -62,7 +62,7 @@ const sendStayRequestMail = (hostEmail, guestEmail, startDate, endDate) => {
 }
 
 //handles log in information in the db, creates jwt
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
   var email = req.body.email;
   var password = req.body.password;
   User.findOne({ email: email })
@@ -98,7 +98,7 @@ app.post('/login', (req, res) => {
 });
 
 //handles new user creations in db
-app.post('/signup', (req, res) => {
+app.post('/api/signup', (req, res) => {
   var name = req.body.name;
   var password = req.body.password;
   var email = req.body.email;
@@ -246,10 +246,10 @@ const listingCloudinaryHandler = (req, res, next) => {
   }
 }
 
-app.post('/listings', jwtAuth, listingsUpload, listingLocalHandler, listingCloudinaryHandler);
+app.post('/api/listings', jwtAuth, listingsUpload, listingLocalHandler, listingCloudinaryHandler);
 
 //handles getting all listings that exist
-app.get('/listings', (req, res) => {
+app.get('/api/listings', (req, res) => {
   Listing.find({})
     .exec((err, listings) => {
       if (err) {
@@ -261,7 +261,7 @@ app.get('/listings', (req, res) => {
 });
 
 //handles getting listings by zipcode from search
-app.get('/listings/:zipcode', (req, res) => {
+app.get('/api/listings/:zipcode', (req, res) => {
   var zipcode = req.params.zipcode;
   Listing.find({ "$where": `function() { return this.zipcode.toString().match(/${zipcode}/) !== null; }`})
     .exec((err, listings) => {
