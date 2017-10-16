@@ -51,7 +51,7 @@ export default class ListingView extends React.Component {
           startDate: this.state.startDate.toISOString(),
           endDate: this.state.endDate.toISOString()
         }, // params object: headers
-        { headers: {'Authorization': this.token} }
+        { headers: {'Authorization': this.props.getToken()} }
       ).then(resp => {
         this.setState({open: false});
       }).catch(err => this.setState({formWarning: 'Server error: ' + err}));
