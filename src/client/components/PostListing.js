@@ -51,7 +51,7 @@ export default class PostListing extends React.Component {
       formData.append("homePictures", this.state.homePictures);
       formData.append("cost", this.state.cost);
 
-      axios.post('/listings', formData, {headers: {'authorization': this.token}})
+      axios.post('/api/listings', formData, {headers: {'authorization': this.token}})
         .then(resp => {
           if (resp.data.success === true) {
             this.setState({message: resp.data.message, submitted: true});
