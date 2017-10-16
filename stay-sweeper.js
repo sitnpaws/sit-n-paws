@@ -7,7 +7,7 @@ let today = new Date();
 
 const sweepStays = () => {
   const expiringStays = Stay.find({}).where('startDate').lt(today).where('status').equals('pending').exec();
-  const completeStays = Stay.find({}).where('endDate').gt(today).where('status').equals('approved').exec();
+  const completeStays = Stay.find({}).where('endDate').lt(today).where('status').equals('approved').exec();
 
   Promise.all([expiringStays, completeStays]).then(([expiringStays, completeStays]) => {
     expiringStays.forEach(stay => stay.update({'status': 'expired'}).exec());
