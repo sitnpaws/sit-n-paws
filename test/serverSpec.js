@@ -1,3 +1,4 @@
+
 const chai = require('chai');
 const expect = chai.expect;
 const request = require('supertest');
@@ -10,15 +11,15 @@ const db = require('../db/config');
 const Listing = require('../db/models/listing');
 const User = require('../db/models/users');
 const Stay = require('../db/models/stays');
-const Chat = require('../db/models/chat');
+const Chat = require('../db/models/chat').Chat;
+const Chat = require('../db/models/chat').Msg;
 
 chai.use(require('chai-things'));
 
-// Clear Database
-
-// Stay.remove({});
-// Listing.remove({});
-// User.remove({});
+// Clear Database of all items associted, but not in following tests
+Stay.remove().exec();
+Chat.remove().exec();
+Msg.remove().exec();
 
 var authToken = '';
 
@@ -98,7 +99,7 @@ const testFormListing = [
     "homePictures":"https://farm7.staticflickr.com/6076/6080657644_19cfe82456.jpg",
     "cost":35},
 
-]
+];
 
 // test images for uploading to cloudinary service
 const testImage1 = path.join(__dirname, '..', 'test', 'TESTimage1.png');
@@ -114,7 +115,7 @@ describe('Server and Client Are Active', function() {
   request(server)
     .get('/')
     .expect(200, done)
-  })
+  });
 
   it('Responds with index.html at root path', function(done) {
   request(server)
@@ -141,7 +142,7 @@ describe('User APIs and Database', function() {
 
   beforeEach(function(done) {
     // assure mock users are removed from database
-    User.remove({ email: { "$in": emails } }).exec().then(() => {
+    User.remove().exec().then(() => {
         // add one user for tests
         var newUser = new User(basicTestUsers[0]);
         return newUser.save();
@@ -166,7 +167,7 @@ describe('User APIs and Database', function() {
         expect(res.body.success).to.equal(true);
       })
       .end(done);
-  })
+  });
 
   // a user already in the database will return an empty object
   it('Prevents same email being added to database', function(done) {
@@ -178,7 +179,7 @@ describe('User APIs and Database', function() {
         expect(res.body).to.be.empty;
       })
       .end(done);
-  })
+  });
 
   // a user can login and receive a success response
   it('Allows valid user to be logged in', function(done) {
@@ -210,7 +211,7 @@ describe('Listings APIs and database', function() {
       listingsNamesData.push(listingsData[i].name);
     }
     // assure mock listings are removed from database
-    var clearListings = Listing.remove({ name: { "$in": listingsNamesData } });
+    var clearListings = Listing.remove();
 
     // once listings are clear, login a user we know is there
     clearListings.then(() => {
@@ -246,7 +247,7 @@ describe('Listings APIs and database', function() {
       .expect(function(res) {
         expect(res.body.success).to.equal(true);
       }).end(done);
-  })
+  });
 
   // returns one total listing from database
   //todo: failing. Is not length 1, has other entries.
@@ -258,7 +259,7 @@ describe('Listings APIs and database', function() {
         expect(res.body).to.be.an('array').to.have.lengthOf(1);
       })
       .end(done);
-  })
+  });
 
   // returns search query for zipcode
   it('Returns search query for zipcode', function(done) {
@@ -269,7 +270,7 @@ describe('Listings APIs and database', function() {
         expect(res.body[0].zipcode).to.be.equal(94106);
       })
       .end(done);
-  })
+  });
 
   // returns multiple listings from search query for zipcode with more than one database entry
   it('Returns multiple listings from search query for zipcode', function(done) {
@@ -304,3 +305,4 @@ describe('Listings APIs and database', function() {
 
 });
 //TODO: Update testing for endpoints: post-/api/stays get-/api/stays , and signup/login (just username to email switch)
+

@@ -8,6 +8,10 @@ import Chat from '../../../src/client/components/chat.js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 configure({ adapter: new Adapter() });
 
+// AJAX testing
+import sinon from 'sinon';
+import axios from 'axios';
+import moxios from 'moxios';
 
 var wrapComponent = function() {
   const props = {
@@ -21,6 +25,18 @@ var wrapComponent = function() {
 };
 
 describe('<Chat />', () => {
+  var axiosGet;
+
+  beforeEach(() => {
+    axiosGet = sinon.stub(axios, "get").callsFake(function() {
+      return new Promise(function() {});
+    });
+  });
+
+  afterEach(() => {
+    axiosGet.restore();
+  });
+
   it('renders with chat header', () => {
     const wrapper = wrapComponent();
     expect(wrapper.find('.chat-header')).to.have.length(1);

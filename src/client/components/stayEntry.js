@@ -57,7 +57,7 @@ class StayEntry extends React.Component {
   }
 
   componentWillMount() {
-    this.token = localStorage.jwt;
+    this.token = localStorage.jwt || '';
     this.getNameAndRating();
   }
 
