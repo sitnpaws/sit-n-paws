@@ -1,29 +1,20 @@
+// libraries
 import React from 'react';
 import axios from 'axios';
-import FlatButton from 'material-ui/FlatButton';
+
+// material-ui components
 import RaisedButton from 'material-ui/RaisedButton';
-import LoginSubmit from '../utils/login';
-import jwt from 'jsonwebtoken'
 
-
-export default class ProfileUpdate extends React.Component {
+export default class ProfileForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      name: '',
-      phone: '',
-      address: ''
-    }
-    this.token;
+    this.state = { name: '', phone: '', address: '' };
     this.setField = this.setField.bind(this);
     this.getProfile = this.getProfile.bind(this);
     this.updateProfile = this.updateProfile.bind(this);
   }
 
-  componentDidMount() {
-    this.token = localStorage.jwt;
-    this.getProfile();
-  }
+  componentDidMount() { this.getProfile(); }
 
   // Handles form fields
   setField(e) {
@@ -31,24 +22,21 @@ export default class ProfileUpdate extends React.Component {
   }
 
   getProfile() {
-    axios.get('/api/profile', { headers: {'Authorization': this.token} })
+    axios.get('/api/profile', { headers: {'authorization': this.props.getToken()} })
       .then((res) => {
         this.setState({
           name: res.data.name,
           phone: res.data.phone,
           address: res.data.address
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      })
+      }).catch((err) => console.log(err));
   }
 
   // Updates profile on clicking submit button
   updateProfile() {
-    let name = (this.state.name) ? this.state.name : null;
-    let phone = (this.state.phone) ? this.state.phone : null;
-    let address = (this.state.address) ? this.state.address : null;
+    let name = (this.state.name) ? this.state.name : '';
+    let phone = (this.state.phone) ? this.state.phone : '';
+    let address = (this.state.address) ? this.state.address : '';
     let data = {
       name: name,
       phone: phone,
