@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import _ from 'lodash';
+import debounce from 'lodash/debounce';
 import openSocket from 'socket.io-client';
 
 // material-ui components
@@ -29,7 +29,7 @@ export default class Chat extends Component {
       newMessageLoc: '',
     };
     this.postMessage = this.postMessage.bind(this);
-    this.debStopTyping = _.debounce(this.stopTyping.bind(this), 1500, true);
+    this.debStopTyping = debounce(this.stopTyping.bind(this), 1500, true);
   }
 
   componentWillMount() { this.getChatInfo(); }
