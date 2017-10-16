@@ -29,10 +29,7 @@ export default class App extends React.Component {
     this.toggleDrawer = this.toggleDrawer.bind(this);
   }
 
-  toggleDrawer() {
-    console.log('clicked to toggle drawer');
-    this.setState({drawerOpen: !this.state.drawerOpen});
-  }
+  toggleDrawer() { this.setState({drawerOpen: !this.state.drawerOpen}); }
 
   onLogin(token) {
     window.localStorage.setItem('sitnpaws_jwt', token);
