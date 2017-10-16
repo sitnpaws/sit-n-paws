@@ -262,7 +262,7 @@ app.get('/api/listings', (req, res) => {
 });
 
 //handles getting listings by zipcode from search
-app.get('/api/listings/:zipcode', (req, res) => {
+app.get('/api/listings/:zipcode', jwtAuth, (req, res) => {
   var zipcode = req.params.zipcode;
   Listing.find({ "$where": `function() { return this.zipcode.toString().match(/${zipcode}/) !== null; }`})
     .exec((err, listings) => {
@@ -408,6 +408,24 @@ app.get('/api/stay/rating/host/:userId', jwtAuth, (req, res) => {
     });
     let avgRating = (ratingTotal / ratingCount).toFixed(1);
     res.status(200).json({name: name, rating: avgRating > 0 ? avgRating : 0})
+  }).catch((err) => {
+    res.status(400).send(err.message);
+  });
+});
+
+app.get('/api/stay/rating/listing/:listingId', jwtAuth, (req, res) => {
+  const listingId = req.params.listingId;
+  Stay.find({listing: ObjectId(listingId)}).exec().then((stays) => {
+    let ratingTotal = 0;
+    let ratingCount = 0;
+    stays.forEach((stay) => {
+      if (stay.listingRating) {
+        ratingTotal += stay.listingRating;
+        ratingCount++;
+      }
+    });
+    let avgRating = (ratingTotal / ratingCount).toFixed(1);
+    res.status(200).json({rating: avgRating > 0 ? avgRating : 0})
   }).catch((err) => {
     res.status(400).send(err.message);
   });
