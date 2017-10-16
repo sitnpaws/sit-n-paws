@@ -5,7 +5,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import { shallow, mount, render } from 'enzyme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import Component from '../../../src/client/components/stayEntry.js';
+import Component from '../../../src/client/components/stays/stayEntry.js';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import propTypes from 'prop-types';
 
