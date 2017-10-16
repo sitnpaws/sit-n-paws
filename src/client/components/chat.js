@@ -32,10 +32,7 @@ export default class Chat extends Component {
     this.debStopTyping = _.debounce(this.stopTyping.bind(this), 1500, true);
   }
 
-  componentWillMount() {
-    this.token = localStorage.jwt;
-    this.getChatInfo();
-  }
+  componentWillMount() { this.getChatInfo(); }
 
   componentDidMount() {
     this.socket = openSocket('/');
@@ -65,7 +62,7 @@ export default class Chat extends Component {
   scrollToBottom () { this.msgContainerBottom.scrollIntoView(); }
 
   getChatInfo() {
-    axios.get('/api/chat/'+this.stayId, {headers: {'authorization': this.token}})
+    axios.get('/api/chat/'+this.stayId, {headers: {'authorization': this.props.getToken()}})
       .then(resp => {
         this.setState({
           chatId: resp.data.chatId,
@@ -77,7 +74,7 @@ export default class Chat extends Component {
   }
 
   getMessages() {
-    axios.get('/api/messages/'+this.stayId, {headers: {'authorization': this.token}})
+    axios.get('/api/messages/'+this.stayId, {headers: {'authorization': this.props.getToken()}})
       .then(resp => {
         let messages = resp.data;
         messages.reverse();
@@ -91,7 +88,7 @@ export default class Chat extends Component {
   getMessageHistory() {
     if (!this.state.messages.length) { return; } // can't get message history if there are no messages!
     axios.get('/api/messages/'+this.stayId, {
-      headers: {'authorization': this.token},
+      headers: {'authorization': this.props.getToken()},
       params: { before: this.state.messages[0].createdAt }
     }).then(resp => {
       let olderMessages = resp.data;
@@ -107,7 +104,7 @@ export default class Chat extends Component {
   getNewMessages() {
     let after = this.state.messages.length ? this.state.messages[this.state.messages.length - 1].createdAt : 0;
     axios.get('/api/messages/'+this.stayId, {
-      headers: {'authorization': this.token},
+      headers: {'authorization': this.props.getToken()},
       params: { after }
     }).then(resp => {
       let newMessages = resp.data;
@@ -153,7 +150,7 @@ export default class Chat extends Component {
     if (!this.state.messageText) { return; }
     axios.post('/api/messages/'+this.stayId,
     {text: this.state.messageText},
-    {headers: {'authorization': this.token}}).then(resp => {
+    {headers: {'authorization': this.props.getToken()}}).then(resp => {
       this.setState({messageText: ''});
       this.socket.emit('new message', this.stayId);
       this.stopTyping();

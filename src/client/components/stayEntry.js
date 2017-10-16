@@ -2,6 +2,7 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 // material-ui components
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
@@ -103,7 +104,7 @@ class StayEntry extends React.Component {
     if (this.state.rating > 0) {
       const params = { role: this.props.stay.role, rating: this.state.rating };
       axios.put('/api/stay/rating/' + this.props.stay._id, params, {
-        headers: {'authorization': this.token}
+        headers: {'authorization': this.props.getToken()}
       }).then((res) => {
         if (this.props.stay.role === 'guest') {
           this.setState({ listingRating: this.state.rating })
@@ -124,7 +125,7 @@ class StayEntry extends React.Component {
       userId: userId
     };
     axios.get('/api/stay/rating/' + role + '/' + userId, {
-      headers: {'authorization': this.token}
+      headers: {'authorization': this.props.getToken()}
     }).then((res) => {
       const name = res.data.name.split(' ')
       this.setState({
@@ -183,7 +184,7 @@ class StayEntry extends React.Component {
                     </div>
                   : this.state.status === 'cancelled' || this.state.status === 'rejected' || this.state.status === 'expired'
                     ? null
-                    : <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`} /></a><FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/></span>
+                    : <span><Link to={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`} /></Link><FlatButton label="Cancel Stay" secondary={true} onClick={this.handleCancelStay}/></span>
               }
             </CardActions>
           </Card>
@@ -232,8 +233,8 @@ class StayEntry extends React.Component {
                   : this.state.status === 'rejected' || this.state.status === 'cancelled' || this.state.status === 'expired'
                     ? null
                     : this.state.status === 'approved'
-                      ? <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`}/></a></span>
-                      : <span><a href={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`}/></a>
+                      ? <span><Link to={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`}/></Link></span>
+                      : <span><Link to={`/chat/${stay._id}`}><FlatButton label={`chat with ${this.state.firstName}`}/></Link>
                         <FlatButton label="Accept Guest" primary={true} onClick={this.handleGuestAccept}/>
                         <FlatButton label="Reject Guest" secondary={true} onClick={this.handleGuestReject}/></span>
               }
