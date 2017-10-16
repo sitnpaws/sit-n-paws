@@ -19,7 +19,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     const jwt = window.localStorage.getItem('sitnpaws_jwt') || '';
-    const loggedIn = !!jwt;
+    const isLoggedIn = !!jwt;
     this.state = {
       isLoggedIn: false,
       jwtToken: '',
@@ -27,6 +27,12 @@ export default class App extends React.Component {
     }
 
     this.getToken = this.getToken.bind(this);
+    this.toggleDrawer = this.toggleDrawer.bind(this);
+  }
+
+  toggleDrawer() {
+    console.log('clicked to toggle drawer');
+    this.setState({drawerOpen: !this.state.drawerOpen});
   }
 
   onLogin(token) {
@@ -57,14 +63,14 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider>
         <div>
-          <MainAppBar />
+          <MainAppBar toggleDrawer={this.toggleDrawer} />
           <Switch>
             <Route path='/listings' render={props => (<Listings {...props} getToken={this.getToken} />)} />
             <Route path='/stays' render={props => (<Stays {...props} getToken={this.getToken} />)} />
             <Route path='/chat/:stayId' render={props => (<Chat {...props} getToken={this.getToken} />)} />
             <Redirect to='/listings' />
           </Switch>
-          <ProfileDrawer onLogout={() => this.onLogout()} />
+          <ProfileDrawer getToken={this.getToken} onLogout={() => this.onLogout()} drawerOpen={this.state.drawerOpen} toggleDrawer={this.toggleDrawer} />
         </div>
       </MuiThemeProvider>
     );
