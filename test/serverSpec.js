@@ -12,7 +12,7 @@ const Listing = require('../db/models/listing');
 const User = require('../db/models/users');
 const Stay = require('../db/models/stays');
 const Chat = require('../db/models/chat').Chat;
-const Chat = require('../db/models/chat').Msg;
+const Msg = require('../db/models/chat').Msg;
 
 chai.use(require('chai-things'));
 
