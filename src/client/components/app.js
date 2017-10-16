@@ -6,14 +6,14 @@ import jwt from 'jsonwebtoken';
 // material ui components
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-// app modules
+// app modules or components
 import MainAppBar from './main-app-bar.js';
 import ProfileDrawer from './profile-drawer.js';
-import Home from './home.js';
 import Login from './login.js';
-import StaysView from './staysView.js';
-import ChatView from './chatView.js';
-import NotFound from './notfound.js';
+import Home from './home.js';
+import Listings from './listings.js';
+import Stays from './stays.js';
+import Chat from './chat.js';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -25,6 +25,8 @@ export default class App extends React.Component {
       jwtToken: '',
       drawerOpen: false,
     }
+
+    this.getToken = this.getToken.bind(this);
   }
 
   onLogin(token) {
@@ -43,7 +45,7 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider>
         <Switch>
-          <Route path='/login' render={props => (<Login {...props} onLogin={token => this.onLogin(token))} />)} />
+          <Route path='/login' render={props => (<Login {...props} onLogin={token => this.onLogin(token)} />)} />
           <Route exact path='/' component={Home} />
           <Redirect to='/' />
         </Switch>
@@ -55,18 +57,12 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider>
         <MainAppBar />
-        <br/>
         <Switch>
-          <Route path='/listings' component={Listings} />
-          <Route path='/stays' component={Stays} />
-          <Route path='/chat/:stayId' component={Chats} />
+          <Route path='/listings' render={props => (<Listings {...props} getToken={this.getToken} />)} />
+          <Route path='/stays' render={props => (<Stays {...props} getToken={this.getToken} />)} />
+          <Route path='/chat/:stayId' render={props => (<Chat {...props} getToken={this.getToken} />)} />
           <Redirect to='/listings' />
         </Switch>
-        {/* <div className="search">
-            <Search onChange={this.handleSearch}/>
-            </div>
-            <br/>
-        <ListingsContainer listings={this.state.listings} /> */}
         <ProfileDrawer onLogout={() => this.onLogout()} />
       </MuiThemeProvider>
     );
@@ -74,9 +70,9 @@ export default class App extends React.Component {
 
   render() {
     return ( this.state.isLoggedIn ) ? (
-      {this.renderLogin()}
+      this.renderLogin()
     ) : (
-      {this.renderApp()}
+      this.renderApp()
     );
   }
 }
