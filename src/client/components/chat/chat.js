@@ -189,7 +189,7 @@ export default class Chat extends Component {
               value={this.state.messageText} onKeyDown={e => this.handleMessageKey(e)}
               onChange={e => this.setState({messageText: e.target.value})}
             />
-            <div className="new-message-submit"><i className="material-icons">send</i></div>
+            <div className="new-message-submit" onClick={() => this.postMessage()}><i className="material-icons">send</i></div>
           </div>
         </div>
       </div>
