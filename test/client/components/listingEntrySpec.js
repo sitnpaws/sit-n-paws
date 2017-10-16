@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { shallow, mount, render } from 'enzyme';
-import Component from '../../../src/client/components/listings.js';
+import Component from '../../../src/client/components/listingEntry.js';
 
 configure({ adapter: new Adapter() });
 
@@ -26,14 +26,15 @@ const listing = {
 
 var wrapComponent = function() {
   const props = {
-    listing: listing
+    listing: listing,
+    getToken: () => ('abc123')
   };
   var wrapper = shallow(<Component {...props}/>);
   wrapper.token = 'testToken';
   return wrapper;
 };
 
-describe('<listingView />', () => {
+describe('<ListingEntry />', () => {
   var axiosGet;
 
   beforeEach(() => {
