@@ -5,7 +5,7 @@ import axios from 'axios';
 
 // app components
 import Search from './search.js';
-import ListingEntry from './listingEntry.js';
+import ListingEntry from './listing-entry.js';
 
 export default class Listings extends React.Component {
   constructor(props) {

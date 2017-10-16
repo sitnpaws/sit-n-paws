@@ -8,9 +8,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 
 // app modules
-import PostListing from './PostListing.js';
-import ProfileUpdate from './profileForm.js';
-import ShowProfile from './showProfile.js';
+import PostListing from './post-listing.js';
+import ShowProfile from './show-profile.js';
 
 export default class ProfileDrawer extends React.Component {
   constructor(props) {

@@ -3,7 +3,7 @@ import React from 'react';
 import axios from 'axios';
 
 // app components / modules
-import StayEntry from './stayEntry.js';
+import StayEntry from './stay-entry.js';
 
 export default class Stays extends React.Component {
   constructor(props) {
