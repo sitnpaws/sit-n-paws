@@ -44,11 +44,7 @@ export default class ShowProfile extends React.Component {
   }
 
   getName() {
-    this.token = localStorage.jwt;
-    let decoded = jwt.decode(this.token);
-    this.setState({
-      name: decoded.name
-    });
+    this.setState({ name: jwt.decode(this.props.getToken()).name });
   }
 
   handleUpdateProfile(data) {
