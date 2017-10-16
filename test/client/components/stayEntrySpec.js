@@ -14,7 +14,6 @@ configure({ adapter: new Adapter() });
 // AJAX testing
 import sinon from 'sinon';
 import axios from 'axios';
-import moxios from 'moxios';
 
 const listing = {
   _id: "59e10080705f9771fe252800",
@@ -43,19 +42,31 @@ const customTheme = {
 const muiTheme = getMuiTheme(customTheme);
 
 var wrapComponent = function() {
-  const props = {
-    stay: stay
-  };
-  //wrapper.setState({status: this.props.stay.status});
-  return shallow(
+  const props = { stay: stay };
+  var wrapper = shallow(
       <Component {...props} />, {
         context: {muiTheme},
         childContextTypes: {muiTheme: propTypes.object}
       }
   );
+  wrapper.token = 'testToken';
+  return wrapper;
 };
 
 describe('<stayEntry />', () => {
+  var axiosGet;
+
+  beforeEach(() => {
+    axiosGet = sinon.stub(axios, "get").callsFake(function() {
+      return new Promise(function() {});
+    });
+  });
+
+  afterEach(() => {
+
+    axiosGet.restore();
+  });
+
   it('renders as a div', () => {
     const wrapper = wrapComponent();
     expect(wrapper.type()).to.equal('div');
@@ -80,8 +91,6 @@ describe('<stayEntry />', () => {
     const wrapper = wrapComponent();
     expect(wrapper.find('CardActions').find('FlatButton')).to.have.length(2);
     expect(wrapper.find('CardActions').find('[label="Cancel Stay"]')).to.have.length(1);
-    wrapper.find('CardActions').find('[label="Cancel Stay"]').simulate('click');
-
   });
 
   it('CardHeader contains name', () => {
@@ -89,19 +98,23 @@ describe('<stayEntry />', () => {
     const headerTitle = wrapper.find('CardHeader').props('title');
     expect(JSON.stringify(headerTitle)).to.contain(stay.listing.name);
   });
-
 });
-
 
 describe('stays entry AJAX', () => {
   var axiosPut;
+  var axiosGet;
 
   beforeEach(() => {
-    axiosPut = sinon.spy(axios, "put");
+    axiosGet = sinon.stub(axios, "get").callsFake(function() {
+      return new Promise(function() {});
+    });
+    axiosPut = sinon.stub(axios, "put").callsFake(function() {
+      return new Promise(function() {});
+    });
   });
 
   afterEach(() => {
-
+    axiosGet.restore();
     axiosPut.restore();
   });
 
@@ -124,9 +137,6 @@ describe('stays entry AJAX', () => {
   });
 
 });
-
-
-
 
   //todo: make role 'guest', populate with a new stay. Try to cancel.
   //todo: handle put to '/api/stay/cancel/' + this.props.stay._id , headers: {'authorization': this.token}, status: 'cancelled'

@@ -7,6 +7,10 @@ import Component from '../../../src/client/components/listingView.js';
 
 configure({ adapter: new Adapter() });
 
+// AJAX testing
+import sinon from 'sinon';
+import axios from 'axios';
+
 const listing = {
   "name": "Say Swinglehurst",
   "zipcode": 94123,
@@ -20,29 +24,45 @@ const listing = {
   "cost": 57.99
 };
 
-var wrapComponent = function(saving) {
+var wrapComponent = function() {
   const props = {
     listing: listing
   };
-  return shallow(<Component {...props}/>);
+  var wrapper = shallow(<Component {...props}/>);
+  wrapper.token = 'testToken';
+  return wrapper;
 };
 
 describe('<listingView />', () => {
+  var axiosGet;
+
+  beforeEach(() => {
+    axiosGet = sinon.stub(axios, "get").callsFake(function() {
+      return new Promise(function() {});
+    });
+  });
+
+  afterEach(() => {
+
+    axiosGet.restore();
+  });
+
   it('renders with CardHeader element', () => {
     const wrapper = wrapComponent();
     expect(wrapper.find('CardHeader')).to.have.length(1);
   });
 
   it('Includes the dog breed in the listing', () => {
-    const wrapper = shallow(<Component listing = {listing}/>);
+    const wrapper = wrapComponent();
     expect(wrapper.find('.listing').text()).to.include('ROSIE');
   });
 
   it('sets open state to true when the "request a stay" button is clicked', () => {
-    const wrapper = shallow(<Component listing = {listing}/>);
+    const wrapper = wrapComponent();
     wrapper.find('FlatButton').simulate('click');
     expect(wrapper.state('open')).to.equal(true);
   });
+
 });
 
 //todo: loads a get request to listings
