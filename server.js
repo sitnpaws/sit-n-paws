@@ -17,6 +17,7 @@ const multer = require('multer');
 const nodemailer = require('nodemailer');
 const upload = multer({dest: './uploads/'});
 const debug = process.env.DEBUG || true;
+const httpPort = process.env.PORT || 8080;
 
 // This is the shape of the object from the config file which is gitignored
 // const cloudConfig = {
@@ -506,8 +507,8 @@ app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
 })
 
-const server = app.listen(3000, () => {
-  console.log('Listening on localhost:3000');
+const server = app.listen(httpPort, () => {
+  console.log('Listening on localhost on ', httpPort);
 });
 
 const io = socket(server);
