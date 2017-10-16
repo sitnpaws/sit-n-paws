@@ -23,7 +23,7 @@ export default class ProfileDrawer extends React.Component {
     // Drawer - Styles for the side drawer buttons
     this.styles = { margin: 40 }
     this.toggleDrawer = this.toggleDrawer.bind(this);
-    this.openEditProfile = this.openEditProfile.bind(this);
+    this.toggleEditProfile = this.toggleEditProfile.bind(this);
     this.togglePostListing = this.togglePostListing.bind(this);
   }
 
@@ -34,7 +34,7 @@ export default class ProfileDrawer extends React.Component {
   render() {
     return (
       [
-        <Drawer width={400} openSecondary={true} open={this.state.openDrawer} >
+        <Drawer key="prof-drawer" width={400} openSecondary={true} open={this.state.openDrawer} >
           <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.toggleDrawer} style={{background: '#C5BA9B'}}/>
           <ShowProfile editProfile={this.state.openEditProfile}/>
           <RaisedButton onClick={this.toggleEditProfile} label="Edit Profile" labelColor="#FFFFFF" style={this.styles} backgroundColor="#C5BA9B" />
@@ -45,7 +45,7 @@ export default class ProfileDrawer extends React.Component {
         </Drawer>
       ],
       [
-        <Dialog modal={false} open={this.state.openPostListing}
+        <Dialog key="post-listing-dialog" modal={false} open={this.state.openPostListing}
           onRequestClose={this.togglePostListing}>
           <PostListing />
         </Dialog>
