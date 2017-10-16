@@ -274,7 +274,7 @@ app.get('/api/listings/:zipcode', (req, res) => {
 });
 
 app.get('/api/stays', jwtAuth, (req, res) => {
-  console.log('request received...');
+  if (debug) { console.log('request received...'); }
   const { email: userEmail } = req.tokenPayload;
   User.findOne({email: userEmail}).then(user => {
     if (!user) {
@@ -446,9 +446,6 @@ app.get('/api/messages/:stayId', jwtAuth, (req, res) => {
     }
     return Chat.findOne({stay: req.params.stayId}).exec();
   }).then(chat => {
-    console.log('query: ', req.query);
-    console.log('before: ', req.query.before);
-    console.log('after: ', req.query.after);
     let msg = Msg.find({chatId: chat._id});
     if (req.query.before) { msg = msg.where('createdAt').lt(req.query.before); }
     if (req.query.after) { msg = msg.where('createdAt').gt(req.query.after); }
