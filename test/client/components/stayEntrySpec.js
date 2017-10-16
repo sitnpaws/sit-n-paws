@@ -42,7 +42,7 @@ const customTheme = {
 const muiTheme = getMuiTheme(customTheme);
 
 var wrapComponent = function() {
-  const props = { stay: stay };
+  const props = { stay: stay, getToken: () => ('abc123') };
   var wrapper = shallow(
       <Component {...props} />, {
         context: {muiTheme},
