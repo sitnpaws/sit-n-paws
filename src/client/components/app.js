@@ -66,7 +66,7 @@ export default class App extends React.Component {
             <Route path='/chat/:stayId' render={props => (<Chat {...props} getToken={this.getToken} />)} />
             <Redirect to='/listings' />
           </Switch>
-          <ProfileDrawer getToken={this.getToken} onLogout={() => this.onLogout()} drawerOpen={this.state.drawerOpen} toggleDrawer={this.toggleDrawer} />
+          <ProfileDrawer getToken={this.getToken} onLogin={token => this.onLogin(token)} onLogout={() => this.onLogout()} drawerOpen={this.state.drawerOpen} toggleDrawer={this.toggleDrawer} />
         </div>
       </MuiThemeProvider>
     );

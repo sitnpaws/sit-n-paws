@@ -21,41 +21,27 @@ import {
 
 // Shows the profile in the drawer
 export default class ShowProfile extends React.Component {
-
   constructor(props) {
     super(props);
-
-    this.state = {
-      name: null
-    }
-
-    this.styles = {
-      width: 140,
-      height: 140
-    }
+    this.state = { name: null }
+    this.styles = { width: 140, height: 140 }
 
     this.handleUpdateProfile = this.handleUpdateProfile.bind(this);
     this.getName = this.getName.bind(this);
-
   }
 
-  componentDidMount() {
-    this.getName();
-  }
+  componentDidMount() { this.getName(); }
 
   getName() {
     this.setState({ name: jwt.decode(this.props.getToken()).name });
   }
 
   handleUpdateProfile(data) {
-    axios.put('/api/profile', data, { headers: {'Authorization': this.token} })
+    axios.put('/api/profile', data, { headers: {'Authorization': this.props.getToken()} })
       .then((res) => {
-        localStorage.setItem('jwt', res.data.token);
+        this.props.onLogin(res.data.token);
         this.getName();
-      })
-      .catch((err) => {
-        console.log(err);
-      })
+      }).catch((err) => console.log(err));
   }
 
   render() {

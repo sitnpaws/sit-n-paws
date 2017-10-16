@@ -33,7 +33,7 @@ export default class ProfileDrawer extends React.Component {
       [
         (<Drawer key="prof-drawer" width={400} openSecondary={true} open={this.props.drawerOpen} >
           <AppBar title="Sit-n-Paws Profile" onLeftIconButtonTouchTap={this.props.toggleDrawer} style={{background: '#C5BA9B'}}/>
-          <ShowProfile getToken={this.props.getToken} editProfile={this.state.openEditProfile}/>
+          <ShowProfile getToken={this.props.getToken} onLogin={this.props.onLogin} editProfile={this.state.openEditProfile}/>
           <RaisedButton onClick={this.toggleEditProfile} label="Edit Profile" labelColor="#FFFFFF" style={this.styles} backgroundColor="#C5BA9B" />
           <RaisedButton onClick={this.props.onLogout} label="Log Out" labelColor="#FFFFFF" style={this.styles} backgroundColor="#AB5E5E"/>
           <div align="center">
