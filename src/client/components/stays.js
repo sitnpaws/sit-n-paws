@@ -24,7 +24,7 @@ export default class Stays extends React.Component {
     if (this.state.stays.length === 0) {
       return <div>You have no stays yet! Woof!</div>;
     } else {
-      return (this.state.stays.map(stay => <StayEntry stay={stay} key={stay._id}/>));
+      return (this.state.stays.map(stay => <StayEntry stay={stay} key={stay._id} getToken={this.props.getToken}/>));
     }
   }
 }
