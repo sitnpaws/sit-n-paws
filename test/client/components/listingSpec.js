@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { shallow, mount, render } from 'enzyme';
-import Component from '../../../src/client/components/listingView.js';
+import Component from '../../../src/client/components/listings.js';
 
 configure({ adapter: new Adapter() });
 
