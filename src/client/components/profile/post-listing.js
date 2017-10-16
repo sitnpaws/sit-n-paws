@@ -52,7 +52,7 @@ export default class PostListing extends React.Component {
       formData.append("homePictures", this.state.homePictures);
       formData.append("cost", this.state.cost);
 
-      axios.post('/api/listings', formData, {headers: {'authorization': this.token}})
+      axios.post('/api/listings', formData, {headers: {'authorization': this.props.getToken()}})
         .then(resp => {
           if (resp.data.success === true) {
             this.setState({message: resp.data.message, submitted: true});
@@ -60,9 +60,7 @@ export default class PostListing extends React.Component {
         }).catch(err => console.log('error: ', err));
     }
   }
-
-  componentDidMount() { this.token = localStorage.getItem('jwt'); }
-
+  
   render() {
     if (this.state.submitted === true) {
       return (
