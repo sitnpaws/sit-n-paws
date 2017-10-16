@@ -8,12 +8,12 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 // app modules or components
 import MainAppBar from './main-app-bar.js';
-import ProfileDrawer from './profile-drawer.js';
-import Login from './login.js';
-import Home from './home.js';
-import Listings from './listings.js';
-import Stays from './stays.js';
-import Chat from './chat.js';
+import ProfileDrawer from '../profile/profile-drawer.js';
+import Login from '../login/login.js';
+import Home from '../login/home.js';
+import Listings from '../listings/listings.js';
+import Stays from '../stays/stays.js';
+import Chat from '../chat/chat.js';
 
 export default class App extends React.Component {
   constructor(props) {
