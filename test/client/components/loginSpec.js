@@ -26,7 +26,8 @@ const muiTheme = getMuiTheme(customTheme);
 
 var wrapComponent = function() {
   const props = {
-    history: []
+    history: [],
+    handleLogin : function(){}
   };
   //wrapper.setState({status: this.props.stay.status});
   return shallow(
