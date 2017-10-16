@@ -49,7 +49,7 @@ export default class Chat extends Component {
   }
 
   componentWillUpdate() {
-    this.isScrolledToBottom = this.messagesContainer.scrollTop + this.messagesContainer.offsetHeight === this.messagesContainer.scrollHeight;
+    this.isScrolledToBottom = (this.messagesContainer.scrollTop + this.messagesContainer.offsetHeight) === this.messagesContainer.scrollHeight;
     this.oldScrollHeight = this.messagesContainer.scrollHeight;
   }
 
