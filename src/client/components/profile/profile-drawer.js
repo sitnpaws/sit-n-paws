@@ -41,7 +41,7 @@ export default class ProfileDrawer extends React.Component {
         </Drawer>),
         (<Dialog key="post-listing-dialog" modal={false} open={this.state.openPostListing}
           onRequestClose={this.togglePostListing}>
-          <PostListing />
+          <PostListing getToken={this.props.getToken} />
         </Dialog>)
       ]
     );
