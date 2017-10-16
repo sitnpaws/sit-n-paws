@@ -29,7 +29,7 @@ export default class MainAppBar extends React.Component {
       <AppBar
         title={
           <Tabs tabItemContainerStyle={styles.tabItemContainer} inkBarStyle={{background: 'none'}}>
-            <Tab label="Main" value="main" style={styles.tab} href="/main"/>
+            <Tab label="Listings" value="listings" style={styles.tab} href="/listings"/>
             <Tab label="Stays" value="stays" style={styles.tab} href="/stays"/>
           </Tabs>
         }
