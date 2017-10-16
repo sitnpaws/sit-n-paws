@@ -15,6 +15,7 @@ import './chat.css';
 export default class Chat extends Component {
   constructor(props) {
     super(props);
+    this.stayId = props.match.params.stayId;
     this.state = {
       chatId: '',
       myName: '', myRole: '', myId: '',
@@ -38,7 +39,7 @@ export default class Chat extends Component {
 
   componentDidMount() {
     this.socket = openSocket('/');
-    this.socket.emit('enter chat', this.props.stayId);
+    this.socket.emit('enter chat', this.stayId);
     this.socket.on('refresh', () => this.getNewMessages());
     this.socket.on('started typing', () => {
       this.setState({otherTyping: true});
@@ -64,7 +65,7 @@ export default class Chat extends Component {
   scrollToBottom () { this.msgContainerBottom.scrollIntoView(); }
 
   getChatInfo() {
-    axios.get('/api/chat/'+this.props.stayId, {headers: {'authorization': this.token}})
+    axios.get('/api/chat/'+this.stayId, {headers: {'authorization': this.token}})
       .then(resp => {
         this.setState({
           chatId: resp.data.chatId,
@@ -76,7 +77,7 @@ export default class Chat extends Component {
   }
 
   getMessages() {
-    axios.get('/api/messages/'+this.props.stayId, {headers: {'authorization': this.token}})
+    axios.get('/api/messages/'+this.stayId, {headers: {'authorization': this.token}})
       .then(resp => {
         let messages = resp.data;
         messages.reverse();
@@ -89,7 +90,7 @@ export default class Chat extends Component {
 
   getMessageHistory() {
     if (!this.state.messages.length) { return; } // can't get message history if there are no messages!
-    axios.get('/api/messages/'+this.props.stayId, {
+    axios.get('/api/messages/'+this.stayId, {
       headers: {'authorization': this.token},
       params: { before: this.state.messages[0].createdAt }
     }).then(resp => {
@@ -105,7 +106,7 @@ export default class Chat extends Component {
 
   getNewMessages() {
     let after = this.state.messages.length ? this.state.messages[this.state.messages.length - 1].createdAt : 0;
-    axios.get('/api/messages/'+this.props.stayId, {
+    axios.get('/api/messages/'+this.stayId, {
       headers: {'authorization': this.token},
       params: { after }
     }).then(resp => {
@@ -139,22 +140,22 @@ export default class Chat extends Component {
   }
 
   startTyping() {
-    this.socket.emit('started typing', this.props.stayId);
+    this.socket.emit('started typing', this.stayId);
     this.setState({isTyping: true});
   }
 
   stopTyping() {
-    this.socket.emit('stopped typing', this.props.stayId);
+    this.socket.emit('stopped typing', this.stayId);
     this.setState({isTyping: false});
   }
 
   postMessage() {
     if (!this.state.messageText) { return; }
-    axios.post('/api/messages/'+this.props.stayId,
+    axios.post('/api/messages/'+this.stayId,
     {text: this.state.messageText},
     {headers: {'authorization': this.token}}).then(resp => {
       this.setState({messageText: ''});
-      this.socket.emit('new message', this.props.stayId);
+      this.socket.emit('new message', this.stayId);
       this.stopTyping();
     }).catch(err => console.log('Error: ', err));
   }
