@@ -23,7 +23,7 @@ export default class Login extends React.Component {
     // Default is login. If 'register' is passed as an argument, it executes the register post instead.
     this.handleSubmit = (e, register) => {
       if(register === 'register') {
-        var url = '/signup';
+        var url = '/api/signup';
         var credentials = {
           name: this.state.registerName,
           password: this.state.registerPassword,
@@ -31,7 +31,7 @@ export default class Login extends React.Component {
         };
 
       } else {
-        var url = '/login';
+        var url = '/api/login';
         var credentials = {
           email: this.state.email,
           password: this.state.password
@@ -114,4 +114,4 @@ export default class Login extends React.Component {
   }
 }
 
-Login.propTypes = {handleLogin: PropTypes.func.isRequired};
+Login.propTypes = {onLogin: PropTypes.func.isRequired};
