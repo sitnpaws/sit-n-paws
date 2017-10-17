@@ -7,6 +7,7 @@
   "scripts": {
     "test": "mocha test/**/*spec.js* --require ./tools/test-helper.js -r mock-local-storage --recursive --compilers js:babel-register --exit",
     "start": "nodemon server.js",
+    "start:dev": "NODE_ENV='test' nodemon server.js",
     "build": "webpack",
     "build:prod": "webpack --config webpack.prod.js",
     "server": "nodemon server.js",

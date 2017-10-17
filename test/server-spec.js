@@ -1,10 +1,15 @@
+process.env.NODE_ENV = 'test';
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const chai = require('chai');
 const expect = chai.expect;
-const request = require('supertest');
+const supertest = require('supertest');
 const axios = require('axios');
 const path = require('path');
 const server = require('../server.js');
 const mongoose = require('mongoose');
+
+const app = supertest('https://localhost:8443');
 
 const db = require('../db/config');
 const Listing = require('../db/models/listing');
@@ -110,14 +115,14 @@ const testImage2 = path.join(__dirname, '..', 'test', 'TESTimage2.png');
 
 describe('Server and Client Are Active', function() {
 
-  it('Respond with 200 at localhost port 3000', function(done) {
-  request(server)
+  it('Respond with 200 at localhost port 8443', function(done) {
+  app
     .get('/')
     .expect(200, done)
   });
 
   it('Responds with index.html at root path', function(done) {
-  request(server)
+  app
     .get('/')
     .expect('Content-Type', /html/)
     .expect(200)
@@ -158,7 +163,7 @@ describe('User APIs and Database', function() {
   // a new user added to database will return a response with success, email, and token
   //todo: failing
   it('Adds new user to database', function(done) {
-    request(server)
+    app
       .post('/api/signup')
       .send(basicTestUsers[1])
       .expect(200)
@@ -170,7 +175,7 @@ describe('User APIs and Database', function() {
 
   // a user already in the database will return an empty object
   it('Prevents same email being added to database', function(done) {
-    request(server)
+    app
       .post('/api/signup')
       .send(basicTestUsers[0])
       .expect(200)
@@ -183,7 +188,7 @@ describe('User APIs and Database', function() {
   // a user can login and receive a success response
   it('Allows valid user to be logged in', function(done) {
 
-    request(server)
+    app
       .post('/api/login')
       .send(basicTestUsers[0])
       .expect(200)
@@ -214,7 +219,7 @@ describe('Listings APIs and database', function() {
 
     // once listings are clear, login a user we know is there
     clearListings.then(() => {
-      request(server).post('/api/signup').send(basicTestUsers[0])
+      app.post('/api/signup').send(basicTestUsers[0])
         .then(resp => {
           authToken = resp.body.token;
           done();
@@ -229,7 +234,7 @@ describe('Listings APIs and database', function() {
   // add one listing to database using formData supertest field and attach
   //todo: failing
   it('Add one listing to the database', function(done) {
-    request(server)
+    app
       .post('/api/listings').set('authorization', authToken)
       .field('name', 'Lily Feake')
       .field('email', 'Lily@Feake.com')
@@ -251,7 +256,7 @@ describe('Listings APIs and database', function() {
   // returns one total listing from database
   //todo: failing. Is not length 1, has other entries.
   it('Returns all(i.e. one seeded) listing in database', function(done) {
-    request(server)
+    app
       .get('/api/listings').set('authorization', authToken)
       .expect(200)
       .expect(function(res) {
@@ -262,7 +267,7 @@ describe('Listings APIs and database', function() {
 
   // returns search query for zipcode
   it('Returns search query for zipcode', function(done) {
-    request(server)
+    app
       .get('/api/listings/94106').set('authorization', authToken)
       .expect(200)
       .expect(function(res) {
@@ -273,7 +278,7 @@ describe('Listings APIs and database', function() {
 
   // returns multiple listings from search query for zipcode with more than one database entry
   it('Returns multiple listings from search query for zipcode', function(done) {
-    request(server)
+    app
       .post('/api/listings').set('authorization', authToken)
       .field('name', 'Angus Bafford')
       .field('email', 'angus@example.com')
@@ -292,7 +297,7 @@ describe('Listings APIs and database', function() {
       })
       .end(function() {
 
-        request(server)
+        app
           .get('/api/listings/94106').set('authorization', authToken)
           .expect(200)
           .expect(function(res) {

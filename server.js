@@ -19,6 +19,7 @@ const multer = require('multer');
 const nodemailer = require('nodemailer');
 const upload = multer({dest: './uploads/'});
 const debug = process.env.DEBUG || true;
+const nodeEnv = process.env.NODE_ENV || 'prod';
 const http = require('http');
 const https = require('https');
 const httpPort = process.env.PORT || 8080;
@@ -34,8 +35,23 @@ const app = express();
 
 // redirect non secure traffic to https
 const httpsRoute = function (req, res, next) {
-  if (debug) { console.log((req.secure ? 'Secure' : 'Insecure') + ' connection received to: ', req.url); }
-  if (req.secure) { next(); } else { console.log('redirecing to secure connection'); res.redirect('https://' + req.hostname + req.path); }
+  if (debug) {
+    console.log((req.secure ? 'Secure' : 'Insecure') + ' connection received to: ', req.url);
+  }
+  if (nodeEnv === 'prod') {
+    if (req.secure) {
+      next();
+    } else {
+      console.log('redirecing to secure connection');
+      res.redirect('https://' + req.hostname + req.path);
+    }
+  } else {
+    if (req.secure) {
+      next();
+    } else {
+      res.redirect('https://localhost:' + httpsPort);
+    }
+  }
 };
 
 app.get('*', httpsRoute);
