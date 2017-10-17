@@ -12,6 +12,8 @@ const sweepStays = () => {
   Promise.all([expiringStays, completeStays]).then(([expiringStays, completeStays]) => {
     expiringStays.forEach(stay => stay.update({'status': 'expired'}).exec());
     completeStays.forEach(stay => stay.update({'status': 'complete'}).exec());
+  }).then(() => {
+    mongoose.connection.close();
   }).catch((err) =>{
     console.log(err);
   });

@@ -23,6 +23,7 @@ const http = require('http');
 const https = require('https');
 const httpPort = process.env.PORT || 8080;
 const httpsPort = process.env.HTTPS_PORT || 8443;
+const app = express();
 
 // This is the shape of the object from the config file which is gitignored
 // const cloudConfig = {
@@ -31,10 +32,29 @@ const httpsPort = process.env.HTTPS_PORT || 8443;
 //   api_secret: 'API_SECRET'
 // };
 
+// redirect non secure traffic to https
+const httpsRoute = function (req, res, next) {
+  if (debug) { console.log((req.secure ? 'Secure' : 'Insecure') + ' connection received to: ', req.url); }
+  if (req.secure) { next(); } else { console.log('redirecing to secure connection'); res.redirect('https://' + req.hostname + req.path); }
+};
+
+app.get('*', httpsRoute);
+
 cloudinary.config(cloudConfig);
-const app = express();
 app.use(express.static((__dirname + '/src/public')));
 app.use(bodyParser.json());
+
+const httpsOptions = {
+  key: fs.readFileSync(path.join(__dirname, 'cert', 'domain.key')),
+  cert: fs.readFileSync(path.join(__dirname, 'cert', 'domain.crt'))
+};
+
+http.createServer(app).listen(httpPort);
+const server = https.createServer(httpsOptions, app).listen(httpsPort);
+
+console.log('HTTP Server now listening on port ' + httpPort);
+console.log('HTTPS Server now listening on port ' + httpsPort);
+
 
 const JWT_KEY = 'who let the dogs in?!';
 const EMAIL_AUTH = {user: 'sitnpawsio@gmail.com', pass: 'sitnpaws13'};
@@ -66,14 +86,6 @@ const sendStayRequestMail = (hostEmail, guestEmail, startDate, endDate) => {
     if (debug) { console.log('Nodemailer details: ', info); }
   });
 }
-
-// redirect non secure traffic to https
-const httpsRoute = function (req, res, next) {
-  if (debug) { console.log((req.secure ? 'Secure' : 'Insecure') + ' connection received to: ', req.url); }
-  if (req.secure) { next(); } else { res.redirect('https://' + req.hostname + req.path); }
-};
-
-app.get('*', httpsRoute);
 
 //handles log in information in the db, creates jwt
 app.post('/api/login', (req, res) => {
@@ -537,17 +549,6 @@ app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
 })
-
-const httpsOptions = {
-  key: fs.readFileSync(path.join(__dirname, 'cert', 'domain.key')),
-  cert: fs.readFileSync(path.join(__dirname, 'cert', 'domain.crt'))
-};
-
-http.createServer(app).listen(httpPort);
-const server = https.createServer(httpsOptions, app).listen(httpsPort);
-
-console.log('HTTP Server now listening on port ' + httpPort);
-console.log('HTTPS Server now listening on port ' + httpsPort);
 
 const io = socket(server);
 socketChat(io);
