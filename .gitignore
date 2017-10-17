@@ -20,8 +20,3 @@ uploads
 
 ## snippets ##
 tools/test-snippets.js
-
-## cert ##
-cert/*.key
-cert/*.crt
-cert
