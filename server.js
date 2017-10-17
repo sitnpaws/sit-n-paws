@@ -268,8 +268,8 @@ const listingCloudinaryHandler = (req, res, next) => {
     if (debug) { console.log('Send to cloudinary!', req.files.hostPictures[0].path); }
     cloudinary.v2.uploader.upload(req.files.hostPictures[0].path, (err, result) => {
       if(err) { console.log('Cloudinary error: ', err); }
-      if (debug) { console.log('Host Picture url: ', result.url); }
-      Listing.findOneAndUpdate({email: req.body.email}, {hostPictures: result.url}, (err, found) => {
+      if (debug) { console.log('Host Picture url: ', result.secure_url); }
+      Listing.findOneAndUpdate({email: req.body.email}, {hostPictures: result.secure_url}, (err, found) => {
         if (err) { console.log(err); }
         if (debug) { console.log('Updated Host Pictures: ', found); }
       });
@@ -279,8 +279,8 @@ const listingCloudinaryHandler = (req, res, next) => {
     if (debug) { console.log('Send to cloudinary!', req.files.homePictures[0].path); }
     cloudinary.v2.uploader.upload(req.files.homePictures[0].path, (err, result) => {
       if (err) { console.log('Cloudinary error: ', err); }
-      if (debug) { console.log('Home Picture url: ', result.url); }
-      Listing.findOneAndUpdate({email: req.body.email}, {homePictures: result.url}, (err, found) => {
+      if (debug) { console.log('Home Picture url: ', result.secure_url); }
+      Listing.findOneAndUpdate({email: req.body.email}, {homePictures: result.secure_url}, (err, found) => {
         if (err) { console.log(err); }
         if (debug) { console.log('Updated Home Pictures: ', found); }
       });
