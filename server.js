@@ -31,13 +31,6 @@ const httpsPort = process.env.HTTPS_PORT || 8443;
 //   api_secret: 'API_SECRET'
 // };
 
-// redirect non secure traffic to https
-
-const httpsRoute = function (req, res, next) {
-  if (debug) { console.log((req.secure ? 'Secure' : 'Insecure') + ' connection received to: ', req.url); }
-  if (req.secure) { next(); } else { res.redirect('https://' + req.hostname + req.path); }
-};
-
 cloudinary.config(cloudConfig);
 const app = express();
 app.use(express.static((__dirname + '/src/public')));
@@ -73,6 +66,14 @@ const sendStayRequestMail = (hostEmail, guestEmail, startDate, endDate) => {
     if (debug) { console.log('Nodemailer details: ', info); }
   });
 }
+
+// redirect non secure traffic to https
+const httpsRoute = function (req, res, next) {
+  if (debug) { console.log((req.secure ? 'Secure' : 'Insecure') + ' connection received to: ', req.url); }
+  if (req.secure) { next(); } else { res.redirect('https://' + req.hostname + req.path); }
+};
+
+app.get('*', httpsRoute);
 
 //handles log in information in the db, creates jwt
 app.post('/api/login', (req, res) => {
@@ -532,8 +533,6 @@ app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
     res.status(201).send('Message created');
   }).catch(err => res.status(400).send(err.message));
 });
-
-app.get('*', httpsRoute);
 
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
