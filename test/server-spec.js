@@ -9,7 +9,7 @@ const path = require('path');
 const server = require('../server.js');
 const mongoose = require('mongoose');
 
-const app = supertest('https://localhost:8443');
+const app = supertest('http://localhost:8080');
 
 const db = require('../db/config');
 const Listing = require('../db/models/listing');
@@ -115,7 +115,7 @@ const testImage2 = path.join(__dirname, '..', 'test', 'TESTimage2.png');
 
 describe('Server and Client Are Active', function() {
 
-  it('Respond with 200 at localhost port 8443', function(done) {
+  it('Respond with 200 at localhost port 8080', function(done) {
   app
     .get('/')
     .expect(200, done)
