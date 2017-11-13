@@ -21,9 +21,7 @@ const upload = multer({dest: './uploads/'});
 const debug = process.env.DEBUG || true;
 const nodeEnv = process.env.NODE_ENV || 'prod';
 const http = require('http');
-const https = require('https');
 const httpPort = process.env.PORT || 8080;
-const httpsPort = process.env.HTTPS_PORT || 8443;
 const app = express();
 
 // This is the shape of the object from the config file which is gitignored
@@ -33,44 +31,9 @@ const app = express();
 //   api_secret: 'API_SECRET'
 // };
 
-// redirect non secure traffic to https
-const httpsRoute = function (req, res, next) {
-  if (debug) {
-    console.log((req.secure ? 'Secure' : 'Insecure') + ' connection received to: ', req.url);
-  }
-  if (nodeEnv === 'prod') {
-    if (req.secure) {
-      next();
-    } else {
-      console.log('redirecing to secure connection');
-      res.redirect('https://' + req.hostname + req.path);
-    }
-  } else {
-    if (req.secure) {
-      next();
-    } else {
-      res.redirect('https://localhost:' + httpsPort);
-    }
-  }
-};
-
-app.get('*', httpsRoute);
-
 cloudinary.config(cloudConfig);
 app.use(express.static((__dirname + '/src/public')));
 app.use(bodyParser.json());
-
-const httpsOptions = {
-  key: fs.readFileSync(path.join(__dirname, 'cert', 'domain.key')),
-  cert: fs.readFileSync(path.join(__dirname, 'cert', 'domain.crt'))
-};
-
-http.createServer(app).listen(httpPort);
-const server = https.createServer(httpsOptions, app).listen(httpsPort);
-
-console.log('HTTP Server now listening on port ' + httpPort);
-console.log('HTTPS Server now listening on port ' + httpsPort);
-
 
 const JWT_KEY = 'who let the dogs in?!';
 const EMAIL_AUTH = {user: 'sitnpawsio@gmail.com', pass: 'sitnpaws13'};
@@ -565,6 +528,9 @@ app.post('/api/messages/:stayId', jwtAuth, (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/src/public/index.html');
 })
+
+const server = http.createServer(app).listen(httpPort, 'localhost');
+console.log('HTTP Server now listening on port ' + httpPort);
 
 const io = socket(server);
 socketChat(io);
